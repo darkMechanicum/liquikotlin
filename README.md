@@ -5,3 +5,6 @@ Kotlin DSL for liquibase.
 
 # TODO
 Add detailed README.
+Ask about logos.
+Change logo size.
+Add tests.
