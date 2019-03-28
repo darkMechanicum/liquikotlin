@@ -1,10 +1,9 @@
 plugins {
     kotlin("jvm") version "1.3.21"
-    `maven-publish`
 }
 
-group = "org.bundled"
-version = "1.2.2"
+group = "com.tsarev"
+version = "1.0.0."
 
 configurations {
     "archives"()

@@ -41,6 +41,7 @@ import javax.script.ScriptException
  * @author Jason Blackwell
  * @author Tsarev Alexander
  */
+// TODO cleanup
 open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
     override fun parse(physicalChangeLogLocation: String, changeLogParameters: ChangeLogParameters?,
                        resourceAccessor: ResourceAccessor): DatabaseChangeLog {
