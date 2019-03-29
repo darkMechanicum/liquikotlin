@@ -43,6 +43,7 @@ open class LbDslNode<SelfT : LbDslNode<SelfT, LinkedT, ParentLinkedT>, LinkedT :
     private fun getNewFlag() = requiredFlags.apply { add(RequiredFlag()) }.size - 1
 
     override fun copySelfParameters(other: DefaultNode<SelfT, LinkedT, LbArg>) {
+        super.copySelfParameters(other)
         val otherFlags = other.self.requiredFlags
         if (requiredFlags.size == otherFlags.size) {
             otherFlags.forEachIndexed { index, _ -> requiredFlags[index].hasNone = otherFlags[index].hasNone }

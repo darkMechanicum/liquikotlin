@@ -22,9 +22,9 @@ val defaultFilter = IncludeAllFilter { it?.endsWith(".kts") ?: false }
  * Utility class to hide change add differency
  * between [ChangeSet] and [liquibase.changelog.RollbackContainer] present in [ChangeSet].
  */
-class LkChangesHolder {
-    val changes: MutableCollection<Change> = ArrayList()
-    var preconditions: PreconditionContainer? = null
+open class LkChangesHolder {
+    open val changes: MutableCollection<Change> = ArrayList()
+    open var preconditions: PreconditionContainer? = null
 }
 
 /**
@@ -56,53 +56,53 @@ abstract class Refactorings<SelfT : Refactorings<SelfT, LinkedT, ParentLinkedT>,
 ) {
 
     // Creating changes
-    val addAutoIncrement by child(::LkAddAutoIncrement)
-    val addColumn by child(::LkAddColumn)
-    val constraints by child(::LkConstraints)
-    val addDefaultValue by child(::LkAddDefaultValue)
-    val addForeignKeyConstraint by child(::LkAddForeignKeyConstraint)
-    val addLookupTable by child(::LkAddLookupTable)
-    val addNotNullConstraint by child(::LkAddNotNullConstraint)
-    val addPrimaryKey by child(::LkAddPrimaryKey)
-    val addUniqueConstraint by child(::LkAddUniqueConstraint)
-    val createIndex by child(::LkCreateIndex)
-    val createProcedure by child(::LkCreateProcedure)
-    val createSequence by child(::LkCreateSequence)
-    val createTable by child(::LkCreateTable)
-    val createView by child(::LkCreateView)
+    open val addAutoIncrement by child(::LkAddAutoIncrement)
+    open val addColumn by child(::LkAddColumn)
+    open val constraints by child(::LkConstraints)
+    open val addDefaultValue by child(::LkAddDefaultValue)
+    open val addForeignKeyConstraint by child(::LkAddForeignKeyConstraint)
+    open val addLookupTable by child(::LkAddLookupTable)
+    open val addNotNullConstraint by child(::LkAddNotNullConstraint)
+    open val addPrimaryKey by child(::LkAddPrimaryKey)
+    open val addUniqueConstraint by child(::LkAddUniqueConstraint)
+    open val createIndex by child(::LkCreateIndex)
+    open val createProcedure by child(::LkCreateProcedure)
+    open val createSequence by child(::LkCreateSequence)
+    open val createTable by child(::LkCreateTable)
+    open val createView by child(::LkCreateView)
 
     // Deleting changes
-    val delete by child(::LkDelete)
-    val dropAllForeignKeyConstraints by child(::LkDropAllForeignKeyConstraints)
-    val dropColumn by child(::LkDropColumn)
-    val dropDefaultValue by child(::LkDropDefaultValue)
-    val dropForeignKeyConstraint by child(::LkDropForeignKeyConstraint)
-    val dropIndex by child(::LkDropIndex)
-    val dropNotNullConstraint by child(::LkDropNotNullConstraint)
-    val dropPrimaryKey by child(::LkDropPrimaryKey)
-    val dropProcedure by child(::LkDropProcedure)
-    val dropSequence by child(::LkDropSequence)
-    val dropTable by child(::LkDropTable)
-    val dropUniqueConstraint by child(::LkDropUniqueConstraint)
-    val dropView by child(::LkDropView)
+    open val delete by child(::LkDelete)
+    open val dropAllForeignKeyConstraints by child(::LkDropAllForeignKeyConstraints)
+    open val dropColumn by child(::LkDropColumn)
+    open val dropDefaultValue by child(::LkDropDefaultValue)
+    open val dropForeignKeyConstraint by child(::LkDropForeignKeyConstraint)
+    open val dropIndex by child(::LkDropIndex)
+    open val dropNotNullConstraint by child(::LkDropNotNullConstraint)
+    open val dropPrimaryKey by child(::LkDropPrimaryKey)
+    open val dropProcedure by child(::LkDropProcedure)
+    open val dropSequence by child(::LkDropSequence)
+    open val dropTable by child(::LkDropTable)
+    open val dropUniqueConstraint by child(::LkDropUniqueConstraint)
+    open val dropView by child(::LkDropView)
 
     // Other changes
-    val alterSequence by child(::LkAlterSequence)
-    val empty by child(::LkEmpty)
-    val executeCommand by child(::LkExecuteCommand)
-    val insert by child(::LkInsert)
-    val loadData by child(::LkLoadData)
-    val loadUpdateData by child(::LkLoadUpdateData)
-    val mergeColumns by child(::LkMergeColumns)
-    val modifyDataType by child(::LkModifyDataType)
-    val renameColumn by child(::LkRenameColumn)
-    val renameTable by child(::LkRenameTable)
-    val renameView by child(::LkRenameView)
-    val sql by child(::LkSql)
-    val sqlFile by child(::LkSqlFile)
-    val stop by child(::LkStop)
-    val tagDatabase by child(::LkTagDatabase)
-    val update by child(::LkUpdate)
+    open val alterSequence by child(::LkAlterSequence)
+    open val empty by child(::LkEmpty)
+    open val executeCommand by child(::LkExecuteCommand)
+    open val insert by child(::LkInsert)
+    open val loadData by child(::LkLoadData)
+    open val loadUpdateData by child(::LkLoadUpdateData)
+    open val mergeColumns by child(::LkMergeColumns)
+    open val modifyDataType by child(::LkModifyDataType)
+    open val renameColumn by child(::LkRenameColumn)
+    open val renameTable by child(::LkRenameTable)
+    open val renameView by child(::LkRenameView)
+    open val sql by child(::LkSql)
+    open val sqlFile by child(::LkSqlFile)
+    open val stop by child(::LkStop)
+    open val tagDatabase by child(::LkTagDatabase)
+    open val update by child(::LkUpdate)
 }
 
 // --- Core definition classes ---
@@ -119,13 +119,13 @@ open class ChangeLog : LbDslNode<ChangeLog, DatabaseChangeLog, Any>(
     ChangeLog::class,
     ::DatabaseChangeLog
 ) {
-    val logicalFilePath by nullable(String::class)
+    open val logicalFilePath by nullable(String::class)
 
-    val precondition by child(::LkChangeLogPrecondition)
-    val property by child(::LkProperty)
-    val changeset by child(::LkChangeSet)
-    val include by child(::Include)
-    val includeAll by child(::IncludeAll)
+    open val precondition by child(::LkChangeLogPrecondition)
+    open val property by child(::LkProperty)
+    open val changeset by child(::LkChangeSet)
+    open val include by child(::Include)
+    open val includeAll by child(::IncludeAll)
 
     /**
      * Intercept constructor evaluation to set file path.
@@ -147,8 +147,8 @@ open class Include : LbDslNode<Include, Any, DatabaseChangeLog>(
         changeLog.include(self.path.current, self.relativeToChangelogFile.current, resourceAccessor)
     }
 ) {
-    val path by nonNullable(String::class)
-    val relativeToChangelogFile by nonNullable(Boolean::class, false)
+    open val path by nonNullable(String::class)
+    open val relativeToChangelogFile by nonNullable(Boolean::class, false)
 
     operator fun invoke(path: String) = path(path)
 }
@@ -178,10 +178,10 @@ open class IncludeAll : LbDslNode<IncludeAll, Any, DatabaseChangeLog>(
         )
     }
 ) {
-    val path by nonNullable(String::class)
-    val resourceFilter by nullable(String::class)
-    val relativeToChangelogFile by nonNullable(Boolean::class, false)
-    val errorIfMissingOrEmpty by nonNullable(Boolean::class, true)
+    open val path by nonNullable(String::class)
+    open val resourceFilter by nullable(String::class)
+    open val relativeToChangelogFile by nonNullable(Boolean::class, false)
+    open val errorIfMissingOrEmpty by nonNullable(Boolean::class, true)
 
     operator fun invoke(path: String) = path(path)
 }
@@ -204,15 +204,15 @@ open class LkProperty : LbDslNode<LkProperty, Any, DatabaseChangeLog>(
         )
     }
 ) {
-    val name by nonNullable(String::class)
-    val value by nonNullable(String::class)
-    val context by nullable(String::class)
-    val dbms by nullable(String::class)
+    open val name by nonNullable(String::class)
+    open val value by nonNullable(String::class)
+    open val context by nullable(String::class)
+    open val dbms by nullable(String::class)
 
     operator fun invoke(name: String, value: String) = name(name).value(value)
 }
 
-class LkChangeSet : Refactorings<LkChangeSet, LkChangesHolder, DatabaseChangeLog>(
+open class LkChangeSet : Refactorings<LkChangeSet, LkChangesHolder, DatabaseChangeLog>(
     LkChangeSet::class,
     ::LkChangesHolder,
     { changeLog, it, self ->
@@ -231,19 +231,19 @@ class LkChangeSet : Refactorings<LkChangeSet, LkChangesHolder, DatabaseChangeLog
         changeLog.addChangeSet(result)
     }
 ) {
-    val id by nonNullable(Any::class)
-    val author by nullable(String::class)
-    val dbms by nullable(String::class)
-    val runAlways by nullable(Boolean::class, true) // TODO What is correct default?
-    val runOnChange by nullable(Boolean::class, true) // TODO What is correct default?
-    val context by nullable(String::class)
-    val runInTransaction by nullable(Boolean::class)
-    val failOnError by nullable(Boolean::class)
+    open val id by nonNullable(Any::class)
+    open val author by nullable(String::class)
+    open val dbms by nullable(String::class)
+    open val runAlways by nullable(Boolean::class, true) // TODO What is correct default?
+    open val runOnChange by nullable(Boolean::class, true) // TODO What is correct default?
+    open val context by nullable(String::class)
+    open val runInTransaction by nullable(Boolean::class)
+    open val failOnError by nullable(Boolean::class)
 
-    val rollback by child(::LkRollback)
-    val comment by child(::LkComment)
-    val validCheckSum by child(::LkValidCheckSum)
-    val precondition by child(::LkChangeSetPrecondition)
+    open val rollback by child(::LkRollback)
+    open val comment by child(::LkComment)
+    open val validCheckSum by child(::LkValidCheckSum)
+    open val precondition by child(::LkChangeSetPrecondition)
 
     operator fun invoke(id: Any) = id(id)
     operator fun invoke(id: Any, author: String) = id(id).author(author)
@@ -262,7 +262,7 @@ open class LkValidCheckSum : LbDslNode<LkValidCheckSum, Any, ChangeSet>(
     ::Any,
     { changeSet, _, self, _ -> changeSet.addValidCheckSum(self.checkSum.current) }
 ) {
-    val checkSum by nonNullable(String::class)
+    open val checkSum by nonNullable(String::class)
     operator fun invoke(checkSum: String) = checkSum(checkSum)
 }
 
@@ -271,9 +271,8 @@ open class LkComment : LbDslNode<LkComment, Any, ChangeSet>(
     ::Any,
     { changeSet, _, self, _ -> changeSet.comments += self.text.current }
 ) {
-    val text by nonNullable(String::class)
+    open val text by nonNullable(String::class)
+
     operator fun invoke(text: String) = text(text)
-    operator fun minus(text: String) {
-        text(text)
-    }
+    operator fun minus(text: String) = text(text)
 }
