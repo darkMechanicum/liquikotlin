@@ -119,16 +119,12 @@ open class LkDbmsPrecondition : AbstractNestedPrecondition<LkDbmsPrecondition, D
     LkDbmsPrecondition::class, ::DBMSPrecondition
 ) {
     open val type by nullableWS(String::class, DBMSPrecondition::setType)
-
-    operator fun invoke(type: String) = type(type)
 }
 
 open class LkRunningAsPrecondition : AbstractNestedPrecondition<LkRunningAsPrecondition, RunningAsPrecondition>(
     LkRunningAsPrecondition::class, ::RunningAsPrecondition
 ) {
     open val username by nullableWS(String::class, RunningAsPrecondition::setUsername)
-
-    operator fun invoke(username: String) = username(username)
 }
 
 open class LkChangeSetExecutedPrecondition :
@@ -138,8 +134,6 @@ open class LkChangeSetExecutedPrecondition :
     open val id by nullableWS(String::class, ChangeSetExecutedPrecondition::setId)
     open val author by nullableWS(String::class, ChangeSetExecutedPrecondition::setAuthor)
     open val changeLogFile by nullableWS(String::class, ChangeSetExecutedPrecondition::setChangeLogFile)
-
-    operator fun invoke(id: String) = id(id)
 }
 
 open class LkColumnExistsPrecondition :
@@ -151,9 +145,6 @@ open class LkColumnExistsPrecondition :
     ) {
     open val tableName by nullableWS(String::class, ColumnExistsPrecondition::setTableName)
     open val columnName by nullableWS(String::class, ColumnExistsPrecondition::setColumnName)
-
-    operator fun invoke(tableName: String, columnName: String) =
-        tableName(tableName).columnName(columnName)
 }
 
 open class LkTableExistsPrecondition :
@@ -164,8 +155,6 @@ open class LkTableExistsPrecondition :
         TableExistsPrecondition::setCatalogName
     ) {
     open val tableName by nullableWS(String::class, TableExistsPrecondition::setTableName)
-
-    operator fun invoke(tableName: String) = tableName(tableName)
 }
 
 open class LkViewExistsPrecondition :
@@ -176,8 +165,6 @@ open class LkViewExistsPrecondition :
         ViewExistsPrecondition::setCatalogName
     ) {
     open val viewName by nullableWS(String::class, ViewExistsPrecondition::setViewName)
-
-    operator fun invoke(viewName: String) = viewName(viewName)
 }
 
 open class LkForeignKeyConstraintExistsPrecondition :
@@ -189,9 +176,6 @@ open class LkForeignKeyConstraintExistsPrecondition :
     ) {
     open val foreignKeyName by nullableWS(String::class, ForeignKeyExistsPrecondition::setForeignKeyName)
     open val foreignKeyTableName by nullableWS(String::class, ForeignKeyExistsPrecondition::setForeignKeyTableName)
-
-    operator fun invoke(foreignKeyTableName: String, foreignKeyName: String) =
-        foreignKeyTableName(foreignKeyTableName).foreignKeyName(foreignKeyName)
 }
 
 open class LkIndexExistsPrecondition :
@@ -203,8 +187,6 @@ open class LkIndexExistsPrecondition :
     ) {
     open val indexName by nullableWS(String::class, IndexExistsPrecondition::setIndexName)
     open val tableName by nullableWS(String::class, IndexExistsPrecondition::setTableName)
-
-    operator fun invoke(tableName: String, indexName: String) = tableName(tableName).indexName(indexName)
 }
 
 open class LkSequenceExistsPrecondition :
@@ -215,8 +197,6 @@ open class LkSequenceExistsPrecondition :
         SequenceExistsPrecondition::setCatalogName
     ) {
     open val sequenceName by nullableWS(String::class, SequenceExistsPrecondition::setSequenceName)
-
-    operator fun invoke(sequenceName: String) = sequenceName(sequenceName)
 }
 
 open class LkPrimaryKeyExistsPrecondition :
@@ -228,9 +208,6 @@ open class LkPrimaryKeyExistsPrecondition :
     ) {
     open val primaryKeyName by nonNullableWS(String::class, PrimaryKeyExistsPrecondition::setPrimaryKeyName)
     open val tableName by nullableWS(String::class, PrimaryKeyExistsPrecondition::setTableName)
-
-    operator fun invoke(tableName: String, primaryKeyName: String) =
-        tableName(tableName).primaryKeyName(primaryKeyName)
 }
 
 open class LkSqlCheckPrecondition : AbstractNestedPrecondition<LkSqlCheckPrecondition, SqlPrecondition>(
@@ -238,9 +215,6 @@ open class LkSqlCheckPrecondition : AbstractNestedPrecondition<LkSqlCheckPrecond
 ) {
     open val expectedResult by nullableWS(String::class, SqlPrecondition::setExpectedResult)
     open val sql by nullableWS(String::class, SqlPrecondition::setSql)
-
-    operator fun invoke(expectedResult: String) = expectedResult(expectedResult)
-    operator fun minus(sql: String) = sql(sql)
 }
 
 open class LkChangeLogPropertyDefinedPrecondition :
@@ -249,9 +223,6 @@ open class LkChangeLogPropertyDefinedPrecondition :
     ) {
     open val property by nullableWS(String::class, ChangeLogPropertyDefinedPrecondition::setProperty)
     open val value by nullableWS(String::class, ChangeLogPropertyDefinedPrecondition::setValue)
-
-    operator fun invoke(property: String) = property(property)
-    operator fun invoke(property: String, value: String) = property(property).value(value)
 }
 
 open class LkCustomPrecondition : AbstractNestedPrecondition<LkCustomPrecondition, CustomPreconditionWrapper>(
@@ -260,11 +231,6 @@ open class LkCustomPrecondition : AbstractNestedPrecondition<LkCustomPreconditio
 ) {
     open val className by nullableWS(String::class, CustomPreconditionWrapper::setClassName)
     open val param by child(::LkCustomPreconditionParam)
-
-    operator fun invoke(className: String, vararg params: Pair<String, String>) =
-        className(className).apply {
-            params.forEach { (name, value) -> this.param.name(name).value(value) }
-        }
 }
 
 open class LkCustomPreconditionParam : LbDslNode<LkCustomPreconditionParam, Any, CustomPreconditionWrapper>(

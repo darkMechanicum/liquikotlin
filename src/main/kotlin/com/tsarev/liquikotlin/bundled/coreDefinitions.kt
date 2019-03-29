@@ -45,7 +45,7 @@ LkChange<SelfT : LkChange<SelfT, LinkedT>, LinkedT : Change>(
 /**
  * Class container of all bundled refactorings.
  */
-abstract class Refactorings<SelfT : Refactorings<SelfT, LinkedT, ParentLinkedT>, LinkedT : Any, ParentLinkedT>(
+abstract class LkRefactorings<SelfT : LkRefactorings<SelfT, LinkedT, ParentLinkedT>, LinkedT : Any, ParentLinkedT>(
     thisClass: KClass<SelfT>,
     linkedConstructor: () -> LinkedT,
     linkedSetter: ((ParentLinkedT, LinkedT, SelfT) -> Unit)
@@ -110,13 +110,13 @@ abstract class Refactorings<SelfT : Refactorings<SelfT, LinkedT, ParentLinkedT>,
 /**
  * Entry point for script.
  */
-val changelog = ChangeLog()
+val changelog = LkChangeLog()
 
 /**
  * Changelog. Entry point for rest nodes.
  */
-open class ChangeLog : LbDslNode<ChangeLog, DatabaseChangeLog, Any>(
-    ChangeLog::class,
+open class LkChangeLog : LbDslNode<LkChangeLog, DatabaseChangeLog, Any>(
+    LkChangeLog::class,
     ::DatabaseChangeLog
 ) {
     open val logicalFilePath by nullable(String::class)
@@ -124,8 +124,8 @@ open class ChangeLog : LbDslNode<ChangeLog, DatabaseChangeLog, Any>(
     open val precondition by child(::LkChangeLogPrecondition)
     open val property by child(::LkProperty)
     open val changeset by child(::LkChangeSet)
-    open val include by child(::Include)
-    open val includeAll by child(::IncludeAll)
+    open val include by child(::LkInclude)
+    open val includeAll by child(::LkIncludeAll)
 
     /**
      * Intercept constructor evaluation to set file path.
@@ -139,8 +139,8 @@ open class ChangeLog : LbDslNode<ChangeLog, DatabaseChangeLog, Any>(
     }
 }
 
-open class Include : LbDslNode<Include, Any, DatabaseChangeLog>(
-    Include::class,
+open class LkInclude : LbDslNode<LkInclude, Any, DatabaseChangeLog>(
+    LkInclude::class,
     ::Any,
     { changeLog, _, self, arg ->
         val (_, resourceAccessor) = (arg as Pair<*, ResourceAccessor>)
@@ -149,12 +149,10 @@ open class Include : LbDslNode<Include, Any, DatabaseChangeLog>(
 ) {
     open val path by nonNullable(String::class)
     open val relativeToChangelogFile by nonNullable(Boolean::class, false)
-
-    operator fun invoke(path: String) = path(path)
 }
 
-open class IncludeAll : LbDslNode<IncludeAll, Any, DatabaseChangeLog>(
-    IncludeAll::class,
+open class LkIncludeAll : LbDslNode<LkIncludeAll, Any, DatabaseChangeLog>(
+    LkIncludeAll::class,
     ::Any,
     { changeLog, _, self, arg ->
         val (_, resourceAccessor) = arg!!
@@ -182,8 +180,6 @@ open class IncludeAll : LbDslNode<IncludeAll, Any, DatabaseChangeLog>(
     open val resourceFilter by nullable(String::class)
     open val relativeToChangelogFile by nonNullable(Boolean::class, false)
     open val errorIfMissingOrEmpty by nonNullable(Boolean::class, true)
-
-    operator fun invoke(path: String) = path(path)
 }
 
 /**
@@ -208,11 +204,9 @@ open class LkProperty : LbDslNode<LkProperty, Any, DatabaseChangeLog>(
     open val value by nonNullable(String::class)
     open val context by nullable(String::class)
     open val dbms by nullable(String::class)
-
-    operator fun invoke(name: String, value: String) = name(name).value(value)
 }
 
-open class LkChangeSet : Refactorings<LkChangeSet, LkChangesHolder, DatabaseChangeLog>(
+open class LkChangeSet : LkRefactorings<LkChangeSet, LkChangesHolder, DatabaseChangeLog>(
     LkChangeSet::class,
     ::LkChangesHolder,
     { changeLog, it, self ->
@@ -244,12 +238,9 @@ open class LkChangeSet : Refactorings<LkChangeSet, LkChangesHolder, DatabaseChan
     open val comment by child(::LkComment)
     open val validCheckSum by child(::LkValidCheckSum)
     open val precondition by child(::LkChangeSetPrecondition)
-
-    operator fun invoke(id: Any) = id(id)
-    operator fun invoke(id: Any, author: String) = id(id).author(author)
 }
 
-open class LkRollback : Refactorings<LkRollback, LkChangesHolder, ChangeSet>(
+open class LkRollback : LkRefactorings<LkRollback, LkChangesHolder, ChangeSet>(
     LkRollback::class,
     ::LkChangesHolder,
     { changeSet, it, _ ->
@@ -263,7 +254,6 @@ open class LkValidCheckSum : LbDslNode<LkValidCheckSum, Any, ChangeSet>(
     { changeSet, _, self, _ -> changeSet.addValidCheckSum(self.checkSum.current) }
 ) {
     open val checkSum by nonNullable(String::class)
-    operator fun invoke(checkSum: String) = checkSum(checkSum)
 }
 
 open class LkComment : LbDslNode<LkComment, Any, ChangeSet>(
@@ -272,7 +262,4 @@ open class LkComment : LbDslNode<LkComment, Any, ChangeSet>(
     { changeSet, _, self, _ -> changeSet.comments += self.text.current }
 ) {
     open val text by nonNullable(String::class)
-
-    operator fun invoke(text: String) = text(text)
-    operator fun minus(text: String) = text(text)
 }

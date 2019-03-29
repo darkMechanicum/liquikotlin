@@ -45,8 +45,6 @@ abstract class LkBaseColumnConfig<SelfT : LkBaseColumnConfig<SelfT, ColumnT, Par
     open val remarks by nullableWS(String::class, ColumnConfig::setRemarks)
 
     open val constraints by child(::LkConstraints)
-
-    operator fun invoke(name: String) = name(name)
 }
 
 abstract class LkBaseAddColumnConfig<SelfT : LkBaseAddColumnConfig<SelfT, ParentT>, ParentT>(
@@ -85,8 +83,6 @@ open class LkAddAutoIncrement :
     open val schemaName by nullableWS(String::class, AddAutoIncrementChange::setSchemaName)
     open val startWith by nullableWS(BigInteger::class, AddAutoIncrementChange::setStartWith)
     open val tableName by nonNullableWS(String::class, AddAutoIncrementChange::setTableName)
-
-    fun at(tableName: String, columnName: String) = columnName(columnName).tableName(tableName)
 }
 
 open class LkAddColumn : LkChange<LkAddColumn, AddColumnChange>(
@@ -98,8 +94,6 @@ open class LkAddColumn : LkChange<LkAddColumn, AddColumnChange>(
     open val tableName by nonNullableWS(String::class, AddColumnChange::setTableName)
 
     open val column by child(::LkAddColumnConfig)
-
-    operator fun invoke(tableName: String) = tableName(tableName)
 }
 
 class LkAddColumnConfig : LkBaseAddColumnConfig<LkAddColumnConfig, AddColumnChange>(
@@ -143,8 +137,6 @@ open class LkAddDefaultValue : LkChange<LkAddDefaultValue, AddDefaultValueChange
         { change, value -> change.setDefaultValueSequenceNext(SequenceNextValueFunction(value)) })
     open val schemaName by nullableWS(String::class, AddDefaultValueChange::setSchemaName)
     open val tableName by nullableWS(String::class, AddDefaultValueChange::setTableName)
-
-    fun at(tableName: String, columnName: String) = tableName(tableName).columnName(columnName)
 }
 
 open class LkAddForeignKeyConstraint : LkChange<LkAddForeignKeyConstraint, AddForeignKeyConstraintChange>(
@@ -171,13 +163,6 @@ open class LkAddForeignKeyConstraint : LkChange<LkAddForeignKeyConstraint, AddFo
         AddForeignKeyConstraintChange::setReferencedTableSchemaName
     )
     open val referencesUniqueColumn by nullableWS(Boolean::class, AddForeignKeyConstraintChange::setReferencesUniqueColumn)
-
-    operator fun invoke(constraintName: String) = constraintName(constraintName)
-    fun at(baseTableName: String, vararg baseColumnNames: String) =
-        if (baseColumnNames.isNotEmpty())
-            baseTableName(baseTableName).baseColumnNames(baseColumnNames.joinToString())
-        else
-            throw IllegalArgumentException("Referenced columns cannot be empty.")
 }
 
 open class LkAddLookupTable : LkChange<LkAddLookupTable, AddLookupTableChange>(
@@ -206,8 +191,6 @@ open class LkAddNotNullConstraint : LkChange<LkAddNotNullConstraint, AddNotNullC
     open val defaultNullValue by nullableWS(String::class, AddNotNullConstraintChange::setDefaultNullValue)
     open val schemaName by nullableWS(String::class, AddNotNullConstraintChange::setSchemaName)
     open val tableName by nullableWS(String::class, AddNotNullConstraintChange::setTableName)
-
-    fun at(tableName: String, columnName: String) = tableName(tableName).columnName(columnName)
 }
 
 open class LkAddPrimaryKey : LkChange<LkAddPrimaryKey, AddPrimaryKeyChange>(
@@ -220,8 +203,6 @@ open class LkAddPrimaryKey : LkChange<LkAddPrimaryKey, AddPrimaryKeyChange>(
     open val schemaName by nullableWS(String::class, AddPrimaryKeyChange::setSchemaName)
     open val tableName by nullableWS(String::class, AddPrimaryKeyChange::setTableName)
     open val tablespace by nullableWS(String::class, AddPrimaryKeyChange::setTablespace)
-
-    operator fun invoke(constraintName: String) = constraintName(constraintName)
 }
 
 open class LkAddUniqueConstraint : LkChange<LkAddUniqueConstraint, AddUniqueConstraintChange>(
@@ -237,13 +218,6 @@ open class LkAddUniqueConstraint : LkChange<LkAddUniqueConstraint, AddUniqueCons
     open val schemaName by nullableWS(String::class, AddUniqueConstraintChange::setSchemaName)
     open val tableName by nullableWS(String::class, AddUniqueConstraintChange::setTableName)
     open val tablespace by nullableWS(String::class, AddUniqueConstraintChange::setTablespace)
-
-    operator fun invoke(constraintName: String) = constraintName(constraintName)
-    fun at(tableName: String, vararg columnNames: String) =
-        if (columnNames.isNotEmpty())
-            tableName(tableName).columnNames(columnNames.joinToString())
-        else
-            throw IllegalArgumentException("Referenced columns cannot be empty.")
 }
 
 open class LkCreateIndex : LkChange<LkCreateIndex, CreateIndexChange>(
@@ -258,8 +232,6 @@ open class LkCreateIndex : LkChange<LkCreateIndex, CreateIndexChange>(
     open val unique by nullableWS(Boolean::class, CreateIndexChange::setUnique)
 
     open val column by child(::LbAddIndexColumnConfig)
-
-    operator fun invoke(indexName: String) = indexName(indexName)
 
     class LbAddIndexColumnConfig : LkBaseAddColumnConfig<LbAddIndexColumnConfig, CreateIndexChange>(
         LbAddIndexColumnConfig::class,
@@ -280,9 +252,6 @@ open class LkCreateProcedure : LkChange<LkCreateProcedure, CreateProcedureChange
     open val procedureText by nullableWS(String::class, CreateProcedureChange::setProcedureText)
     open val relativeToChangelogFile by nullableWS(Boolean::class, CreateProcedureChange::setRelativeToChangelogFile)
     open val schemaName by nullableWS(String::class, CreateProcedureChange::setSchemaName)
-
-    operator fun invoke(procedureName: String) = procedureName(procedureName)
-    operator fun minus(procedureText: String): Any = procedureText(procedureText)
 }
 
 open class LkCreateSequence : LkChange<LkCreateSequence, CreateSequenceChange>(
@@ -298,8 +267,6 @@ open class LkCreateSequence : LkChange<LkCreateSequence, CreateSequenceChange>(
     open val schemaName by nullableWS(String::class, CreateSequenceChange::setSchemaName)
     open val sequenceName by nullableWS(String::class, CreateSequenceChange::setSequenceName)
     open val startValue by nullableWS(BigInteger::class, CreateSequenceChange::setStartValue)
-
-    operator fun invoke(sequenceName: String) = sequenceName(sequenceName)
 }
 
 open class LkCreateTable : LkChange<LkCreateTable, CreateTableChange>(
@@ -317,12 +284,6 @@ open class LkCreateTable : LkChange<LkCreateTable, CreateTableChange>(
     class CreateTableColumnConfig : LkCommonColumnConfig<CreateTableColumnConfig, CreateTableChange>(
         CreateTableColumnConfig::class,
         { parent, column, _ -> parent.addColumn(column) })
-
-    operator fun invoke(tableName: String) = tableName(tableName)
-    operator fun invoke(tableName: String, vararg columns: Pair<String, String>) =
-        tableName(tableName).apply {
-            columns.forEach { (name, type) -> this.column(name).type(type) }
-        }
 }
 
 open class LkCreateView : LkChange<LkCreateView, CreateViewChange>(
@@ -334,7 +295,4 @@ open class LkCreateView : LkChange<LkCreateView, CreateViewChange>(
     open val schemaName by nullableWS(String::class, CreateViewChange::setSchemaName)
     open val selectQuery by nullableWS(String::class, CreateViewChange::setSelectQuery)
     open val viewName by nullableWS(String::class, CreateViewChange::setViewName)
-
-    operator fun invoke(viewName: String) = viewName(viewName)
-    operator fun minus(selectQuery: String): Any = selectQuery(selectQuery)
 }

@@ -1,10 +1,8 @@
-<img src="https://github.com/darkMechanicum/liquikotlin/blob/master/logo.png" alt="Liquikotlin" width="70" />
-
-# Liquikotlin 
+# <img src="https://github.com/darkMechanicum/liquikotlin/blob/master/logo.png" alt="Liquikotlin" width="30" /> Liquikotlin 
 Kotlin DSL for liquibase.
 
 # TODO
-Add detailed README.
-Ask about logos.
-Change logo size.
-Add tests.
+0. Add detailed README.
+0. Ask about logos.
+0. Change logo size.
+0. Add tests.

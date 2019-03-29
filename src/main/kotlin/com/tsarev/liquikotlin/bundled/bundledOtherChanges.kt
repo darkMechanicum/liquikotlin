@@ -14,8 +14,6 @@ open class LkAlterSequence : LkChange<LkAlterSequence, AlterSequenceChange>(
     open val ordered by nullableWS(Boolean::class, AlterSequenceChange::setOrdered)
     open val schemaName by nullableWS(String::class, AlterSequenceChange::setSchemaName)
     open val sequenceName by nullableWS(String::class, AlterSequenceChange::setSequenceName)
-
-    operator fun invoke(sequenceName: String) = sequenceName(sequenceName)
 }
 
 open class LkEmpty : LkChange<LkEmpty, EmptyChange>(LkEmpty::class, ::EmptyChange)
@@ -25,8 +23,6 @@ open class LkExecuteCommand : LkChange<LkExecuteCommand, ExecuteShellCommandChan
     ::ExecuteShellCommandChange
 ) {
     open val executable by nullableWS(String::class, ExecuteShellCommandChange::setExecutable)
-
-    operator fun invoke(executable: String) = executable(executable)
 }
 
 open class LkInsert : LkChange<LkInsert, InsertDataChange>(
@@ -44,8 +40,6 @@ open class LkInsert : LkChange<LkInsert, InsertDataChange>(
         AddDataColumnConfig::class,
         { change, it, _ -> change.addColumn(it) }
     )
-
-    operator fun invoke(tableName: String) = tableName(tableName)
 }
 
 open class LkLoadData : LkChange<LkLoadData, LoadDataChange>(
@@ -67,8 +61,6 @@ open class LkLoadData : LkChange<LkLoadData, LoadDataChange>(
         ::LoadDataColumnConfig,
         { change, it, _ -> change.addColumn(it) }
     )
-
-    operator fun invoke(tableName: String) = tableName(tableName)
 }
 
 open class LkLoadUpdateData : LkChange<LkLoadUpdateData, LoadUpdateDataChange>(
@@ -92,8 +84,6 @@ open class LkLoadUpdateData : LkChange<LkLoadUpdateData, LoadUpdateDataChange>(
             ::LoadDataColumnConfig,
             { change, it, _ -> change.addColumn(it) }
         )
-
-    operator fun invoke(tableName: String) = tableName(tableName)
 }
 
 open class LkMergeColumns : LkChange<LkMergeColumns, MergeColumnChange>(
@@ -108,8 +98,6 @@ open class LkMergeColumns : LkChange<LkMergeColumns, MergeColumnChange>(
     open val joinString by nullableWS(String::class, MergeColumnChange::setJoinString)
     open val schemaName by nullableWS(String::class, MergeColumnChange::setSchemaName)
     open val tableName by nullableWS(String::class, MergeColumnChange::setTableName)
-
-    operator fun invoke(tableName: String) = tableName(tableName)
 }
 
 open class LkModifyDataType : LkChange<LkModifyDataType, ModifyDataTypeChange>(
@@ -121,9 +109,6 @@ open class LkModifyDataType : LkChange<LkModifyDataType, ModifyDataTypeChange>(
     open val newDataType by nullableWS(String::class, ModifyDataTypeChange::setNewDataType)
     open val schemaName by nullableWS(String::class, ModifyDataTypeChange::setSchemaName)
     open val tableName by nullableWS(String::class, ModifyDataTypeChange::setTableName)
-
-    operator fun invoke(tableName: String, columnName: String, newDataType: String) =
-        tableName(tableName).columnName(columnName).newDataType(newDataType)
 }
 
 open class LkRenameColumn : LkChange<LkRenameColumn, RenameColumnChange>(
@@ -137,9 +122,6 @@ open class LkRenameColumn : LkChange<LkRenameColumn, RenameColumnChange>(
     open val remarks by nullableWS(String::class, RenameColumnChange::setRemarks)
     open val schemaName by nullableWS(String::class, RenameColumnChange::setSchemaName)
     open val tableName by nullableWS(String::class, RenameColumnChange::setTableName)
-
-    operator fun invoke(tableName: String, oldColumnName: String, newColumnName: String) =
-        tableName(tableName).oldColumnName(oldColumnName).newColumnName(newColumnName)
 }
 
 open class LkRenameTable : LkChange<LkRenameTable, RenameTableChange>(
@@ -150,9 +132,6 @@ open class LkRenameTable : LkChange<LkRenameTable, RenameTableChange>(
     open val newTableName by nullableWS(String::class, RenameTableChange::setNewTableName)
     open val oldTableName by nullableWS(String::class, RenameTableChange::setOldTableName)
     open val schemaName by nullableWS(String::class, RenameTableChange::setSchemaName)
-
-    operator fun invoke(oldTableName: String, newTableName: String) =
-        oldTableName(oldTableName).newTableName(newTableName)
 }
 
 open class LkRenameView : LkChange<LkRenameView, RenameViewChange>(
@@ -163,9 +142,6 @@ open class LkRenameView : LkChange<LkRenameView, RenameViewChange>(
     open val newViewName by nullableWS(String::class, RenameViewChange::setNewViewName)
     open val oldViewName by nullableWS(String::class, RenameViewChange::setOldViewName)
     open val schemaName by nullableWS(String::class, RenameViewChange::setSchemaName)
-
-    operator fun invoke(oldViewName: String, newViewName: String) =
-            oldViewName(oldViewName).newViewName(newViewName)
 }
 
 open class LkSql : LkChange<LkSql, RawSQLChange>(
@@ -178,8 +154,6 @@ open class LkSql : LkChange<LkSql, RawSQLChange>(
     open val splitStatements by nullableWS(Boolean::class, RawSQLChange::setSplitStatements)
     open val sql by nonNullableWS(String::class, RawSQLChange::setSql)
     open val stripComments by nullableWS(Boolean::class, RawSQLChange::setStripComments)
-
-    operator fun minus(sql: String) = sql(sql)
 }
 
 open class LkSqlFile : LkChange<LkSqlFile, SQLFileChange>(
@@ -193,20 +167,14 @@ open class LkSqlFile : LkChange<LkSqlFile, SQLFileChange>(
     open val relativeToChangelogFile by nullableWS(Boolean::class, SQLFileChange::setRelativeToChangelogFile)
     open val splitStatements by nullableWS(Boolean::class, SQLFileChange::setSplitStatements)
     open val stripComments by nullableWS(Boolean::class, SQLFileChange::setStripComments)
-
-    operator fun invoke(path: String) = path(path)
 }
 
 open class LkStop : LkChange<LkStop, StopChange>(LkStop::class, ::StopChange) {
     open val message by nullableWS(String::class, StopChange::setMessage)
-
-    operator fun invoke(message: String) = message(message)
 }
 
 open class LkTagDatabase : LkChange<LkTagDatabase, TagDatabaseChange>(LkTagDatabase::class, ::TagDatabaseChange) {
     open val tag by nullableWS(String::class, TagDatabaseChange::setTag)
-
-    operator fun invoke(tag: String) = tag(tag)
 }
 
 open class LkUpdate : LkChange<LkUpdate, UpdateDataChange>(LkUpdate::class, ::UpdateDataChange) {
@@ -219,7 +187,5 @@ open class LkUpdate : LkChange<LkUpdate, UpdateDataChange>(LkUpdate::class, ::Up
 
     class LkLoadUpdateDataColumnConfig : LkCommonColumnConfig<LkLoadUpdateDataColumnConfig, UpdateDataChange>(
         LkLoadUpdateDataColumnConfig::class, { change, it, _ -> change.addColumn(it) })
-
-    operator fun invoke(tableName: String) = tableName(tableName)
 }
 
