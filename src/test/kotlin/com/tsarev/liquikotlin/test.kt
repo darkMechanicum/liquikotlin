@@ -1,12 +1,10 @@
 package com.tsarev.liquikotlin
 
-import com.tsarev.liquikotlin.bundled.LkChange
-import com.tsarev.liquikotlin.bundled.LkChangeSet
-import com.tsarev.liquikotlin.bundled.LkSql
 import com.tsarev.liquikotlin.embedded.KtsObjectLoader
 import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
-import liquibase.change.core.RawSQLChange
-import liquibase.resource.FileSystemResourceAccessor
+import com.tsarev.liquikotlin.infrastructure.LbArg
+import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
+import liquibase.change.core.LoadDataColumnConfig
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -20,10 +18,10 @@ fun main() {
     println(currentPath.toAbsolutePath().toString())
     val filePath = Paths.get("build/resources/test/simpleScript.kts")
     val scriptReader = Files.newBufferedReader(filePath)
-    var loadedObj: EvaluatableDslNode<*, *, Any?> = KtsObjectLoader().load(scriptReader)
+    var loadedObj: EvaluatableDslNode<*> = KtsObjectLoader().load(scriptReader)
     while (loadedObj.parent != null) {
         loadedObj = loadedObj.parent!!
     }
-    val result = loadedObj.eval(filePath.toAbsolutePath().toString().replace("\\", "/") to FileSystemResourceAccessor())
+    val result = loadedObj.eval<LoadDataColumnConfig, LbArg>(LiquibaseIntegrationFactory(), null)
     println(result)
 }

@@ -74,8 +74,9 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
                 System.setOut(out)
             }
 
-            val result = compiled.eval() as EvaluatableDslNode<*, *, Any?>
-            return result.eval(physicalChangeLogLocation to resourceAccessor) as DatabaseChangeLog
+            val result = compiled.eval() as EvaluatableDslNode<*>
+//            return result.eval(physicalChangeLogLocation to resourceAccessor) as DatabaseChangeLog
+            return DatabaseChangeLog()
         }
     }
 

@@ -100,16 +100,9 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
     }
 
     /**
-     * Property that can be invoked to set its value and return
-     * parent object for chaining.
+     * Property, whose current value can be obtained.
      */
-    abstract inner class ChainableProperty<FieldT : Any> : NameableProperty<FieldT>() {
-
-        /**
-         * Invocation style property setter.
-         */
-        abstract operator fun invoke(value: FieldT): SelfT
-
+    interface Valuable<FieldT> {
         /**
          * Current property value.
          */
@@ -120,16 +113,23 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
      * Property that can be invoked to set its value and return
      * parent object for chaining.
      */
-    abstract inner class NullableChainableProperty<FieldT : Any> : NameableProperty<FieldT>() {
+    abstract inner class ChainableProperty<FieldT : Any> : NameableProperty<FieldT>(), Valuable<FieldT> {
+
+        /**
+         * Invocation style property setter.
+         */
+        abstract operator fun invoke(value: FieldT): SelfT
+    }
+
+    /**
+     * Property that can be invoked to set its value and return
+     * parent object for chaining.
+     */
+    abstract inner class NullableChainableProperty<FieldT : Any> : NameableProperty<FieldT>(), Valuable<FieldT?> {
         /**
          * Invocation style property setter.
          */
         abstract operator fun invoke(value: FieldT?): SelfT
-
-        /**
-         * Current property value.
-         */
-        abstract val current: FieldT?
     }
 
     abstract inner class DelegateBase {
@@ -271,63 +271,70 @@ abstract class DefaultableDslNode<SelfT : DefaultableDslNode<SelfT>> : DslNode<S
 /**
  * Base node class with property defaults support.
  */
-abstract class EvaluatableDslNode<SelfT : EvaluatableDslNode<SelfT, EvalT, ArgT>, EvalT, ArgT> :
+abstract class EvaluatableDslNode<SelfT : EvaluatableDslNode<SelfT>> :
     DefaultableDslNode<SelfT>() {
 
     /**
      * Parent node.
      */
-    abstract override val parent: EvaluatableDslNode<*, *, ArgT>?
+    abstract override val parent: EvaluatableDslNode<*>?
 
     /**
      * Children nodes.
      */
-    protected abstract override val children: MutableList<out EvaluatableDslNode<*, *, ArgT>>
+    protected abstract override val children: MutableList<out EvaluatableDslNode<*>>
 
     /**
      * Child builders.
      */
-    protected abstract override val childBuilders: MutableMap<String, out Lazy<EvaluatableDslNode<*, *, ArgT>>>
+    protected abstract override val childBuilders: MutableMap<String, out Lazy<EvaluatableDslNode<*>>>
 
     /**
-     * Property evaluations.
+     * Get evaluator from this node.
      */
-    protected var propertyEvaluationChain: MutableMap<String, (EvalT, SelfT, ArgT?) -> Unit> = HashMap()
+    fun <EvalT : Any, ArgT> getEvaluator(factory: EvaluatorFactory<ArgT>)
+            = factory.getEvaluatorFor<SelfT, EvalT>(this.self)
 
     /**
-     * Evaluate current node.
+     * Evaluate node.
      */
-    protected abstract fun createEvalResult(argument: ArgT?): EvalT
-
-    /**
-     * Perform children evaluation.
-     */
-    protected open fun evalChild(evalResult: EvalT, child: EvaluatableDslNode<*, *, ArgT>, argument: ArgT?): EvalT {
-        child.eval(argument, self, evalResult)
-        return evalResult
+    fun <EvalT : Any, ArgT> eval(factory: EvaluatorFactory<ArgT>, arg: ArgT?, parentEval: Any? = null): EvalT {
+        val evaluator = factory.getEvaluatorFor<SelfT, EvalT>(this.self)
+        val result = evaluator.initResult(self, arg)
+        val childEvaluations = children.map { it.eval<Any, ArgT>(factory, arg, result) }
+        return evaluator.eval(childEvaluations, arg, self, parentEval, result)
     }
 
     /**
-     * Perform children evaluation.
+     * Entry point for any evaluation process.
      */
-    protected open fun evalChildren(evalResult: EvalT, argument: ArgT?): EvalT {
-        children.forEach { evalChild(evalResult, it, argument) }
-        return evalResult
+    abstract class EvaluatorFactory<ArgT> {
+
+        /**
+         * Get evaluator for node.
+         */
+        abstract fun <NodeT: Selfable<NodeT>, EvalT : Any> getEvaluatorFor(node: NodeT): Evaluator<NodeT, EvalT, ArgT>
     }
 
     /**
-     * Perform all node evaluation.
+     * Hierarchy evaluation worker.
      */
-    open fun eval(
-        argument: ArgT? = null,
-        parent: EvaluatableDslNode<*, *, ArgT>? = null,
-        parentEval: Any? = null
-    ): EvalT {
-        val evalResult = createEvalResult(argument)
-        propertyEvaluationChain.values.forEach { it(evalResult, self, argument) }
-        evalChildren(evalResult, argument)
-        return evalResult
+    abstract class Evaluator<NodeT : Selfable<NodeT>, EvalT : Any, ArgT> {
+
+        /**
+         * Create empty eval result if need.
+         */
+        internal open fun initResult(thisNode: NodeT, argument: ArgT?): EvalT? = null
+
+        /**
+         * Perform all node evaluation.
+         */
+        abstract fun eval(
+            childEvaluations: Collection<Any> = emptyList(),
+            argument: ArgT?,
+            thisNode: NodeT,
+            parentEval: Any?,
+            resultEval: EvalT?
+        ): EvalT
     }
-
-
 }

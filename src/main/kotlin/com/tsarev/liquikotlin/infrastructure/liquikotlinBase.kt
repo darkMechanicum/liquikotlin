@@ -1,24 +1,21 @@
 package com.tsarev.liquikotlin.infrastructure
 
 import liquibase.resource.ResourceAccessor
-import java.lang.RuntimeException
 import kotlin.reflect.KClass
-import kotlin.reflect.full.cast
+import kotlin.reflect.KProperty1
 
 typealias LbArg = Pair<String, ResourceAccessor>
 
-open class LbDslNode<SelfT : LbDslNode<SelfT, LinkedT, ParentLinkedT>, LinkedT : Any, ParentLinkedT>(
-    override val thisClass: KClass<SelfT>,
-    protected val linkedConstructor: () -> LinkedT,
-    private val linkedSetter: ((ParentLinkedT, LinkedT, SelfT, LbArg?) -> Unit)? = null
-) : DefaultNode<SelfT, LinkedT, LbArg>() {
+open class LbDslNode<SelfT : LbDslNode<SelfT>>(
+    override val thisClass: KClass<SelfT>
+) : DefaultNode<SelfT>() {
 
     protected companion object {
         /**
          * Add child builder.
          */
-        inline fun <ArgT, reified ChildT : DefaultNode<ChildT, *, ArgT>, SelfT : DefaultNode<SelfT, *, ArgT>>
-                DefaultNode<SelfT, *, ArgT>.child(noinline constructor: () -> ChildT): Lazy<ChildT> {
+        inline fun <reified ChildT : DefaultNode<ChildT>, SelfT : DefaultNode<SelfT>>
+                DefaultNode<SelfT>.child(noinline constructor: () -> ChildT): Lazy<ChildT> {
             val result = lazy {
                 constructor().also {
                     addChild(
@@ -42,80 +39,51 @@ open class LbDslNode<SelfT : LbDslNode<SelfT, LinkedT, ParentLinkedT>, LinkedT :
 
     private fun getNewFlag() = requiredFlags.apply { add(RequiredFlag()) }.size - 1
 
-    override fun copySelfParameters(other: DefaultNode<SelfT, LinkedT, LbArg>) {
-        super.copySelfParameters(other)
-        val otherFlags = other.self.requiredFlags
-        if (requiredFlags.size == otherFlags.size) {
-            otherFlags.forEachIndexed { index, _ -> requiredFlags[index].hasNone = otherFlags[index].hasNone }
+}
+
+data class PropertyMapping<FromT, ToT, PropertyT>(
+    val getter: (FromT) -> PropertyT?,
+    val setter: (ToT, PropertyT) -> Any?
+) {
+    fun map(from: FromT, to: ToT) {
+        val value = getter(from)
+        if (value != null) {
+            setter(to, value)
         }
     }
+}
 
-    override fun createEvalResult(argument: LbArg?): LinkedT = linkedConstructor()
+open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, ParentT : Any>(
+    val linkedConstructor: () -> LinkedT,
+    val parentSetter: ((ParentT, LinkedT, NodeT, LbArg?) -> Unit)? = null
+) : EvaluatableDslNode.Evaluator<NodeT, LinkedT, LbArg>() {
 
-    override fun evalChildren(evalResult: LinkedT, argument: LbArg?): LinkedT {
-        if (requiredFlags.any { it.hasNone }) {
-            throw IllegalArgumentException("Some of the properties of node <${self::class}> is not present.")
+    val propertyMappings: MutableCollection<PropertyMapping<NodeT, LinkedT, *>> = ArrayList()
+
+    override fun initResult(thisNode: NodeT, argument: LbArg?): LinkedT? = linkedConstructor()
+
+    override fun eval(
+        childEvaluations: Collection<Any>,
+        argument: LbArg?,
+        thisNode: NodeT,
+        parentEval: Any?,
+        resultEval: LinkedT?
+    ): LinkedT {
+        resultEval!!
+        propertyMappings.forEach { it.map(thisNode, resultEval) }
+        if (parentEval != null) {
+            parentSetter?.let { it(parentEval as ParentT, resultEval, thisNode, argument) }
         }
-        return super.evalChildren(evalResult, argument)
+        return resultEval
     }
 
-    override fun eval(argument: LbArg?, parent: EvaluatableDslNode<*, *, LbArg>?, parentEval: Any?) =
-        super.eval(argument, parent, parentEval).also {
-            if (parentEval != null) {
-                linkedSetter?.invoke(parentEval as ParentLinkedT, it, self, argument)
-            }
-        }
-
-    /**
-     * Add default property.
-     */
-    protected fun <FieldT : Any> nonNullableWS(
-        fieldClass: KClass<FieldT>,
-        setter: (LinkedT, FieldT) -> Any,
-        default: FieldT? = null
-    ): DefaultableDelegate<FieldT> {
-        val newFlagIndex = getNewFlag()
-        return nonNullableWithCallback(
-            fieldClass,
-            default
-        ) { property, propertyName ->
-            self.requiredFlags[newFlagIndex].hasNone = false
-            setHasDefault()
-            propertyEvaluationChain[propertyName] = { evalRes, self, _ ->
-                val nonNullableValue = self.parameters[propertyName]
-                    ?: throw RuntimeException("No value found for required property $propertyName")
-                if (property.propertyType.isInstance(nonNullableValue)) {
-                    setter(evalRes, property.propertyType.cast(nonNullableValue))
-                } else {
-                    throw RuntimeException("Property <$propertyName> is supplied with wrong type <${nonNullableValue::class}>.")
-                }
-
-            }
-        }
-    }
-
-    /**
-     * Add default property.
-     */
-    protected fun <FieldT : Any> nullableWS(
-        fieldClass: KClass<FieldT>,
-        setter: (LinkedT, FieldT) -> Any,
-        default: FieldT? = null
-    ): NullableDefaultableDelegate<FieldT> = nullableWithCallback(
-        fieldClass,
-        default
-    ) { property, propertyName ->
-        setHasDefault()
-        propertyEvaluationChain[propertyName] = { evalRes, self, _ ->
-            self.parameters[propertyName]?.let {
-                if (property.propertyType.isInstance(it)) {
-                    setter(evalRes, property.propertyType.cast(it))
-                } else {
-                    throw RuntimeException("Property <$propertyName> is supplied with wrong type <${it::class}>.")
-                }
-
-            }
-        }
+    operator fun <PropertyT, BaseT : DslNode<NodeT>> KProperty1<BaseT, DslNode.Valuable<PropertyT>>.minus(
+        setter: (LinkedT, PropertyT?) -> Any
+    ) {
+        // TODO Rework this
+        propertyMappings.add(
+            PropertyMapping({ node -> this.get(node as BaseT).current }, setter)
+        )
     }
 
 }

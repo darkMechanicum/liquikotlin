@@ -6,8 +6,7 @@ import java.lang.IllegalArgumentException
 
 // --- Bundled create changes extension methods ---
 
-operator fun <SelfT : LkBaseColumnConfig<SelfT, ColumnT, ParentT>, ColumnT : ColumnConfig, ParentT>
-        LkBaseColumnConfig<SelfT, ColumnT, ParentT>.invoke(name: String) = name(name)
+operator fun <SelfT : LkBaseColumnConfig<SelfT>> LkBaseColumnConfig<SelfT>.invoke(name: String) = name(name)
 
 operator fun LkAddAutoIncrement.invoke(tableName: String, columnName: String) = columnName(columnName).tableName(tableName)
 

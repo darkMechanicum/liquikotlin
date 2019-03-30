@@ -1,191 +1,133 @@
 package com.tsarev.liquikotlin.bundled
 
-import liquibase.change.core.*
+import com.tsarev.liquikotlin.infrastructure.LbDslNode
 import java.math.BigInteger
 
-open class LkAlterSequence : LkChange<LkAlterSequence, AlterSequenceChange>(
-    LkAlterSequence::class,
-    ::AlterSequenceChange
-) {
-    open val catalogName by nullableWS(String::class, AlterSequenceChange::setCatalogName)
-    open val incrementBy by nullableWS(BigInteger::class, AlterSequenceChange::setIncrementBy)
-    open val maxValue by nullableWS(BigInteger::class, AlterSequenceChange::setMaxValue)
-    open val minValue by nullableWS(BigInteger::class, AlterSequenceChange::setMinValue)
-    open val ordered by nullableWS(Boolean::class, AlterSequenceChange::setOrdered)
-    open val schemaName by nullableWS(String::class, AlterSequenceChange::setSchemaName)
-    open val sequenceName by nullableWS(String::class, AlterSequenceChange::setSequenceName)
+open class LkAlterSequence : LbDslNode<LkAlterSequence>(LkAlterSequence::class) {
+    open val catalogName by nullable(String::class)
+    open val incrementBy by nullable(BigInteger::class)
+    open val maxValue by nullable(BigInteger::class)
+    open val minValue by nullable(BigInteger::class)
+    open val ordered by nullable(Boolean::class)
+    open val schemaName by nullable(String::class)
+    open val sequenceName by nullable(String::class)
 }
 
-open class LkEmpty : LkChange<LkEmpty, EmptyChange>(LkEmpty::class, ::EmptyChange)
+open class LkEmpty : LbDslNode<LkEmpty>(LkEmpty::class)
 
-open class LkExecuteCommand : LkChange<LkExecuteCommand, ExecuteShellCommandChange>(
-    LkExecuteCommand::class,
-    ::ExecuteShellCommandChange
-) {
-    open val executable by nullableWS(String::class, ExecuteShellCommandChange::setExecutable)
+open class LkExecuteCommand : LbDslNode<LkExecuteCommand> (LkExecuteCommand::class) {
+    open val executable by nullable(String::class)
 }
 
-open class LkInsert : LkChange<LkInsert, InsertDataChange>(
-    LkInsert::class,
-    ::InsertDataChange
-) {
-    open val catalogName by nullableWS(String::class, InsertDataChange::setCatalogName)
-    open val dbms by nullableWS(String::class, InsertDataChange::setDbms)
-    open val schemaName by nullableWS(String::class, InsertDataChange::setSchemaName)
-    open val tableName by nullableWS(String::class, InsertDataChange::setTableName)
+open class LkInsert : LbDslNode<LkInsert> (LkInsert::class) {
+    open val catalogName by nullable(String::class)
+    open val dbms by nullable(String::class)
+    open val schemaName by nullable(String::class)
+    open val tableName by nullable(String::class)
 
-    open val column by child(::AddDataColumnConfig)
-
-    class AddDataColumnConfig : LkCommonColumnConfig<AddDataColumnConfig, InsertDataChange>(
-        AddDataColumnConfig::class,
-        { change, it, _ -> change.addColumn(it) }
-    )
+    open val column by child(::LkAddColumnConfig)
 }
 
-open class LkLoadData : LkChange<LkLoadData, LoadDataChange>(
-    LkLoadData::class,
-    ::LoadDataChange
-) {
-    open val catalogName by nullableWS(String::class, LoadDataChange::setCatalogName)
-    open val encoding by nullableWS(String::class, LoadDataChange::setEncoding)
-    open val file by nullableWS(String::class, LoadDataChange::setFile)
-    open val quotchar by nullableWS(String::class, LoadDataChange::setQuotchar)
-    open val schemaName by nullableWS(String::class, LoadDataChange::setSchemaName)
-    open val separator by nullableWS(String::class, LoadDataChange::setSeparator)
-    open val tableName by nullableWS(String::class, LoadDataChange::setTableName)
+open class LkLoadData : LbDslNode<LkLoadData> (LkLoadData::class) {
+    open val catalogName by nullable(String::class)
+    open val encoding by nullable(String::class)
+    open val file by nullable(String::class)
+    open val quotchar by nullable(String::class)
+    open val schemaName by nullable(String::class)
+    open val separator by nullable(String::class)
+    open val tableName by nullable(String::class)
 
-    open val column by child(::LkLoadDataColumnConfig)
-
-    class LkLoadDataColumnConfig : LkBaseColumnConfig<LkLoadDataColumnConfig, LoadDataColumnConfig, LoadDataChange>(
-        LkLoadDataColumnConfig::class,
-        ::LoadDataColumnConfig,
-        { change, it, _ -> change.addColumn(it) }
-    )
+    open val column by child(::LkCommonColumnConfig)
 }
 
-open class LkLoadUpdateData : LkChange<LkLoadUpdateData, LoadUpdateDataChange>(
-    LkLoadUpdateData::class,
-    ::LoadUpdateDataChange
-) {
-    open val catalogName by nullableWS(String::class, LoadUpdateDataChange::setCatalogName)
-    open val encoding by nullableWS(String::class, LoadUpdateDataChange::setEncoding)
-    open val file by nullableWS(String::class, LoadUpdateDataChange::setFile)
-    open val primaryKey by nullableWS(String::class, LoadUpdateDataChange::setPrimaryKey)
-    open val quotchar by nullableWS(String::class, LoadUpdateDataChange::setQuotchar)
-    open val schemaName by nullableWS(String::class, LoadUpdateDataChange::setSchemaName)
-    open val separator by nullableWS(String::class, LoadUpdateDataChange::setSeparator)
-    open val tableName by nullableWS(String::class, LoadUpdateDataChange::setTableName)
+open class LkLoadUpdateData : LbDslNode<LkLoadUpdateData> (LkLoadUpdateData::class) {
+    open val catalogName by nullable(String::class)
+    open val encoding by nullable(String::class)
+    open val file by nullable(String::class)
+    open val primaryKey by nullable(String::class)
+    open val quotchar by nullable(String::class)
+    open val schemaName by nullable(String::class)
+    open val separator by nullable(String::class)
+    open val tableName by nullable(String::class)
 
-    open val column by child(::LkLoadUpdateDataColumnConfig)
-
-    class LkLoadUpdateDataColumnConfig :
-        LkBaseColumnConfig<LkLoadUpdateDataColumnConfig, LoadDataColumnConfig, LoadUpdateDataChange>(
-            LkLoadUpdateDataColumnConfig::class,
-            ::LoadDataColumnConfig,
-            { change, it, _ -> change.addColumn(it) }
-        )
+    open val column by child(::LkCommonColumnConfig)
 }
 
-open class LkMergeColumns : LkChange<LkMergeColumns, MergeColumnChange>(
-    LkMergeColumns::class,
-    ::MergeColumnChange
-) {
-    open val catalogName by nullableWS(String::class, MergeColumnChange::setCatalogName)
-    open val column1Name by nullableWS(String::class, MergeColumnChange::setColumn1Name)
-    open val column2Name by nullableWS(String::class, MergeColumnChange::setColumn2Name)
-    open val finalColumnName by nullableWS(String::class, MergeColumnChange::setFinalColumnName)
-    open val finalColumnType by nullableWS(String::class, MergeColumnChange::setFinalColumnType)
-    open val joinString by nullableWS(String::class, MergeColumnChange::setJoinString)
-    open val schemaName by nullableWS(String::class, MergeColumnChange::setSchemaName)
-    open val tableName by nullableWS(String::class, MergeColumnChange::setTableName)
+open class LkMergeColumns : LbDslNode<LkMergeColumns> (LkMergeColumns::class) {
+    open val catalogName by nullable(String::class)
+    open val column1Name by nullable(String::class)
+    open val column2Name by nullable(String::class)
+    open val finalColumnName by nullable(String::class)
+    open val finalColumnType by nullable(String::class)
+    open val joinString by nullable(String::class)
+    open val schemaName by nullable(String::class)
+    open val tableName by nullable(String::class)
 }
 
-open class LkModifyDataType : LkChange<LkModifyDataType, ModifyDataTypeChange>(
-    LkModifyDataType::class,
-    ::ModifyDataTypeChange
-) {
-    open val catalogName by nullableWS(String::class, ModifyDataTypeChange::setCatalogName)
-    open val columnName by nullableWS(String::class, ModifyDataTypeChange::setColumnName)
-    open val newDataType by nullableWS(String::class, ModifyDataTypeChange::setNewDataType)
-    open val schemaName by nullableWS(String::class, ModifyDataTypeChange::setSchemaName)
-    open val tableName by nullableWS(String::class, ModifyDataTypeChange::setTableName)
+open class LkModifyDataType : LbDslNode<LkModifyDataType> (LkModifyDataType::class) {
+    open val catalogName by nullable(String::class)
+    open val columnName by nullable(String::class)
+    open val newDataType by nullable(String::class)
+    open val schemaName by nullable(String::class)
+    open val tableName by nullable(String::class)
 }
 
-open class LkRenameColumn : LkChange<LkRenameColumn, RenameColumnChange>(
-    LkRenameColumn::class,
-    ::RenameColumnChange
-) {
-    open val catalogName by nullableWS(String::class, RenameColumnChange::setCatalogName)
-    open val columnDataType by nullableWS(String::class, RenameColumnChange::setColumnDataType)
-    open val newColumnName by nullableWS(String::class, RenameColumnChange::setNewColumnName)
-    open val oldColumnName by nullableWS(String::class, RenameColumnChange::setOldColumnName)
-    open val remarks by nullableWS(String::class, RenameColumnChange::setRemarks)
-    open val schemaName by nullableWS(String::class, RenameColumnChange::setSchemaName)
-    open val tableName by nullableWS(String::class, RenameColumnChange::setTableName)
+open class LkRenameColumn : LbDslNode<LkRenameColumn> (LkRenameColumn::class) {
+    open val catalogName by nullable(String::class)
+    open val columnDataType by nullable(String::class)
+    open val newColumnName by nullable(String::class)
+    open val oldColumnName by nullable(String::class)
+    open val remarks by nullable(String::class)
+    open val schemaName by nullable(String::class)
+    open val tableName by nullable(String::class)
 }
 
-open class LkRenameTable : LkChange<LkRenameTable, RenameTableChange>(
-    LkRenameTable::class,
-    ::RenameTableChange
-) {
-    open val catalogName by nullableWS(String::class, RenameTableChange::setCatalogName)
-    open val newTableName by nullableWS(String::class, RenameTableChange::setNewTableName)
-    open val oldTableName by nullableWS(String::class, RenameTableChange::setOldTableName)
-    open val schemaName by nullableWS(String::class, RenameTableChange::setSchemaName)
+open class LkRenameTable : LbDslNode<LkRenameTable> (LkRenameTable::class) {
+    open val catalogName by nullable(String::class)
+    open val newTableName by nullable(String::class)
+    open val oldTableName by nullable(String::class)
+    open val schemaName by nullable(String::class)
 }
 
-open class LkRenameView : LkChange<LkRenameView, RenameViewChange>(
-    LkRenameView::class,
-    ::RenameViewChange
-) {
-    open val catalogName by nullableWS(String::class, RenameViewChange::setCatalogName)
-    open val newViewName by nullableWS(String::class, RenameViewChange::setNewViewName)
-    open val oldViewName by nullableWS(String::class, RenameViewChange::setOldViewName)
-    open val schemaName by nullableWS(String::class, RenameViewChange::setSchemaName)
+open class LkRenameView : LbDslNode<LkRenameView> (LkRenameView::class) {
+    open val catalogName by nullable(String::class)
+    open val newViewName by nullable(String::class)
+    open val oldViewName by nullable(String::class)
+    open val schemaName by nullable(String::class)
 }
 
-open class LkSql : LkChange<LkSql, RawSQLChange>(
-    LkSql::class,
-    ::RawSQLChange
-) {
-    open val comment by nullableWS(String::class, RawSQLChange::setComment)
-    open val dbms by nullableWS(String::class, RawSQLChange::setDbms)
-    open val endDelimiter by nullableWS(String::class, RawSQLChange::setEndDelimiter)
-    open val splitStatements by nullableWS(Boolean::class, RawSQLChange::setSplitStatements)
-    open val sql by nonNullableWS(String::class, RawSQLChange::setSql)
-    open val stripComments by nullableWS(Boolean::class, RawSQLChange::setStripComments)
+open class LkSql : LbDslNode<LkSql> (LkSql::class) {
+    open val comment by nullable(String::class)
+    open val dbms by nullable(String::class)
+    open val endDelimiter by nullable(String::class)
+    open val splitStatements by nullable(Boolean::class)
+    open val sql by nonNullable(String::class)
+    open val stripComments by nullable(Boolean::class)
 }
 
-open class LkSqlFile : LkChange<LkSqlFile, SQLFileChange>(
-    LkSqlFile::class,
-    ::SQLFileChange
-) {
-    open val dbms by nullableWS(String::class, SQLFileChange::setDbms)
-    open val encoding by nullableWS(String::class, SQLFileChange::setEncoding)
-    open val endDelimiter by nullableWS(String::class, SQLFileChange::setEndDelimiter)
-    open val path by nullableWS(String::class, SQLFileChange::setPath)
-    open val relativeToChangelogFile by nullableWS(Boolean::class, SQLFileChange::setRelativeToChangelogFile)
-    open val splitStatements by nullableWS(Boolean::class, SQLFileChange::setSplitStatements)
-    open val stripComments by nullableWS(Boolean::class, SQLFileChange::setStripComments)
+open class LkSqlFile : LbDslNode<LkSqlFile> (LkSqlFile::class) {
+    open val dbms by nullable(String::class)
+    open val encoding by nullable(String::class)
+    open val endDelimiter by nullable(String::class)
+    open val path by nullable(String::class)
+    open val relativeToChangelogFile by nullable(Boolean::class)
+    open val splitStatements by nullable(Boolean::class)
+    open val stripComments by nullable(Boolean::class)
 }
 
-open class LkStop : LkChange<LkStop, StopChange>(LkStop::class, ::StopChange) {
-    open val message by nullableWS(String::class, StopChange::setMessage)
+open class LkStop : LbDslNode<LkStop>(LkStop::class) {
+    open val message by nullable(String::class)
 }
 
-open class LkTagDatabase : LkChange<LkTagDatabase, TagDatabaseChange>(LkTagDatabase::class, ::TagDatabaseChange) {
-    open val tag by nullableWS(String::class, TagDatabaseChange::setTag)
+open class LkTagDatabase : LbDslNode<LkTagDatabase>(LkTagDatabase::class) {
+    open val tag by nullable(String::class)
 }
 
-open class LkUpdate : LkChange<LkUpdate, UpdateDataChange>(LkUpdate::class, ::UpdateDataChange) {
-    open val catalogName by nullableWS(String::class, UpdateDataChange::setCatalogName)
-    open val schemaName by nullableWS(String::class, UpdateDataChange::setSchemaName)
-    open val tableName by nullableWS(String::class, UpdateDataChange::setTableName)
-    open val where by nullableWS(String::class, UpdateDataChange::setWhere)
+open class LkUpdate : LbDslNode<LkUpdate>(LkUpdate::class) {
+    open val catalogName by nullable(String::class)
+    open val schemaName by nullable(String::class)
+    open val tableName by nullable(String::class)
+    open val where by nullable(String::class)
 
-    open val column by child(::LkLoadUpdateDataColumnConfig)
-
-    class LkLoadUpdateDataColumnConfig : LkCommonColumnConfig<LkLoadUpdateDataColumnConfig, UpdateDataChange>(
-        LkLoadUpdateDataColumnConfig::class, { change, it, _ -> change.addColumn(it) })
+    open val column by child(::LkCommonColumnConfig)
 }
-

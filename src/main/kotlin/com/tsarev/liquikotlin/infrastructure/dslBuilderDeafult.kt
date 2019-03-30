@@ -8,40 +8,40 @@ import kotlin.reflect.full.cast
 /**
  * Base node implementation with field initializers.
  */
-abstract class DefaultNode<SelfT : DefaultNode<SelfT, EvalT, ArgT>, EvalT, ArgT> :
-    EvaluatableDslNode<SelfT, EvalT, ArgT>() {
+abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
+    EvaluatableDslNode<SelfT>() {
 
     companion object {
-        fun <ArgT, SelfT : DefaultNode<SelfT, *, ArgT>> addChildBuilder(
+        fun <SelfT : DefaultNode<SelfT>> addChildBuilder(
             self: SelfT,
             childName: String,
-            child: Lazy<DefaultNode<*, *, ArgT>>
+            child: Lazy<DefaultNode<*>>
         ) {
             self.childBuilders[childName] = child
         }
 
-        fun <ArgT, SelfT : DefaultNode<SelfT, *, ArgT>, ChildT : DefaultNode<ChildT, *, ArgT>> addChild(
+        fun <SelfT : DefaultNode<SelfT>, ChildT : DefaultNode<ChildT>> addChild(
             parent: SelfT, child: ChildT
         ) {
             child.realParent = parent
         }
     }
 
-    var realParent: DefaultNode<*, *, ArgT>? = null
+    var realParent: DefaultNode<*>? = null
 
-    override val parent: EvaluatableDslNode<*, *, ArgT>? get() = realParent
+    override val parent: EvaluatableDslNode<*>? get() = realParent
 
     override val parameters: MutableMap<String, Any?> = HashMap()
 
-    override val children: MutableList<DefaultNode<*, *, ArgT>> = ArrayList()
+    override val children: MutableList<DefaultNode<*>> = ArrayList()
 
-    override val childBuilders: MutableMap<String, Lazy<DefaultNode<*, *, ArgT>>> = HashMap()
+    override val childBuilders: MutableMap<String, Lazy<DefaultNode<*>>> = HashMap()
 
     override var hasDefault: Boolean = false
 
     override fun addChild(child: DslNode<*>) {
-        if (child is DefaultNode<*, *, *>) {
-            children.add(child as DefaultNode<*, *, ArgT>)
+        if (child is DefaultNode<*>) {
+            children.add(child as DefaultNode<*>)
         } else {
             throw IllegalArgumentException("Child with class ${child::class} cannot be set in $self")
         }
@@ -49,7 +49,7 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT, EvalT, ArgT>, EvalT, ArgT>
 
     override fun buildNodeIfNeccessary(): SelfT = if (isBuilder) {
         if (realParent?.isBuilder == true) {
-            realParent = realParent!!.buildNodeIfNeccessary() as DefaultNode<*, *, ArgT>
+            realParent = realParent!!.buildNodeIfNeccessary() as DefaultNode<*>
         }
 
         val result = constructor()
@@ -86,13 +86,10 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT, EvalT, ArgT>, EvalT, ArgT>
         callback: ((NameableProperty<FieldT>, String) -> Unit)
     ): NullableDefaultableDelegate<FieldT> = NullableCommonDelegate(fieldType, default, callback)
 
-    private fun copyChainFrom(other: DefaultNode<SelfT, EvalT, ArgT>) {
-        this.propertyEvaluationChain.putAll(other.propertyEvaluationChain)
-    }
 
-    private fun copyParametersFrom(other: DefaultNode<*, *, ArgT>, shouldContinue: Boolean) {
+    private fun copyParametersFrom(other: DefaultNode<*>, shouldContinue: Boolean) {
         if (shouldContinue) {
-            copySelfParameters(other as DefaultNode<SelfT, EvalT, ArgT>)
+            copySelfParameters(other as DefaultNode<SelfT>)
             this.childBuilders.entries.forEach { (builderName, thisBuilder) ->
                 other.childBuilders[builderName]?.let {
                     thisBuilder.value.copyParametersFrom(
@@ -104,10 +101,9 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT, EvalT, ArgT>, EvalT, ArgT>
         }
     }
 
-    protected open fun copySelfParameters(other: DefaultNode<SelfT, EvalT, ArgT>) {
+    protected open fun copySelfParameters(other: DefaultNode<SelfT>) {
         this.parameters.putAll(other.parameters)
         this.hasDefault = other.hasDefault
-        this.copyChainFrom(other)
     }
 
     open inner class CommonProperty<FieldT : Any>(

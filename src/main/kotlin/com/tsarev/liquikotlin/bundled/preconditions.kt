@@ -1,11 +1,6 @@
 package com.tsarev.liquikotlin.bundled
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
-import liquibase.changelog.DatabaseChangeLog
-import liquibase.precondition.CustomPreconditionWrapper
-import liquibase.precondition.Precondition
-import liquibase.precondition.PreconditionLogic
-import liquibase.precondition.core.*
 import kotlin.reflect.KClass
 
 // --- Abstract base classes ---
@@ -14,18 +9,9 @@ import kotlin.reflect.KClass
  * Precondition base including bundled preconditions
  * and and/or grouping.
  */
-abstract class
-LkPreconditionLogic<SelfT : LkPreconditionLogic<SelfT, LinkedT, ParentLinkedT>,
-        LinkedT : Any,
-        ParentLinkedT>(
-    thisClass: KClass<SelfT>,
-    linkedConstructor: () -> LinkedT,
-    linkedSetter: ((ParentLinkedT, LinkedT, SelfT) -> Unit)?
-) : LbDslNode<SelfT, LinkedT, ParentLinkedT>(
-    thisClass,
-    linkedConstructor,
-    { parent, linked, self, _ -> linkedSetter?.invoke(parent, linked, self) }
-) {
+abstract class LkPreconditionLogic<SelfT : LkPreconditionLogic<SelfT>>(
+    thisClass: KClass<SelfT>
+) : LbDslNode<SelfT>(thisClass) {
     open val and by child(::LkAndPrecondition)
     open val or by child(::LkOrPrecondition)
     open val dbms by child(::LkDbmsPrecondition)
@@ -48,196 +34,100 @@ LkPreconditionLogic<SelfT : LkPreconditionLogic<SelfT, LinkedT, ParentLinkedT>,
 }
 
 /**
- * Nested precondition that sets itself into preconfition container.
- */
-abstract class AbstractNestedPrecondition<SelfT : AbstractNestedPrecondition<SelfT, LinkedT>, LinkedT : Precondition>(
-    thisClass: KClass<SelfT>,
-    linkedConstructor: () -> LinkedT
-) : LbDslNode<SelfT, LinkedT, PreconditionLogic>(
-    thisClass,
-    linkedConstructor,
-    { logic, it, _, _ -> logic.nestedPreconditions.add(it) }
-)
-
-/**
- * Base class for []LkChangeSetPrecondition] and []LkChangeLogPrecondition]
- * since they have to set themselves into different parent nodes.
- */
-open class LkBasePrecondition<SelfT : LkBasePrecondition<SelfT, ParentT>, ParentT>(
-    thisClass: KClass<SelfT>,
-    linkedSetter: ((ParentT, PreconditionContainer, SelfT) -> Unit)?
-) : LkPreconditionLogic<SelfT, PreconditionContainer, ParentT>(
-    thisClass,
-    ::PreconditionContainer,
-    linkedSetter
-) {
-    open val onFail by nullableWS(String::class, PreconditionContainer::setOnFail, "HALT")
-    open val onError by nullableWS(String::class, PreconditionContainer::setOnError, "HALT")
-    open val onUpdateSQL by nullableWS(String::class, PreconditionContainer::setOnSqlOutput)
-    open val onFailMessage by nullableWS(String::class, PreconditionContainer::setOnFailMessage)
-    open val onErrorMessage by nullableWS(String::class, PreconditionContainer::setOnErrorMessage)
-}
-
-/**
  * Precondition with catalog name and schema name since
  * they apperar together very often.
  */
-abstract class PreconditionWithSchAndCat
-<SelfT : PreconditionWithSchAndCat<SelfT, LinkedT>, LinkedT : Precondition>(
-    selfClass: KClass<SelfT>,
-    linkedConstructor: () -> LinkedT,
-    schemaSetter: (LinkedT, String) -> Unit,
-    catalogSetter: (LinkedT, String) -> Unit
-) : AbstractNestedPrecondition<SelfT, LinkedT>(selfClass, linkedConstructor) {
-    open val schemaName by nullableWS(String::class, schemaSetter)
-    open val catalogName by nullableWS(String::class, catalogSetter)
+abstract class PreconditionWithSchAndCat<SelfT : PreconditionWithSchAndCat<SelfT>>(selfClass: KClass<SelfT>) :
+    LbDslNode<SelfT>(selfClass) {
+    open val schemaName by nullable(String::class)
+    open val catalogName by nullable(String::class)
 }
 
 // --- Bundled preconditions ---
 
-open class LkChangeLogPrecondition :
-    LkBasePrecondition<LkChangeLogPrecondition, DatabaseChangeLog>(
-        LkChangeLogPrecondition::class,
-        { changeLog, it, _ -> changeLog.preconditions = it }
-    )
-
-open class LkChangeSetPrecondition :
-    LkBasePrecondition<LkChangeSetPrecondition, LkChangesHolder>(
-        LkChangeSetPrecondition::class,
-        { holder, it, _ -> holder.preconditions = it }
-    )
-
-open class LkAndPrecondition : LkPreconditionLogic<LkAndPrecondition, AndPrecondition, PreconditionLogic>(
-    LkAndPrecondition::class, ::AndPrecondition, { logic, it, _ -> logic.nestedPreconditions.add(it) }
-)
-
-open class LkOrPrecondition : LkPreconditionLogic<LkOrPrecondition, OrPrecondition, PreconditionLogic>(
-    LkOrPrecondition::class, ::OrPrecondition, { logic, it, _ -> logic.nestedPreconditions.add(it) }
-)
-
-open class LkDbmsPrecondition : AbstractNestedPrecondition<LkDbmsPrecondition, DBMSPrecondition>(
-    LkDbmsPrecondition::class, ::DBMSPrecondition
-) {
-    open val type by nullableWS(String::class, DBMSPrecondition::setType)
+open class LkPrecondition : LkPreconditionLogic<LkPrecondition>(LkPrecondition::class) {
+    open val onFail by nullable(String::class)
+    open val onError by nullable(String::class)
+    open val onUpdateSQL by nullable(String::class)
+    open val onFailMessage by nullable(String::class)
+    open val onErrorMessage by nullable(String::class)
 }
 
-open class LkRunningAsPrecondition : AbstractNestedPrecondition<LkRunningAsPrecondition, RunningAsPrecondition>(
-    LkRunningAsPrecondition::class, ::RunningAsPrecondition
-) {
-    open val username by nullableWS(String::class, RunningAsPrecondition::setUsername)
+open class LkAndPrecondition : LkPreconditionLogic<LkAndPrecondition>(LkAndPrecondition::class)
+
+open class LkOrPrecondition : LkPreconditionLogic<LkOrPrecondition>(LkOrPrecondition::class)
+
+open class LkDbmsPrecondition : LbDslNode<LkDbmsPrecondition>(LkDbmsPrecondition::class) {
+    open val type by nullable(String::class)
+}
+
+open class LkRunningAsPrecondition : LbDslNode<LkRunningAsPrecondition>(LkRunningAsPrecondition::class) {
+    open val username by nullable(String::class)
 }
 
 open class LkChangeSetExecutedPrecondition :
-    AbstractNestedPrecondition<LkChangeSetExecutedPrecondition, ChangeSetExecutedPrecondition>(
-        LkChangeSetExecutedPrecondition::class, ::ChangeSetExecutedPrecondition
-    ) {
-    open val id by nullableWS(String::class, ChangeSetExecutedPrecondition::setId)
-    open val author by nullableWS(String::class, ChangeSetExecutedPrecondition::setAuthor)
-    open val changeLogFile by nullableWS(String::class, ChangeSetExecutedPrecondition::setChangeLogFile)
+    LbDslNode<LkChangeSetExecutedPrecondition>(LkChangeSetExecutedPrecondition::class) {
+    open val id by nullable(String::class)
+    open val author by nullable(String::class)
+    open val changeLogFile by nullable(String::class)
 }
 
 open class LkColumnExistsPrecondition :
-    PreconditionWithSchAndCat<LkColumnExistsPrecondition, ColumnExistsPrecondition>(
-        LkColumnExistsPrecondition::class,
-        ::ColumnExistsPrecondition,
-        ColumnExistsPrecondition::setSchemaName,
-        ColumnExistsPrecondition::setCatalogName
-    ) {
-    open val tableName by nullableWS(String::class, ColumnExistsPrecondition::setTableName)
-    open val columnName by nullableWS(String::class, ColumnExistsPrecondition::setColumnName)
+    PreconditionWithSchAndCat<LkColumnExistsPrecondition>(LkColumnExistsPrecondition::class) {
+    open val tableName by nullable(String::class)
+    open val columnName by nullable(String::class)
 }
 
 open class LkTableExistsPrecondition :
-    PreconditionWithSchAndCat<LkTableExistsPrecondition, TableExistsPrecondition>(
-        LkTableExistsPrecondition::class,
-        ::TableExistsPrecondition,
-        TableExistsPrecondition::setSchemaName,
-        TableExistsPrecondition::setCatalogName
-    ) {
-    open val tableName by nullableWS(String::class, TableExistsPrecondition::setTableName)
+    PreconditionWithSchAndCat<LkTableExistsPrecondition>(LkTableExistsPrecondition::class) {
+    open val tableName by nullable(String::class)
 }
 
 open class LkViewExistsPrecondition :
-    PreconditionWithSchAndCat<LkViewExistsPrecondition, ViewExistsPrecondition>(
-        LkViewExistsPrecondition::class,
-        ::ViewExistsPrecondition,
-        ViewExistsPrecondition::setSchemaName,
-        ViewExistsPrecondition::setCatalogName
-    ) {
-    open val viewName by nullableWS(String::class, ViewExistsPrecondition::setViewName)
+    PreconditionWithSchAndCat<LkViewExistsPrecondition>(LkViewExistsPrecondition::class) {
+    open val viewName by nullable(String::class)
 }
 
 open class LkForeignKeyConstraintExistsPrecondition :
-    PreconditionWithSchAndCat<LkForeignKeyConstraintExistsPrecondition, ForeignKeyExistsPrecondition>(
-        LkForeignKeyConstraintExistsPrecondition::class,
-        ::ForeignKeyExistsPrecondition,
-        ForeignKeyExistsPrecondition::setSchemaName,
-        ForeignKeyExistsPrecondition::setCatalogName
-    ) {
-    open val foreignKeyName by nullableWS(String::class, ForeignKeyExistsPrecondition::setForeignKeyName)
-    open val foreignKeyTableName by nullableWS(String::class, ForeignKeyExistsPrecondition::setForeignKeyTableName)
+    PreconditionWithSchAndCat<LkForeignKeyConstraintExistsPrecondition>(LkForeignKeyConstraintExistsPrecondition::class) {
+    open val foreignKeyName by nullable(String::class)
+    open val foreignKeyTableName by nullable(String::class)
 }
 
 open class LkIndexExistsPrecondition :
-    PreconditionWithSchAndCat<LkIndexExistsPrecondition, IndexExistsPrecondition>(
-        LkIndexExistsPrecondition::class,
-        ::IndexExistsPrecondition,
-        IndexExistsPrecondition::setSchemaName,
-        IndexExistsPrecondition::setCatalogName
-    ) {
-    open val indexName by nullableWS(String::class, IndexExistsPrecondition::setIndexName)
-    open val tableName by nullableWS(String::class, IndexExistsPrecondition::setTableName)
+    PreconditionWithSchAndCat<LkIndexExistsPrecondition>(LkIndexExistsPrecondition::class) {
+    open val indexName by nullable(String::class)
+    open val tableName by nullable(String::class)
 }
 
 open class LkSequenceExistsPrecondition :
-    PreconditionWithSchAndCat<LkSequenceExistsPrecondition, SequenceExistsPrecondition>(
-        LkSequenceExistsPrecondition::class,
-        ::SequenceExistsPrecondition,
-        SequenceExistsPrecondition::setSchemaName,
-        SequenceExistsPrecondition::setCatalogName
-    ) {
-    open val sequenceName by nullableWS(String::class, SequenceExistsPrecondition::setSequenceName)
+    PreconditionWithSchAndCat<LkSequenceExistsPrecondition>(LkSequenceExistsPrecondition::class) {
+    open val sequenceName by nullable(String::class)
 }
 
 open class LkPrimaryKeyExistsPrecondition :
-    PreconditionWithSchAndCat<LkPrimaryKeyExistsPrecondition, PrimaryKeyExistsPrecondition>(
-        LkPrimaryKeyExistsPrecondition::class,
-        ::PrimaryKeyExistsPrecondition,
-        PrimaryKeyExistsPrecondition::setSchemaName,
-        PrimaryKeyExistsPrecondition::setCatalogName
-    ) {
-    open val primaryKeyName by nonNullableWS(String::class, PrimaryKeyExistsPrecondition::setPrimaryKeyName)
-    open val tableName by nullableWS(String::class, PrimaryKeyExistsPrecondition::setTableName)
+    PreconditionWithSchAndCat<LkPrimaryKeyExistsPrecondition>(LkPrimaryKeyExistsPrecondition::class) {
+    open val primaryKeyName by nonNullable(String::class)
+    open val tableName by nullable(String::class)
 }
 
-open class LkSqlCheckPrecondition : AbstractNestedPrecondition<LkSqlCheckPrecondition, SqlPrecondition>(
-    LkSqlCheckPrecondition::class, ::SqlPrecondition
-) {
-    open val expectedResult by nullableWS(String::class, SqlPrecondition::setExpectedResult)
-    open val sql by nullableWS(String::class, SqlPrecondition::setSql)
+open class LkSqlCheckPrecondition : LbDslNode<LkSqlCheckPrecondition>(LkSqlCheckPrecondition::class) {
+    open val expectedResult by nullable(String::class)
+    open val sql by nullable(String::class)
 }
 
 open class LkChangeLogPropertyDefinedPrecondition :
-    AbstractNestedPrecondition<LkChangeLogPropertyDefinedPrecondition, ChangeLogPropertyDefinedPrecondition>(
-        LkChangeLogPropertyDefinedPrecondition::class, ::ChangeLogPropertyDefinedPrecondition
-    ) {
-    open val property by nullableWS(String::class, ChangeLogPropertyDefinedPrecondition::setProperty)
-    open val value by nullableWS(String::class, ChangeLogPropertyDefinedPrecondition::setValue)
+    LbDslNode<LkChangeLogPropertyDefinedPrecondition>(LkChangeLogPropertyDefinedPrecondition::class) {
+    open val property by nullable(String::class)
+    open val value by nullable(String::class)
 }
 
-open class LkCustomPrecondition : AbstractNestedPrecondition<LkCustomPrecondition, CustomPreconditionWrapper>(
-    LkCustomPrecondition::class,
-    ::CustomPreconditionWrapper
-) {
-    open val className by nullableWS(String::class, CustomPreconditionWrapper::setClassName)
+open class LkCustomPrecondition : LbDslNode<LkCustomPrecondition>(LkCustomPrecondition::class) {
+    open val className by nullable(String::class)
     open val param by child(::LkCustomPreconditionParam)
 }
 
-open class LkCustomPreconditionParam : LbDslNode<LkCustomPreconditionParam, Any, CustomPreconditionWrapper>(
-    LkCustomPreconditionParam::class,
-    ::Any,
-    { wrapper, _, self, _ -> wrapper.setParam(self.name.current, self.value.current?.toString()) }
-) {
+open class LkCustomPreconditionParam : LbDslNode<LkCustomPreconditionParam>(LkCustomPreconditionParam::class) {
     open val name by nullable(String::class)
     open val value by nullable(Any::class)
 }
