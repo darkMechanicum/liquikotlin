@@ -37,6 +37,11 @@ open class LkAddColumnConfig : LkBaseColumnConfig<LkAddColumnConfig>(LkAddColumn
     open val position by nullable(Int::class)
 }
 
+open class LkLoadColumnConfig : LkBaseColumnConfig<LkLoadColumnConfig>(LkLoadColumnConfig::class) {
+    open val index by nullable(Int::class)
+    open val header by nullable(String::class)
+}
+
 open class LkCommonColumnConfig : LkBaseColumnConfig<LkCommonColumnConfig>(LkCommonColumnConfig::class)
 
 // --- Definitions ---

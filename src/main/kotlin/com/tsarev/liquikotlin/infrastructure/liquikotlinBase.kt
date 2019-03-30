@@ -55,10 +55,10 @@ data class PropertyMapping<FromT, ToT, PropertyT>(
 
 open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, ParentT : Any>(
     val linkedConstructor: () -> LinkedT,
-    val parentSetter: ((ParentT, LinkedT, NodeT, LbArg?) -> Unit)? = null
+    private val parentSetter: ((ParentT, LinkedT, NodeT, LbArg?) -> Unit)? = null
 ) : EvaluatableDslNode.Evaluator<NodeT, LinkedT, LbArg>() {
 
-    val propertyMappings: MutableCollection<PropertyMapping<NodeT, LinkedT, *>> = ArrayList()
+    private val propertyMappings: MutableCollection<PropertyMapping<NodeT, LinkedT, *>> = ArrayList()
 
     override fun initResult(thisNode: NodeT, argument: LbArg?): LinkedT? = linkedConstructor()
 

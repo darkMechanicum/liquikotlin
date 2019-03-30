@@ -43,7 +43,7 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
     /**
      * Parent node.
      */
-    abstract val parent: DslNode<*>?
+    internal abstract val parent: DslNode<*>?
 
     /**
      * Children nodes.
@@ -313,7 +313,7 @@ abstract class EvaluatableDslNode<SelfT : EvaluatableDslNode<SelfT>> :
         /**
          * Get evaluator for node.
          */
-        abstract fun <NodeT: Selfable<NodeT>, EvalT : Any> getEvaluatorFor(node: NodeT): Evaluator<NodeT, EvalT, ArgT>
+        abstract fun <NodeT: DslNode<NodeT>, EvalT : Any> getEvaluatorFor(node: NodeT): Evaluator<NodeT, EvalT, ArgT>
     }
 
     /**

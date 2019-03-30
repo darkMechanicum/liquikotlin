@@ -38,7 +38,7 @@ open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, Column
 }
 }
 
-open class LkAddColumnConfigIntegration<ParentT : Any>(
+open class AddColumnConfigIntegration<ParentT : Any>(
     parentSetter: (ParentT, AddColumnConfig, LkAddColumnConfig, LbArg?) -> Unit
 ) : BaseColumnConfigIntegration<LkAddColumnConfig, AddColumnConfig, ParentT>(
     ::AddColumnConfig,
@@ -47,6 +47,17 @@ open class LkAddColumnConfigIntegration<ParentT : Any>(
     LkAddColumnConfig::beforeColumn - AddColumnConfig::setBeforeColumn
     LkAddColumnConfig::afterColumn - AddColumnConfig::setAfterColumn
     LkAddColumnConfig::position - AddColumnConfig::setPosition
+}
+}
+
+open class LoadColumnConfigIntegration<ParentT : Any>(
+    parentSetter: (ParentT, LoadDataColumnConfig, LkLoadColumnConfig, LbArg?) -> Unit
+) : BaseColumnConfigIntegration<LkLoadColumnConfig, LoadDataColumnConfig, ParentT>(
+    ::LoadDataColumnConfig,
+    parentSetter
+) { init {
+    LkLoadColumnConfig::header - LoadDataColumnConfig::setHeader
+    LkLoadColumnConfig::index - LoadDataColumnConfig::setIndex
 }
 }
 
@@ -69,7 +80,7 @@ open class AddAutoIncrementIntegration :
 }
 }
 
-open class LkAddColumnIntegration :
+open class AddColumnIntegration :
     ChangeIntegration<LkAddColumn, AddColumnChange>(::AddColumnChange) { init {
     LkAddColumn::catalogName - AddColumnChange::setCatalogName
     LkAddColumn::schemaName - AddColumnChange::setSchemaName

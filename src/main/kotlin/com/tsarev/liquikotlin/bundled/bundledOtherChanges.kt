@@ -37,7 +37,7 @@ open class LkLoadData : LbDslNode<LkLoadData> (LkLoadData::class) {
     open val separator by nullable(String::class)
     open val tableName by nullable(String::class)
 
-    open val column by child(::LkCommonColumnConfig)
+    open val column by child(::LkLoadColumnConfig)
 }
 
 open class LkLoadUpdateData : LbDslNode<LkLoadUpdateData> (LkLoadUpdateData::class) {
@@ -50,7 +50,7 @@ open class LkLoadUpdateData : LbDslNode<LkLoadUpdateData> (LkLoadUpdateData::cla
     open val separator by nullable(String::class)
     open val tableName by nullable(String::class)
 
-    open val column by child(::LkCommonColumnConfig)
+    open val column by child(::LkLoadColumnConfig)
 }
 
 open class LkMergeColumns : LbDslNode<LkMergeColumns> (LkMergeColumns::class) {

@@ -1,6 +1,5 @@
 package com.tsarev.liquikotlin.integration
 
-import com.sun.corba.se.impl.transport.ReadTCPTimeoutsImpl
 import com.tsarev.liquikotlin.bundled.*
 import liquibase.change.core.*
 

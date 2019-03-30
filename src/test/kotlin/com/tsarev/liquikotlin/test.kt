@@ -5,6 +5,8 @@ import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
 import com.tsarev.liquikotlin.infrastructure.LbArg
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
 import liquibase.change.core.LoadDataColumnConfig
+import liquibase.changelog.DatabaseChangeLog
+import liquibase.resource.FileSystemResourceAccessor
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -22,6 +24,7 @@ fun main() {
     while (loadedObj.parent != null) {
         loadedObj = loadedObj.parent!!
     }
-    val result = loadedObj.eval<LoadDataColumnConfig, LbArg>(LiquibaseIntegrationFactory(), null)
+    val arg = filePath.toAbsolutePath().toString().replace("\\", "/") to FileSystemResourceAccessor()
+    val result = loadedObj.eval<DatabaseChangeLog, LbArg>(LiquibaseIntegrationFactory(), arg)
     println(result)
 }

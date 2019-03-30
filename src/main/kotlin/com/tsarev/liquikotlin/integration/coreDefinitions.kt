@@ -10,8 +10,6 @@ import liquibase.changelog.IncludeAllFilter
 import liquibase.exception.SetupException
 import liquibase.precondition.core.PreconditionContainer
 import liquibase.resource.ResourceAccessor
-import java.util.HashMap
-import kotlin.reflect.KClass
 
 // --- Abstract base and utility classes ---
 
@@ -122,7 +120,7 @@ open class ChangeSetIntegration : LiquibaseIntegrator<LkChangeSet, ChangesHolder
         holder.changes.forEach { result.addChange(it) }
         result.rollback.apply { holder.rollback?.changes?.forEach { this.changes.add(it) } }
         result.comments = holder.comments.joinToString()
-        result.validCheckSums.addAll(holder.validCheckSums.map { CheckSum.parse(it) }.toSet())
+        holder.validCheckSums.map { result.addValidCheckSum(it) }
         result.preconditions = holder.preconditions
         changeLog.addChangeSet(result)
     }
@@ -148,17 +146,3 @@ open class CommentIntegration : LiquibaseIntegrator<LkComment, Any, ChangesHolde
         holder.comments.add(self.text.current)
     }
 )
-
-open class LiquibaseIntegrationFactory : EvaluatableDslNode.EvaluatorFactory<LbArg>() {
-
-    private val registry: MutableMap<KClass<*>, EvaluatableDslNode.Evaluator<*, *, LbArg>> = HashMap()
-
-    init {
-
-    }
-
-    override fun <NodeT : Selfable<NodeT>, EvalT : Any> getEvaluatorFor(node: NodeT): EvaluatableDslNode.Evaluator<NodeT, EvalT, LbArg> {
-        return registry[node::class] as EvaluatableDslNode.Evaluator<NodeT, EvalT, LbArg>
-    }
-
-}
