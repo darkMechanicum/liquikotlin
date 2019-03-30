@@ -3,7 +3,6 @@ package com.tsarev.liquikotlin.integration
 import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.infrastructure.*
 import liquibase.change.Change
-import liquibase.change.CheckSum
 import liquibase.changelog.ChangeSet
 import liquibase.changelog.DatabaseChangeLog
 import liquibase.changelog.IncludeAllFilter
@@ -33,7 +32,10 @@ open class ChangeIntegration<NodeT : LbDslNode<NodeT>, ChangeT : Change>(
     linkedConstructor: () -> ChangeT
 ) : LiquibaseIntegrator<NodeT, ChangeT, ChangesHolder>(
     linkedConstructor,
-    { holder, change, _, _ -> holder.changes.add(change) }
+    { holder, change, _, arg ->
+        arg?.let { change.setResourceAccessor(it.second) }
+        holder.changes.add(change)
+    }
 )
 
 // --- Core definition classes ---
