@@ -5,14 +5,8 @@ changelog.changeset.sql.splitStatements.setDefault(true)
 changelog.changeset.sql.stripComments.setDefault(true)
 
 changelog - {
-    precondition.dbms("oracle")
-
-    changeset(1).sql - "insert all"
-
-    changeset(2) - {
-        validCheckSum("5")
-
-        createTable("newTable", "id" to "number")
-        dropTable("oldTable")
-    }
+    changeset(1).createTable("table", "id" to "number")
+    changeset(2).dropTable("table")
+    changeset(3).createTable("table2", "id" to "number")
+    changeset(4).dropTable("table2")
 }

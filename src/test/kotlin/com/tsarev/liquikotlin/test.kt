@@ -4,6 +4,8 @@ import com.tsarev.liquikotlin.embedded.KtsObjectLoader
 import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
 import com.tsarev.liquikotlin.infrastructure.LbArg
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
+import com.tsarev.liquikotlin.verification.OutdatedReport
+import com.tsarev.liquikotlin.verification.VerificationEvaluatorFactory
 import liquibase.change.core.LoadDataColumnConfig
 import liquibase.changelog.DatabaseChangeLog
 import liquibase.resource.FileSystemResourceAccessor
@@ -26,5 +28,6 @@ fun main() {
     }
     val arg = filePath.toAbsolutePath().toString().replace("\\", "/") to FileSystemResourceAccessor()
     val result = loadedObj.eval<DatabaseChangeLog, LbArg>(LiquibaseIntegrationFactory(), arg)
-    println(result)
+    val result2 = loadedObj.eval<OutdatedReport, Any>(VerificationEvaluatorFactory(), null)
+    println(result2)
 }
