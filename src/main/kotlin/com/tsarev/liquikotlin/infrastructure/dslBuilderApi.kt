@@ -60,7 +60,7 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
     /**
      * Node parameters. Holds actual or default values depending on node's type (builder/non builder).
      */
-    protected abstract val parameters: MutableMap<String, Any?>
+    internal abstract val parameters: MutableMap<String, Any?>
 
     /**
      * Operator for nicer declarations.
@@ -106,7 +106,7 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
         /**
          * Current property value.
          */
-        abstract val current: FieldT
+        val current: FieldT
     }
 
     /**
@@ -165,12 +165,12 @@ abstract class DefaultableDslNode<SelfT : DefaultableDslNode<SelfT>> : DslNode<S
     /**
      * Children nodes.
      */
-    protected abstract override val children: MutableList<out DefaultableDslNode<*>>
+    abstract override val children: MutableList<out DefaultableDslNode<*>>
 
     /**
      * Child builders.
      */
-    protected abstract override val childBuilders: MutableMap<String, out Lazy<DefaultableDslNode<*>>>
+    abstract override val childBuilders: MutableMap<String, out Lazy<DefaultableDslNode<*>>>
 
     /**
      * Flag indicating that default parameters has been set for this node or its child.
@@ -204,10 +204,10 @@ abstract class DefaultableDslNode<SelfT : DefaultableDslNode<SelfT>> : DslNode<S
         default: FieldT? = null
     ): NullableDefaultableDelegate<FieldT>
 
-    protected final override fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>) =
+    final override fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>) =
         nonNullable(fieldType, null)
 
-    protected final override fun <FieldT : Any> nullable(fieldType: KClass<FieldT>) =
+    final override fun <FieldT : Any> nullable(fieldType: KClass<FieldT>) =
         nullable(fieldType, null)
 
     /**
@@ -282,12 +282,12 @@ abstract class EvaluatableDslNode<SelfT : EvaluatableDslNode<SelfT>> :
     /**
      * Children nodes.
      */
-    protected abstract override val children: MutableList<out EvaluatableDslNode<*>>
+    abstract override val children: MutableList<out EvaluatableDslNode<*>>
 
     /**
      * Child builders.
      */
-    protected abstract override val childBuilders: MutableMap<String, out Lazy<EvaluatableDslNode<*>>>
+    abstract override val childBuilders: MutableMap<String, out Lazy<EvaluatableDslNode<*>>>
 
     /**
      * Get evaluator from this node.

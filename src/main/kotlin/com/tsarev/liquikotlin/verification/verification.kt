@@ -14,6 +14,22 @@ data class OutdatedReport(val outdatedNodes: MutableSet<AnalyzeKey> = HashSet())
 
 open class OutdatedVerificator {
 
+    private inline operator fun <reified NodeT : Any, FieldT> KProperty1<NodeT, DslNode.Valuable<FieldT>>.unaryMinus()
+            : Pair<KClass<NodeT>, (Any) -> Any?> = NodeT::class to { node -> this.get(node as NodeT).current }
+
+    private val identificationRules: Map<KClass<*>, (Any) -> Any?> = mapOf(
+        - LkCreateView::viewName,
+        - LkDropView::viewName,
+        - LkCreateTable::tableName,
+        - LkDropTable::tableName,
+        - LkCreateSequence::sequenceName,
+        - LkDropSequence::sequenceName,
+        - LkCreateProcedure::procedureName,
+        - LkDropProcedure::procedureName,
+        - LkCreateIndex::indexName,
+        - LkDropIndex::indexName
+    )
+
     private val complianceRules: Map<KClass<*>, KClass<*>> = twoWayMap(
         LkCreateView::class to LkDropView::class,
         LkCreateTable::class to LkDropTable::class,
@@ -21,22 +37,6 @@ open class OutdatedVerificator {
         LkCreateProcedure::class to LkDropProcedure::class,
         LkCreateIndex::class to LkDropIndex::class
     )
-
-    private val identificationRules: Map<KClass<*>, (Any) -> Any?> = mapOf<KClass<*>, (Any) -> Any?>(
-        LkCreateView::class - LkCreateView::viewName,
-        LkDropView::class - LkDropView::viewName,
-        LkCreateTable::class - LkCreateTable::tableName,
-        LkDropTable::class - LkDropTable::tableName,
-        LkCreateSequence::class - LkCreateSequence::sequenceName,
-        LkDropSequence::class - LkDropSequence::sequenceName,
-        LkCreateProcedure::class - LkCreateProcedure::procedureName,
-        LkDropProcedure::class - LkDropProcedure::procedureName,
-        LkCreateIndex::class - LkCreateIndex::indexName,
-        LkDropIndex::class - LkDropIndex::indexName
-    )
-
-    operator fun <NodeT : Any, FieldT> KClass<NodeT>.minus(property: KProperty1<NodeT, DslNode.Valuable<FieldT>>)
-            : Pair<KClass<NodeT>, (Any) -> Any?> = this to { node -> property.get(node as NodeT).current }
 
     private val analyzedNodesKeys: MutableSet<AnalyzeKey> = HashSet()
 
