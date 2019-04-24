@@ -26,8 +26,9 @@ import liquibase.changelog.DatabaseChangeLog
 import liquibase.exception.ChangeLogParseException
 import liquibase.parser.ChangeLogParser
 import liquibase.resource.ResourceAccessor
-import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.io.InputStreamReader
+import java.io.OutputStream
 import java.io.PrintStream
 import javax.script.Compilable
 import javax.script.ScriptEngineManager
@@ -43,43 +44,61 @@ import javax.script.ScriptException
  * @author Jason Blackwell
  * @author Tsarev Alexander
  */
-// TODO cleanup
+@Suppress("unused")
 open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
-    override fun parse(physicalChangeLogLocation: String, changeLogParameters: ChangeLogParameters?,
-                       resourceAccessor: ResourceAccessor): DatabaseChangeLog {
 
+    companion object {
+        /**
+         * Singleton script engine instance.
+         */
+        val scriptEngine = ScriptEngineManager().getEngineByExtension("kts")!! as Compilable
+
+        /**
+         * NoOp printer to ignore junk messages.
+         */
+        val noOpPrinter = PrintStream(NoOpOutputStream())
+    }
+
+    override fun parse(
+        physicalChangeLogLocation: String,
+        changeLogParameters: ChangeLogParameters?,
+        resourceAccessor: ResourceAccessor
+    ): DatabaseChangeLog {
         val realLocation = physicalChangeLogLocation.replace("\\\\", "/")
         val inputStreams = resourceAccessor.getResourcesAsStream(realLocation)
-        if (inputStreams == null || inputStreams.size < 1) {
-            throw ChangeLogParseException("$realLocation does not exist")
+        val firstStream = inputStreams?.first() ?: throw ChangeLogParseException("$realLocation does not exist")
+        if (inputStreams.size > 1) {
+            System.err.println("Warning: Ambiguous resources for path: $physicalChangeLogLocation")
         }
+        return handleStream(firstStream, physicalChangeLogLocation, resourceAccessor)
+    }
 
-        inputStreams.first().use { inputStream ->
-            val engine = ScriptEngineManager().getEngineByExtension("kts")!! as Compilable
-
-            val err = System.err
-            val out = System.out
-            val compiled = try {
-                PrintStream(ByteArrayOutputStream()).use {
-                    //Set the err and out values to avoid junk messages being written to the console.
-                    System.setErr(it)
-                    System.setOut(it)
-                    InputStreamReader(inputStream).use {
-                        engine.compile(it)
-                    }
-                }
-            } catch (e: ScriptException) {
-                throw ScriptException("Compilation error", "$physicalChangeLogLocation.kts", e.lineNumber, e.columnNumber)
-                    .apply { initCause(e) }
-            } finally {
-                System.setErr(err)
-                System.setOut(out)
+    /**
+     * Handle single script stream with ScriptEngine.
+     */
+    private fun handleStream(
+        stream: InputStream,
+        location: String,
+        resourceAccessor: ResourceAccessor
+    ): DatabaseChangeLog {
+        val err = System.err
+        val out = System.out
+        val compiled = try {
+            System.setErr(noOpPrinter)
+            System.setOut(noOpPrinter)
+            InputStreamReader(stream).use {
+                scriptEngine.compile(it)
             }
-
-            val result = compiled.eval() as EvaluatableDslNode<*>
-            val arg: LbArg = physicalChangeLogLocation to resourceAccessor
-            return result.eval(LiquibaseIntegrationFactory(), arg)
+        } catch (e: ScriptException) {
+            throw ScriptException("Compilation error", "$location.kts", e.lineNumber, e.columnNumber)
+                .apply { initCause(e) }
+        } finally {
+            System.setErr(err)
+            System.setOut(out)
         }
+        val result = compiled.eval() as EvaluatableDslNode<*>
+        val arg: LbArg = location to resourceAccessor
+        return result.eval(LiquibaseIntegrationFactory(), arg)
     }
 
     override fun supports(changeLogFile: String, resourceAccessor: ResourceAccessor): Boolean {
@@ -87,4 +106,14 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
     }
 
     override fun getPriority(): Int = ChangeLogParser.PRIORITY_DEFAULT
+}
+
+/**
+ * Dummy stream to ignore junk messages.
+ */
+class NoOpOutputStream : OutputStream() {
+    override fun write(b: Int) {
+        // No-op
+    }
+
 }
