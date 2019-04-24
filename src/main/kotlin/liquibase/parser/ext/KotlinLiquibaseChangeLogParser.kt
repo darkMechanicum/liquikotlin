@@ -19,6 +19,8 @@
 package liquibase.parser.ext
 
 import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
+import com.tsarev.liquikotlin.infrastructure.LbArg
+import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
 import liquibase.changelog.ChangeLogParameters
 import liquibase.changelog.DatabaseChangeLog
 import liquibase.exception.ChangeLogParseException
@@ -75,8 +77,8 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
             }
 
             val result = compiled.eval() as EvaluatableDslNode<*>
-//            return result.eval(physicalChangeLogLocation to resourceAccessor) as DatabaseChangeLog
-            return DatabaseChangeLog()
+            val arg: LbArg = physicalChangeLogLocation to resourceAccessor
+            return result.eval(LiquibaseIntegrationFactory(), arg)
         }
     }
 
