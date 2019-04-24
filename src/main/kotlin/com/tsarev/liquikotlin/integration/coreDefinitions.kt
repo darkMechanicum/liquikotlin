@@ -1,7 +1,10 @@
 package com.tsarev.liquikotlin.integration
 
 import com.tsarev.liquikotlin.bundled.*
-import com.tsarev.liquikotlin.infrastructure.*
+import com.tsarev.liquikotlin.infrastructure.LbArg
+import com.tsarev.liquikotlin.infrastructure.LbDslNode
+import com.tsarev.liquikotlin.infrastructure.LiquibaseIntegrator
+import com.tsarev.liquikotlin.infrastructure.PropertyMapping
 import liquibase.change.Change
 import liquibase.changelog.ChangeSet
 import liquibase.changelog.DatabaseChangeLog
@@ -29,14 +32,18 @@ open class ChangesHolder {
 }
 
 open class ChangeIntegration<NodeT : LbDslNode<NodeT>, ChangeT : Change>(
-    linkedConstructor: () -> ChangeT
+    linkedConstructor: () -> ChangeT,
+    vararg childMappings: PropertyMapping<NodeT, ChangeT, *>
 ) : LiquibaseIntegrator<NodeT, ChangeT, ChangesHolder>(
     linkedConstructor,
     { holder, change, _, arg ->
         arg?.let { change.setResourceAccessor(it.second) }
         holder.changes.add(change)
     }
-)
+) { init {
+    propertyMappings.addAll(childMappings)
+}
+}
 
 // --- Core definition classes ---
 

@@ -1,6 +1,5 @@
 package com.tsarev.liquikotlin.infrastructure
 
-import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.cast
@@ -41,7 +40,7 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
 
     override fun addChild(child: DslNode<*>) {
         if (child is DefaultNode<*>) {
-            children.add(child as DefaultNode<*>)
+            children.add(child)
         } else {
             throw IllegalArgumentException("Child with class ${child::class} cannot be set in $self")
         }
@@ -49,7 +48,7 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
 
     override fun buildNodeIfNeccessary(): SelfT = if (isBuilder) {
         if (realParent?.isBuilder == true) {
-            realParent = realParent!!.buildNodeIfNeccessary() as DefaultNode<*>
+            realParent = realParent!!.buildNodeIfNeccessary()
         }
 
         val result = constructor()

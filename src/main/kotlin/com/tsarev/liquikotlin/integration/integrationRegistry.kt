@@ -20,19 +20,19 @@ open class LiquibaseIntegrationFactory : EvaluatableDslNode.EvaluatorFactory<LbA
     init {
         withParent = mapOf(
             LkAddColumnConfig::class to LkAddColumn::class to
-                    AddColumnConfigIntegration<AddColumnChange> { change, it, _, _ -> change.addColumn(it) },
+                    AddColumnConfigIntegration<AddColumnChange> ({ change, it, _, _ -> change.addColumn(it) }),
             LkAddColumnConfig::class to LkCreateIndex::class to
-                    AddColumnConfigIntegration<CreateIndexChange> { change, it, _, _ -> change.addColumn(it) },
+                    AddColumnConfigIntegration<CreateIndexChange> ({ change, it, _, _ -> change.addColumn(it) }),
             LkAddColumnConfig::class to LkInsert::class to
-                    AddColumnConfigIntegration<InsertDataChange> { change, it, _, _ -> change.addColumn(it) },
+                    AddColumnConfigIntegration<InsertDataChange> ({ change, it, _, _ -> change.addColumn(it) }),
             LkCommonColumnConfig::class to LkCreateTable::class to
-                    CommonColumnConfigIntegration<CreateTableChange> { change, it, _, _ -> change.addColumn(it) },
+                    CommonColumnConfigIntegration<CreateTableChange> ({ change, it, _, _ -> change.addColumn(it) }),
             LkCommonColumnConfig::class to LkUpdate::class to
-                    CommonColumnConfigIntegration<UpdateDataChange> { change, it, _, _ -> change.addColumn(it) },
+                    CommonColumnConfigIntegration<UpdateDataChange> ({ change, it, _, _ -> change.addColumn(it) }),
             LkLoadColumnConfig::class to LkLoadData::class to
-                    LoadColumnConfigIntegration<LoadDataChange> { change, it, _, _ -> change.addColumn(it) },
+                    LoadColumnConfigIntegration<LoadDataChange> ({ change, it, _, _ -> change.addColumn(it) }),
             LkLoadColumnConfig::class to LkLoadUpdateData::class to
-                    LoadColumnConfigIntegration<LoadUpdateDataChange> { change, it, _, _ -> change.addColumn(it) },
+                    LoadColumnConfigIntegration<LoadUpdateDataChange> ({ change, it, _, _ -> change.addColumn(it) }),
             LkPrecondition::class to LkChangeSet::class to
                     PreconditionContainerIntegration<ChangesHolder> { holder, it, _, _ -> holder.preconditions = it },
             LkPrecondition::class to LkChangeLog::class to

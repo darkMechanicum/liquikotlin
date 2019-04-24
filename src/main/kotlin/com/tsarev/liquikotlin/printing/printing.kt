@@ -36,10 +36,11 @@ open class Printer {
         -LkCreateIndex::indexName,
         -LkDropIndex::indexName,
         -LkCommonColumnConfig::name,
-        -LkChangeSet::id
+        -LkChangeSet::id,
+        -LkSql::sql
     )
 
-    fun initResult(thisNode: DslNode<*>, arg: PrinterArg?): Any {
+    fun initResult(thisNode: DslNode<*>, arg: PrinterArg?) {
         when (arg?.first ?: PrinterMode.PRETTY) {
             PrinterMode.FULL -> {
                 println("$currentPrefix${thisNode::class.qualifiedName}")
@@ -55,18 +56,16 @@ open class Printer {
             }
         }
         currentLevel++
-        return Any()
     }
 
-    fun eval(): Any {
+    fun eval() {
         currentLevel--
-        return Any()
     }
 
     fun <NodeT : DslNode<NodeT>> getAdapter() = PrinterAdapter<NodeT>()
 
     inner class PrinterAdapter<NodeT : DslNode<NodeT>> :
-        EvaluatableDslNode.Evaluator<NodeT, Any, PrinterArg>() {
+        EvaluatableDslNode.Evaluator<NodeT, Unit, PrinterArg>() {
 
         override fun initResult(thisNode: NodeT, argument: PrinterArg?) = this@Printer.initResult(thisNode, argument)
 
@@ -75,8 +74,8 @@ open class Printer {
             argument: PrinterArg?,
             thisNode: NodeT,
             parentEval: Any?,
-            resultEval: Any?
-        ): Any = this@Printer.eval()
+            resultEval: Unit?
+        ) = this@Printer.eval()
 
     }
 

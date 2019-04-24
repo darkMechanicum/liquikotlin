@@ -55,10 +55,14 @@ data class PropertyMapping<FromT, ToT, PropertyT>(
 
 open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, ParentT : Any>(
     val linkedConstructor: () -> LinkedT,
-    private val parentSetter: ((ParentT, LinkedT, NodeT, LbArg?) -> Unit)? = null
+    private val parentSetter: ((ParentT, LinkedT, NodeT, LbArg?) -> Unit)? = null,
+    vararg mappings: PropertyMapping<NodeT, LinkedT, *>
 ) : EvaluatableDslNode.Evaluator<NodeT, LinkedT, LbArg>() {
 
-    private val propertyMappings: MutableCollection<PropertyMapping<NodeT, LinkedT, *>> = ArrayList()
+    protected val propertyMappings: MutableCollection<PropertyMapping<NodeT, LinkedT, *>> =
+        ArrayList<PropertyMapping<NodeT, LinkedT, *>>().also {
+            it.addAll(mappings)
+        }
 
     override fun initResult(thisNode: NodeT, argument: LbArg?): LinkedT? = linkedConstructor()
 
@@ -77,13 +81,8 @@ open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, Parent
         return resultEval
     }
 
-    operator fun <PropertyT, BaseT : DslNode<NodeT>> KProperty1<BaseT, DslNode.Valuable<PropertyT>>.minus(
-        setter: (LinkedT, PropertyT?) -> Any
-    ) {
-        // TODO Rework this
-        propertyMappings.add(
-            PropertyMapping({ node -> this.get(node as BaseT).current }, setter)
-        )
-    }
-
 }
+
+operator fun <LinkedT : SelfLinkedT, SelfLinkedT : Any, NodeT : DefaultNode<NodeT>, SelfT : DefaultNode<NodeT>, PropertyT>
+        KProperty1<SelfT, DslNode.Valuable<PropertyT>>.minus(setter: (SelfLinkedT, PropertyT?) -> Any) =
+    PropertyMapping<NodeT, LinkedT, PropertyT>({ node -> this.get(node as SelfT).current }, setter)

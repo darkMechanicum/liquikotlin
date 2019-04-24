@@ -18,16 +18,16 @@ open class OutdatedVerificator {
             : Pair<KClass<NodeT>, (Any) -> Any?> = NodeT::class to { node -> this.get(node as NodeT).current }
 
     private val identificationRules: Map<KClass<*>, (Any) -> Any?> = mapOf(
-        - LkCreateView::viewName,
-        - LkDropView::viewName,
-        - LkCreateTable::tableName,
-        - LkDropTable::tableName,
-        - LkCreateSequence::sequenceName,
-        - LkDropSequence::sequenceName,
-        - LkCreateProcedure::procedureName,
-        - LkDropProcedure::procedureName,
-        - LkCreateIndex::indexName,
-        - LkDropIndex::indexName
+        -LkCreateView::viewName,
+        -LkDropView::viewName,
+        -LkCreateTable::tableName,
+        -LkDropTable::tableName,
+        -LkCreateSequence::sequenceName,
+        -LkDropSequence::sequenceName,
+        -LkCreateProcedure::procedureName,
+        -LkDropProcedure::procedureName,
+        -LkCreateIndex::indexName,
+        -LkDropIndex::indexName
     )
 
     private val complianceRules: Map<KClass<*>, KClass<*>> = twoWayMap(
@@ -48,7 +48,7 @@ open class OutdatedVerificator {
         val identificationGetter = identificationRules[thisNode::class]
         val identification = identificationGetter?.let { it(thisNode) ?: return report } ?: return report
         val complianceClass = complianceRules[thisNode::class]
-        val complianceKey: AnalyzeKey? = complianceClass?.let { it to  identification }
+        val complianceKey: AnalyzeKey? = complianceClass?.let { it to identification }
         val newKey: AnalyzeKey = thisNode::class to identification
         if (complianceKey != null && analyzedNodesKeys.contains(complianceKey)) {
             report.outdatedNodes.add(complianceKey)
@@ -60,7 +60,8 @@ open class OutdatedVerificator {
 
     fun <NodeT : DslNode<NodeT>> getAdapter() = OutdatedVerificatorAdapter<NodeT>()
 
-    inner class OutdatedVerificatorAdapter<NodeT : DslNode<NodeT>> : EvaluatableDslNode.Evaluator<NodeT, OutdatedReport, Any>() {
+    inner class OutdatedVerificatorAdapter<NodeT : DslNode<NodeT>> :
+        EvaluatableDslNode.Evaluator<NodeT, OutdatedReport, Any>() {
 
         override fun initResult(thisNode: NodeT, argument: Any?) = this@OutdatedVerificator.initResult()
 
