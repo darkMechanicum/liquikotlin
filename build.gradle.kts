@@ -20,4 +20,6 @@ dependencies {
     compile(kotlin("script-util"))
     compile("org.liquibase:liquibase-core:3.4.2")
     compile("de.swirtz:ktsRunner:0.0.7")
+
+    testCompile("junit", "junit", "4.12")
 }

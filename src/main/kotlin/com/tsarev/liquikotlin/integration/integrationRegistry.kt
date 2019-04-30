@@ -13,9 +13,9 @@ import kotlin.reflect.KClass
  */
 open class LiquibaseIntegrationFactory : EvaluatableDslNode.EvaluatorFactory<LbArg>() {
 
-    private val withParent: Map<Pair<KClass<*>, KClass<*>>, EvaluatableDslNode.Evaluator<*, *, LbArg>>
+    protected open val withParent: Map<Pair<KClass<*>, KClass<*>>, EvaluatableDslNode.Evaluator<*, *, LbArg>>
 
-    private val single: Map<KClass<*>, EvaluatableDslNode.Evaluator<*, *, LbArg>>
+    protected open val single: Map<KClass<*>, EvaluatableDslNode.Evaluator<*, *, LbArg>>
 
     init {
         withParent = mapOf(

@@ -37,7 +37,7 @@ open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, Column
     LkBaseColumnConfig<NodeT>::defaultValueBoolean - ColumnConfig::setDefaultValueBoolean,
     LkBaseColumnConfig<NodeT>::defaultValueDate - ColumnConfig::setDefaultValueDate,
     LkBaseColumnConfig<NodeT>::defaultValueComputed - { config: ColumnConfig, value ->
-        config.setValueComputed(DatabaseFunction(value))
+        config.setDefaultValueComputed(DatabaseFunction(value))
     },
     LkBaseColumnConfig<NodeT>::autoIncrement - ColumnConfig::setAutoIncrement,
     LkBaseColumnConfig<NodeT>::remarks - ColumnConfig::setRemarks
