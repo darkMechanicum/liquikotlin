@@ -48,9 +48,9 @@ abstract class PreconditionWithSchAndCat<SelfT : PreconditionWithSchAndCat<SelfT
 open class LkPrecondition : LkPreconditionLogic<LkPrecondition>(LkPrecondition::class) {
     open val onFail by nullable(String::class)
     open val onError by nullable(String::class)
-    open val onUpdateSQL by nullable(String::class)
     open val onFailMessage by nullable(String::class)
     open val onErrorMessage by nullable(String::class)
+    open val onSqlOutput by nullable(String::class)
 }
 
 open class LkAndPrecondition : LkPreconditionLogic<LkAndPrecondition>(LkAndPrecondition::class)

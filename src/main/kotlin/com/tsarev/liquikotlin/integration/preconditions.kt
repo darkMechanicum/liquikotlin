@@ -41,9 +41,8 @@ open class PreconditionContainerIntegration<ParentT : Any>(
     LkPrecondition::onFail - PreconditionContainer::setOnFail,
     LkPrecondition::onError - PreconditionContainer::setOnError,
     LkPrecondition::onFailMessage - PreconditionContainer::setOnFailMessage,
-    LkPrecondition::onErrorMessage - PreconditionContainer::setOnErrorMessage
-//    LkPrecondition::onUpdateSQL -
-//    TODO What is this?
+    LkPrecondition::onErrorMessage - PreconditionContainer::setOnErrorMessage,
+    LkPrecondition::onSqlOutput - PreconditionContainer::setOnSqlOutput
 )
 
 open class DbmsPreconditionIntegration : BasePreconditionIntegration<LkDbmsPrecondition, DBMSPrecondition>(

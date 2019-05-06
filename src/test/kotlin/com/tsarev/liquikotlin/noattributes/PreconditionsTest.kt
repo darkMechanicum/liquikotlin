@@ -8,6 +8,10 @@ import liquibase.precondition.core.*
 import org.junit.Ignore
 import org.junit.Test
 
+/**
+ * Testing that basic evaluations do not add any
+ * values except required ones.
+ */
 class PreconditionsTest : BaseLiquikotlinUnitTest() {
 
     @Test

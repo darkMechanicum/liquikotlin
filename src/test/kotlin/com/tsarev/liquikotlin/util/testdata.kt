@@ -1,5 +1,6 @@
 package com.tsarev.liquikotlin.util
 
+import liquibase.precondition.core.PreconditionContainer
 import java.math.BigInteger
 import java.util.*
 
@@ -92,3 +93,37 @@ val maxValue = BigInteger.valueOf(64634L)
 val minValue = BigInteger.valueOf(1L)
 val startValue = BigInteger.valueOf(34L)
 val startWith = BigInteger.valueOf(507L)
+
+const val where = "1 = 1"
+const val cascadeConstraints = false
+const val stripComments = false
+const val splitStatements = true
+const val endDelimiter = "#"
+const val cacheSize = 50
+const val executable = "bash"
+const val os = "ColibriOS"
+const val file = "MyFile.txt"
+const val column1Name = "firstColumn"
+const val joinString = "left join secondColumn on firstColumn.id = secondColumn.id"
+const val column2Name = "secondColumn"
+const val finalColumnName = "resultColumn"
+const val finalColumnType = "finalColumn"
+const val newDataType = "varchar(256)"
+const val oldColumnName = "oldColumn"
+const val oldTableName = "oldTable"
+const val oldViewName = "oldView"
+const val newViewName = "newView"
+const val comment = "My Comment"
+const val message = "Stop message"
+const val tag = "NewTag"
+val onFail = PreconditionContainer.FailOption.MARK_RAN
+val onError = PreconditionContainer.ErrorOption.MARK_RAN
+val onSqlOutput = PreconditionContainer.OnSqlOutputOption.FAIL
+const val onFailMessage = "Execution failed!"
+const val onErrorMessage = "Error occured!"
+const val username = "root"
+const val foreignKeyTableName = "ForeignTable"
+const val expectedResult = "42"
+const val property = "answer"
+const val value = "42"
+const val className = "com.tsarev.test.MyTestClass"
