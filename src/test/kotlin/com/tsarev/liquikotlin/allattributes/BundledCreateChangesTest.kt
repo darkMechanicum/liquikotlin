@@ -2,111 +2,19 @@ package com.tsarev.liquikotlin.allattributes
 
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
+import com.tsarev.liquikotlin.util.*
 import liquibase.change.AddColumnConfig
 import liquibase.change.ColumnConfig
 import liquibase.change.ConstraintsConfig
 import liquibase.change.core.*
 import liquibase.statement.DatabaseFunction
 import org.junit.Test
-import java.math.BigInteger
-import java.util.*
 
 /**
  * Testing that basic evaluations process all attributes
  * correctly without modifications.
  */
 open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
-
-    companion object {
-        private const val tableName = "tableName"
-        private const val catalogName = "catalogName"
-        private const val schemaName = "schemaName"
-        private const val columnName = "myColumn"
-        private const val columnType = "number"
-        private const val columnValue = "value"
-        private const val columnComputed = true
-        private const val columnValueNumeric = 54L
-        private const val columnValueBoolean = true
-        private val columnValueDate = Date()
-        private const val columnValueComputed = "some"
-        private const val columnValueBlobFile = "blob file"
-        private const val columnValueClobFile = "clob file"
-        private const val columnEncoding = "UTF-8"
-        private const val columnDefaultValue = "default"
-        private const val columnDefaultValueNumeric = 5L
-        private const val columnDefaultValueBoolean = true
-        private val columnDefaultValueDate = Date()
-        private const val columnDefaultValueComputed = "default computed"
-        private const val columnAutoIncrement = true
-        private const val columnRemarks = "My remarks"
-        private const val afterColumn = "AfterColumn"
-        private const val beforeColumn = "BeforeColumn"
-        private const val position = 5
-        private const val index = 42
-        private const val header = "myHeader"
-        private val startWith = BigInteger.valueOf(507L)
-        private val incrementBy = BigInteger.valueOf(406L)
-        private const val nullable = true
-        private const val primaryKey = true
-        private const val primaryKeyName = "primaryKeyName"
-        private const val primaryKeyTablespace = "primaryKeyTablespace"
-        private const val references = "reference1,reference2"
-        private const val referencedTableName = "referencedTable"
-        private const val referencedColumnNames = "referenceColumn1,referenceColumn2"
-        private const val unique = true
-        private const val uniqueConstraintName = "uniqueName"
-        private const val checkConstraint = "select true from dual"
-        private const val deleteCascade = true
-        private const val foreignKeyName = "foreignKey"
-        private const val initiallyDeferred = true
-        private const val deferrable = true
-        private const val defaultValue = "default"
-        private const val defaultValueNumeric = "365"
-        private const val defaultValueBoolean = true
-        private val defaultValueDate = "${Date()}"
-        private const val defaultValueComputed = "default computed"
-        private const val baseTableCatalogName = "baseTableCatalogName"
-        private const val baseTableSchemaName = "baseTableSchemaName"
-        private const val baseTableName = "baseTableName"
-        private const val baseColumnNames = "baseColumnNames"
-        private const val referencedTableCatalogName = "referencedTableCatalogName"
-        private const val referencedTableSchemaName = "referencedTableSchemaName"
-        private const val constraintName = "constraintName"
-        private const val onUpdate = "onUpdate"
-        private const val onDelete = "onDelete"
-        private const val existingTableCatalogName = "existingTableCatalogName"
-        private const val existingTableSchemaName = "existingTableSchemaName"
-        private const val existingTableName = "existingTableName"
-        private const val existingColumnName = "existingColumnName"
-        private const val newTableCatalogName = "newTableCatalogName"
-        private const val newTableSchemaName = "newTableSchemaName"
-        private const val newTableName = "newTableName"
-        private const val newColumnName = "newColumnName"
-        private const val newColumnDataType = "newColumnDataType"
-        private const val defaultNullValue = "defaultNullValue"
-        private const val tablespace = "tablespace"
-        private const val columnNames = "columnNames"
-        private const val disabled = true
-        private const val indexName = "myIndex"
-        private const val comments = "My Comments"
-        private const val procedureName = "My Procedure Name"
-        private const val procedureText = "My Procedure Text"
-        private const val dbms = "Oracle"
-        private const val path = "/myFile.txt"
-        private const val relativeToChangelogFile = true
-        private const val encoding = "UTF-8"
-        private const val sequenceName = "MySequence"
-        private val startValue = BigInteger.valueOf(34L)
-        private val maxValue = BigInteger.valueOf(64634L)
-        private val minValue = BigInteger.valueOf(1L)
-        private const val ordered = true
-        private const val cycle = true
-        private const val remarks = "MyRemarks"
-        private const val viewName = "MyView"
-        private const val selectQuery = "select 1 from dual"
-        private const val replaceIfExists = true
-        private const val fullDefinition = "some definition"
-    }
 
     private val columnConfigFields = arrayOf(
         ColumnConfig::getName to columnName,

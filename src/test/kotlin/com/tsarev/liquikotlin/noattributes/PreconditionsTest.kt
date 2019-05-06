@@ -2,18 +2,13 @@ package com.tsarev.liquikotlin.noattributes
 
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
+import com.tsarev.liquikotlin.util.primaryKeyName
 import liquibase.precondition.CustomPreconditionWrapper
 import liquibase.precondition.core.*
 import org.junit.Ignore
 import org.junit.Test
 
 class PreconditionsTest : BaseLiquikotlinUnitTest() {
-
-    companion object {
-
-        const val primaryKeyName = "myPrimaryKey"
-
-    }
 
     @Test
     fun preconditionTest() = testEvaluation(

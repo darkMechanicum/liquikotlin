@@ -2,6 +2,8 @@ package com.tsarev.liquikotlin.noattributes
 
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
+import com.tsarev.liquikotlin.util.columnName
+import com.tsarev.liquikotlin.util.tableName
 import liquibase.change.AddColumnConfig
 import liquibase.change.ColumnConfig
 import liquibase.change.ConstraintsConfig
@@ -14,37 +16,35 @@ import org.junit.Test
  */
 open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
 
-    private val columnName = "myColumn"
-
-    private val tableName = "myColumn"
-
-    private val columnConfigFields = arrayOf(
-        ColumnConfig::getName,
-        ColumnConfig::getComputed,
-        ColumnConfig::getType,
-        ColumnConfig::getValue,
-        ColumnConfig::getValueNumeric,
-        ColumnConfig::getValueDate,
-        ColumnConfig::getValueBoolean,
-        ColumnConfig::getValueBlobFile,
-        ColumnConfig::getValueClobFile,
-        ColumnConfig::getEncoding,
-        ColumnConfig::getValueComputed,
-        ColumnConfig::getValueSequenceNext,
-        ColumnConfig::getValueSequenceCurrent,
-        ColumnConfig::getDefaultValue,
-        ColumnConfig::getDefaultValueNumeric,
-        ColumnConfig::getDefaultValueDate,
-        ColumnConfig::getDefaultValueBoolean,
-        ColumnConfig::getDefaultValueComputed,
-        ColumnConfig::getDefaultValueSequenceNext,
-        ColumnConfig::getConstraints,
-        ColumnConfig::isAutoIncrement,
-        ColumnConfig::getStartWith,
-        ColumnConfig::getIncrementBy,
-        ColumnConfig::getRemarks,
-        ColumnConfig::getDescending
-    )
+    companion object {
+        private val columnConfigFields = arrayOf(
+            ColumnConfig::getName,
+            ColumnConfig::getComputed,
+            ColumnConfig::getType,
+            ColumnConfig::getValue,
+            ColumnConfig::getValueNumeric,
+            ColumnConfig::getValueDate,
+            ColumnConfig::getValueBoolean,
+            ColumnConfig::getValueBlobFile,
+            ColumnConfig::getValueClobFile,
+            ColumnConfig::getEncoding,
+            ColumnConfig::getValueComputed,
+            ColumnConfig::getValueSequenceNext,
+            ColumnConfig::getValueSequenceCurrent,
+            ColumnConfig::getDefaultValue,
+            ColumnConfig::getDefaultValueNumeric,
+            ColumnConfig::getDefaultValueDate,
+            ColumnConfig::getDefaultValueBoolean,
+            ColumnConfig::getDefaultValueComputed,
+            ColumnConfig::getDefaultValueSequenceNext,
+            ColumnConfig::getConstraints,
+            ColumnConfig::isAutoIncrement,
+            ColumnConfig::getStartWith,
+            ColumnConfig::getIncrementBy,
+            ColumnConfig::getRemarks,
+            ColumnConfig::getDescending
+        )
+    }
 
     @Test
     fun addColumnConfigTest() = testEvaluation(

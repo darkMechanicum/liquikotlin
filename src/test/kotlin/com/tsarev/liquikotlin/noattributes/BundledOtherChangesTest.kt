@@ -2,6 +2,7 @@ package com.tsarev.liquikotlin.noattributes
 
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
+import com.tsarev.liquikotlin.util.sql
 import liquibase.change.AbstractSQLChange
 import liquibase.change.ColumnConfig
 import liquibase.change.core.*
@@ -14,9 +15,6 @@ import org.junit.Test
 class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
 
     companion object {
-
-        const val sql = "select 1 from dual"
-
         val abstractSql = arrayOf(
             AbstractSQLChange::isStripComments to false,
             AbstractSQLChange::isSplitStatements to true,
