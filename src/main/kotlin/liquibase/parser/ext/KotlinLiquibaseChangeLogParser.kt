@@ -18,6 +18,7 @@
 
 package liquibase.parser.ext
 
+import com.tsarev.liquikotlin.bundled.changelog
 import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
 import com.tsarev.liquikotlin.infrastructure.LbArg
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
@@ -97,9 +98,16 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
             System.setErr(err)
             System.setOut(out)
         }
-        val result = compiled.eval() as EvaluatableDslNode<*>
-        val arg: LbArg = location to resourceAccessor
-        return result.letWhile { it.parent }.eval(LiquibaseIntegrationFactory(), arg)
+        try {
+            // Save current script state, if any, since next script can ruin it.
+            changelog.pushState()
+            val result = compiled.eval() as EvaluatableDslNode<*>
+            val arg: LbArg = location to resourceAccessor
+            return result.letWhile { it.parent }.eval(LiquibaseIntegrationFactory(), arg)
+        } finally {
+            // Restore current script state, if any.
+            changelog.popState()
+        }
     }
 
     override fun supports(changeLogFile: String, resourceAccessor: ResourceAccessor): Boolean {

@@ -1,5 +1,8 @@
 package com.tsarev.liquikotlin.infrastructure
 
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.cast
@@ -24,19 +27,51 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         ) {
             child.realParent = parent
         }
+
+        // Various state stacks. Should be used only for root nodes.
+        val childrenStack = ArrayDeque<MutableList<DefaultNode<*>>>()
+        val parametersStack = ArrayDeque<MutableMap<String, Any?>>()
+        val hasDefaultStack = ArrayDeque<Boolean>()
+        val childBuildersStack = ArrayDeque<MutableMap<String, Lazy<DefaultNode<*>>>>()
     }
 
     var realParent: DefaultNode<*>? = null
 
     override val parent: EvaluatableDslNode<*>? get() = realParent
 
-    override val parameters: MutableMap<String, Any?> = HashMap()
+    override lateinit var parameters: MutableMap<String, Any?>
 
-    override val children: MutableList<DefaultNode<*>> = ArrayList()
+    override lateinit var children: MutableList<DefaultNode<*>>
 
-    override val childBuilders: MutableMap<String, Lazy<DefaultNode<*>>> = HashMap()
+    override lateinit var childBuilders: MutableMap<String, Lazy<DefaultNode<*>>>
 
     override var hasDefault: Boolean = false
+
+    private fun initDefaults() {
+        parameters = HashMap()
+        children = ArrayList()
+        childBuilders = HashMap()
+        hasDefault = false
+    }
+
+    init {
+        initDefaults()
+    }
+
+    override fun pushState() {
+        childrenStack.push(children)
+        parametersStack.push(parameters)
+        hasDefaultStack.push(hasDefault)
+        childBuildersStack.push(childBuilders)
+        initDefaults()
+    }
+
+    override fun popState() {
+        children = childrenStack.pop()
+        parameters = parametersStack.pop()
+        hasDefault = hasDefaultStack.pop()
+        childBuilders = childBuildersStack.pop()
+    }
 
     override fun addChild(child: DslNode<*>) {
         if (child is DefaultNode<*>) {
@@ -55,7 +90,7 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         result.copyParametersFrom(this, true)
         if (parent != null) {
             val parenCast = parent as DslNode<*>
-            DslNode.addChild(parenCast, result)
+            addChild(parenCast, result)
             result.realParent = self.realParent
         }
         result.isBuilder = false

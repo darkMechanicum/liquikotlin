@@ -50,6 +50,19 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
      */
     protected abstract val children: MutableList<out DslNode<*>>
 
+    /**
+     * Save current state to state stack and clear it.
+     */
+    abstract fun pushState()
+
+    /**
+     * Retrieve state from state stack and set it to current node.
+     */
+    abstract fun popState()
+
+    /**
+     * Add child to this node.
+     */
     protected abstract fun addChild(child: DslNode<*>)
 
     /**
