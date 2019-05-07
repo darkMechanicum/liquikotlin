@@ -4,12 +4,13 @@ import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.infrastructure.*
 import liquibase.precondition.CustomPreconditionWrapper
 import liquibase.precondition.Precondition
+import liquibase.precondition.PreconditionLogic
 import liquibase.precondition.core.*
 
 open class BasePreconditionIntegration<SelfT : LbDslNode<SelfT>, LinkedT : Precondition>(
     linkedConstructor: () -> LinkedT,
     vararg childMappings: PropertyMapping<SelfT, LinkedT, *>
-) : LiquibaseIntegrator<SelfT, LinkedT, PreconditionContainer>(
+) : LiquibaseIntegrator<SelfT, LinkedT, PreconditionLogic>(
     linkedConstructor,
     { container, precondition, _, _ -> container.addNestedPrecondition(precondition) }
 ) { init {
@@ -44,6 +45,10 @@ open class PreconditionContainerIntegration<ParentT : Any>(
     LkPrecondition::onErrorMessage - PreconditionContainer::setOnErrorMessage,
     LkPrecondition::onSqlOutput - PreconditionContainer::setOnSqlOutput
 )
+
+open class AndPreconditionIntegration : BasePreconditionIntegration<LkAndPrecondition, AndPrecondition>(::AndPrecondition)
+
+open class OrPreconditionIntegration : BasePreconditionIntegration<LkOrPrecondition, OrPrecondition>(::OrPrecondition)
 
 open class DbmsPreconditionIntegration : BasePreconditionIntegration<LkDbmsPrecondition, DBMSPrecondition>(
     ::DBMSPrecondition,

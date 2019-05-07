@@ -106,7 +106,9 @@ open class LiquibaseIntegrationFactory : EvaluatableDslNode.EvaluatorFactory<LbA
             LkSqlCheckPrecondition::class to SqlCheckPreconditionIntegration(),
             LkChangeLogPropertyDefinedPrecondition::class to ChangeLogPropertyDefinedPreconditionIntegration(),
             LkCustomPrecondition::class to CustomPreconditionIntegration(),
-            LkCustomPreconditionParam::class to CustomPreconditionParamIntegration()
+            LkCustomPreconditionParam::class to CustomPreconditionParamIntegration(),
+            LkAndPrecondition::class to AndPreconditionIntegration(),
+            LkOrPrecondition::class to OrPreconditionIntegration()
         )
     }
 
