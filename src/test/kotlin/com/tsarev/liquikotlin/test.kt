@@ -20,5 +20,5 @@ fun main() {
     val filePath = Paths.get("build/resources/test/simpleScript.kts")
     val scriptReader = Files.newBufferedReader(filePath)
     val rootNode = KtsObjectLoader().load<EvaluatableDslNode<*>>(scriptReader).letWhile { it.parent }
-    rootNode.eval<Any, PrinterArg>(PrintingEvaluatorFactory(), PrinterMode.PRETTY to System.err)
+    rootNode.eval<Any, PrinterArg>(PrintingEvaluatorFactory(), PrinterMode.FULL to System.out)
 }
