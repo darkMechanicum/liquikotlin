@@ -4,8 +4,8 @@ import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.util.testPrimaryKeyName
 import liquibase.precondition.CustomPreconditionWrapper
+import liquibase.precondition.Precondition
 import liquibase.precondition.core.*
-import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -25,15 +25,19 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
         PreconditionContainer::getOnErrorMessage
     )
 
-    // TODO Implement
     @Test
-    @Ignore
-    fun andPreconditionTest() { }
+    fun andPreconditionTest() = testEvaluation(
+        LkAndPrecondition(),
+        AndPrecondition::class,
+        PreconditionContainer::getNestedPreconditions to emptyList<Precondition>()
+    )
 
-    // TODO Implement
     @Test
-    @Ignore
-    fun orPreconditionTest() { }
+    fun orPreconditionTest() = testEvaluation(
+        LkOrPrecondition(),
+        OrPrecondition::class,
+        PreconditionContainer::getNestedPreconditions to emptyList<Precondition>()
+    )
 
     @Test
     fun dbmsPreconditionTest() = testEvaluation(

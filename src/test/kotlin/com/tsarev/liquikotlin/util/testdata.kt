@@ -162,3 +162,13 @@ val testValueDate = Date()
 // W
 const val testWhere = "1 = 1"
 const val testWillCycle = true
+
+// Sort
+const val testId = "simpleId1"
+const val testAuthor = "Don"
+const val testRunAlways = true
+const val testRunOnChange = true
+const val testContext = "Context"
+const val testRunInTransaction = true
+const val testFailOnError = true
+const val testCheckSum = "1:1234567890"

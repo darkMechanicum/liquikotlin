@@ -10,6 +10,9 @@ open class LbDslNode<SelfT : LbDslNode<SelfT>>(
     override val thisClass: KClass<SelfT>
 ) : DefaultNode<SelfT>() {
 
+    override val parent: LbDslNode<*>?
+        get() = super.parent as LbDslNode<*>?
+
     protected companion object {
         /**
          * Add child builder.

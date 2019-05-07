@@ -98,8 +98,7 @@ open class ForeignKeyConstraintExistsPreconditionIntegration :
     SchAndCatIntegration<LkForeignKeyConstraintExistsPrecondition, ForeignKeyExistsPrecondition>(
         ::ForeignKeyExistsPrecondition,
         ForeignKeyExistsPrecondition::setSchemaName,
-        ForeignKeyExistsPrecondition::setCatalogName
-        ,
+        ForeignKeyExistsPrecondition::setCatalogName,
         LkForeignKeyConstraintExistsPrecondition::foreignKeyName - ForeignKeyExistsPrecondition::setForeignKeyName,
         LkForeignKeyConstraintExistsPrecondition::foreignKeyTableName - ForeignKeyExistsPrecondition::setForeignKeyTableName
     )
@@ -111,7 +110,8 @@ open class IndexExistsPreconditionIntegration :
         IndexExistsPrecondition::setCatalogName
         ,
         LkIndexExistsPrecondition::indexName - IndexExistsPrecondition::setIndexName,
-        LkIndexExistsPrecondition::tableName - IndexExistsPrecondition::setTableName
+        LkIndexExistsPrecondition::tableName - IndexExistsPrecondition::setTableName,
+        LkIndexExistsPrecondition::columnNames - IndexExistsPrecondition::setColumnNames
     )
 
 open class SequenceExistsPreconditionIntegration :

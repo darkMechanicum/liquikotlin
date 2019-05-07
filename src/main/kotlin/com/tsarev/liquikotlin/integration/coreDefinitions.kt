@@ -6,6 +6,7 @@ import com.tsarev.liquikotlin.infrastructure.LbDslNode
 import com.tsarev.liquikotlin.infrastructure.LiquibaseIntegrator
 import com.tsarev.liquikotlin.infrastructure.PropertyMapping
 import liquibase.change.Change
+import liquibase.changelog.ChangeLogParameters
 import liquibase.changelog.ChangeSet
 import liquibase.changelog.DatabaseChangeLog
 import liquibase.changelog.IncludeAllFilter
@@ -53,7 +54,7 @@ open class ChangeIntegration<NodeT : LbDslNode<NodeT>, ChangeT : Change>(
 open class ChangeLogIntegration : LiquibaseIntegrator<LkChangeLog, DatabaseChangeLog, Any>(::DatabaseChangeLog) {
     override fun initResult(thisNode: LkChangeLog, argument: LbArg?): DatabaseChangeLog? {
         val (physicalPath, _) = argument!!
-        val result = DatabaseChangeLog(physicalPath)
+        val result = DatabaseChangeLog(physicalPath).apply { changeLogParameters = ChangeLogParameters() }
         val resultPath = thisNode.logicalFilePath.current ?: physicalPath
         result.logicalFilePath = resultPath
         return result
@@ -129,6 +130,7 @@ open class ChangeSetIntegration : LiquibaseIntegrator<LkChangeSet, ChangesHolder
         holder.changes.forEach { result.addChange(it) }
         result.rollback.apply { holder.rollback?.changes?.forEach { this.changes.add(it) } }
         result.comments = holder.comments.joinToString()
+        result.failOnError = self.failOnError.current
         holder.validCheckSums.map { result.addValidCheckSum(it) }
         result.preconditions = holder.preconditions
         changeLog.addChangeSet(result)

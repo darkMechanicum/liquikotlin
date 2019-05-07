@@ -9,10 +9,6 @@ import kotlin.reflect.KClass
  */
 open class BaseLiquikotlinUnitTest {
 
-    companion object {
-        val dummyPath = "some"
-    }
-
     /**
      * Extended test integration factory.
      */
@@ -26,7 +22,8 @@ open class BaseLiquikotlinUnitTest {
         expectedClass: KClass<*>,
         vararg expectedFields: Any
     ) {
-        val evalResult = node.generalEval(liquibaseIntegration, dummyPath to DummyAccessor.instance)
+        val rootNode = node.letWhile { it.parent }
+        val evalResult = rootNode.generalEval(liquibaseIntegration, testPath to DummyAccessor.instance)
         assertType(expectedClass, evalResult)
         assertFields(evalResult, *expectedFields)
     }

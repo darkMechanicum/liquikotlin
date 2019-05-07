@@ -2,9 +2,12 @@ package com.tsarev.liquikotlin.noattributes
 
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.LkChangeLog
+import com.tsarev.liquikotlin.bundled.LkChangeSet
+import com.tsarev.liquikotlin.integration.ChangesHolder
+import com.tsarev.liquikotlin.util.testPath
+import liquibase.change.Change
 import liquibase.changelog.ChangeSet
 import liquibase.changelog.DatabaseChangeLog
-import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -17,50 +20,20 @@ class CoreDefinitionsTest : BaseLiquikotlinUnitTest() {
     fun changeLogTest() = testEvaluation(
         LkChangeLog(),
         DatabaseChangeLog::class,
-        DatabaseChangeLog::getLogicalFilePath to dummyPath,
-        DatabaseChangeLog::getPhysicalFilePath to dummyPath,
+        DatabaseChangeLog::getLogicalFilePath to testPath,
+        DatabaseChangeLog::getPhysicalFilePath to testPath,
         DatabaseChangeLog::getChangeSets to emptyList<ChangeSet>()
     )
 
-    // TODO Implement
     @Test
-    @Ignore
-    fun includeTest() {
-    }
+    fun changeSetTest() = testEvaluation(
+        LkChangeSet(),
+        ChangesHolder::class,
+        ChangesHolder::changes to emptyList<Change>(),
+        ChangesHolder::preconditions,
+        ChangesHolder::rollback,
+        ChangesHolder::comments to emptyList<String>(),
+        ChangesHolder::validCheckSums to emptyList<String>()
+    )
 
-    // TODO Implement
-    @Test
-    @Ignore
-    fun includeAllTest() {
-    }
-
-    // TODO Implement
-    @Test
-    @Ignore
-    fun propertyTest() {
-    }
-
-    // TODO Implement
-    @Test
-    @Ignore
-    fun changeSetTest() {
-    }
-
-    // TODO Implement
-    @Test
-    @Ignore
-    fun rollbackTest() {
-    }
-
-    // TODO Implement
-    @Test
-    @Ignore
-    fun validCheckSumTest() {
-    }
-
-    // TODO Implement
-    @Test
-    @Ignore
-    fun commentTest() {
-    }
 }

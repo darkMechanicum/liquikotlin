@@ -5,7 +5,6 @@ import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.util.*
 import liquibase.precondition.CustomPreconditionWrapper
 import liquibase.precondition.core.*
-import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -29,16 +28,6 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
         PreconditionContainer::getOnFailMessage to testOnFailMessage,
         PreconditionContainer::getOnErrorMessage to testOnErrorMessage
     )
-
-    // TODO Implement
-    @Test
-    @Ignore
-    fun andPreconditionTest() { }
-
-    // TODO Implement
-    @Test
-    @Ignore
-    fun orPreconditionTest() { }
 
     @Test
     fun dbmsPreconditionTest() = testEvaluation(
@@ -112,14 +101,14 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
             .catalogName(testCatalogName)
             .schemaName(testSchemaName)
             .tableName(testTableName)
-            .indexName(testIndexName),
-//            .columnNames(columnNames), TODO Implement missed attribute
+            .indexName(testIndexName)
+            .columnNames(testColumnNames),
         IndexExistsPrecondition::class,
         IndexExistsPrecondition::getCatalogName to testCatalogName,
         IndexExistsPrecondition::getSchemaName to testSchemaName,
         IndexExistsPrecondition::getTableName to testTableName,
-        IndexExistsPrecondition::getIndexName to testIndexName
-//        IndexExistsPrecondition::getColumnNames TODO Implement missed attribute
+        IndexExistsPrecondition::getIndexName to testIndexName,
+        IndexExistsPrecondition::getColumnNames to testColumnNames
     )
 
     @Test
@@ -170,10 +159,10 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun customPreconditionTest() = testEvaluation(
-        LkCustomPrecondition().className(testClassName),
+        LkCustomPrecondition()(testClassName, testProperty to testValue),
         CustomPreconditionWrapper::class,
-        CustomPreconditionWrapper::getClassName to testClassName
-        // TODO Add child check
+        CustomPreconditionWrapper::getClassName to testClassName,
+        { wrapper: CustomPreconditionWrapper -> wrapper.getParamValue(testProperty) } to testValue
     )
 
 }

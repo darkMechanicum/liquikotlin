@@ -98,6 +98,7 @@ open class LkIndexExistsPrecondition :
     PreconditionWithSchAndCat<LkIndexExistsPrecondition>(LkIndexExistsPrecondition::class) {
     open val indexName by nullable(String::class)
     open val tableName by nullable(String::class)
+    open val columnNames by nullable(String::class)
 }
 
 open class LkSequenceExistsPrecondition :
