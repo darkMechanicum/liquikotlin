@@ -2,7 +2,6 @@ package com.tsarev.liquikotlin
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
 import com.tsarev.liquikotlin.util.*
-import org.junit.Before
 import kotlin.reflect.KClass
 
 /**
@@ -11,25 +10,13 @@ import kotlin.reflect.KClass
 open class BaseLiquikotlinUnitTest {
 
     companion object {
-
         val dummyPath = "some"
-
     }
 
     /**
      * Extended test integration factory.
      */
     private val liquibaseIntegration = TestLiquibaseIntegrationFactory()
-
-    /**
-     * Node that is set in current test.
-     */
-    private var currentNode: LbDslNode<*>? = null
-
-    /**
-     * Evaluation result of the current test.
-     */
-    private var currentEvaluatedNode: Any? = null
 
     /**
      * Simple test wrapped to reduce boilerplate.
@@ -44,12 +31,4 @@ open class BaseLiquikotlinUnitTest {
         assertFields(evalResult, *expectedFields)
     }
 
-    /**
-     * Clear current node fields.
-     */
-    @Before
-    open fun clearFields() {
-        currentNode = null
-        currentEvaluatedNode = null
-    }
 }
