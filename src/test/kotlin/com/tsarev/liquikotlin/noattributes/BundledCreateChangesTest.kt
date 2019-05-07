@@ -16,36 +16,6 @@ import org.junit.Test
  */
 open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
 
-    companion object {
-        private val columnConfigFields = arrayOf(
-            ColumnConfig::getName,
-            ColumnConfig::getComputed,
-            ColumnConfig::getType,
-            ColumnConfig::getValue,
-            ColumnConfig::getValueNumeric,
-            ColumnConfig::getValueDate,
-            ColumnConfig::getValueBoolean,
-            ColumnConfig::getValueBlobFile,
-            ColumnConfig::getValueClobFile,
-            ColumnConfig::getEncoding,
-            ColumnConfig::getValueComputed,
-            ColumnConfig::getValueSequenceNext,
-            ColumnConfig::getValueSequenceCurrent,
-            ColumnConfig::getDefaultValue,
-            ColumnConfig::getDefaultValueNumeric,
-            ColumnConfig::getDefaultValueDate,
-            ColumnConfig::getDefaultValueBoolean,
-            ColumnConfig::getDefaultValueComputed,
-            ColumnConfig::getDefaultValueSequenceNext,
-            ColumnConfig::getConstraints,
-            ColumnConfig::isAutoIncrement,
-            ColumnConfig::getStartWith,
-            ColumnConfig::getIncrementBy,
-            ColumnConfig::getRemarks,
-            ColumnConfig::getDescending
-        )
-    }
-
     @Test
     fun addColumnConfigTest() = testEvaluation(
         LkAddColumnConfig(),
@@ -53,7 +23,7 @@ open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
         AddColumnConfig::getAfterColumn,
         AddColumnConfig::getBeforeColumn,
         AddColumnConfig::getPosition,
-        *columnConfigFields
+        *nullColumnConfigFields
     )
 
     @Test
@@ -62,14 +32,14 @@ open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
         LoadDataColumnConfig::class,
         LoadDataColumnConfig::getIndex,
         LoadDataColumnConfig::getHeader,
-        *columnConfigFields
+        *nullColumnConfigFields
     )
 
     @Test
     fun commonColumnConfigTest() = testEvaluation(
         LkCommonColumnConfig(),
         ColumnConfig::class,
-        * columnConfigFields
+        *nullColumnConfigFields
     )
 
     @Test

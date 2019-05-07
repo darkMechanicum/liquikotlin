@@ -13,16 +13,6 @@ import org.junit.Test
  */
 open class BundledDropChangesTest : BaseLiquikotlinUnitTest() {
 
-    companion object {
-        val abstractModifyFields = arrayOf(
-            AbstractModifyDataChange::getCatalogName to testCatalogName,
-            AbstractModifyDataChange::getSchemaName to testSchemaName,
-            AbstractModifyDataChange::getTableName to testTableName,
-            AbstractModifyDataChange::getWhere to testWhere,
-            AbstractModifyDataChange::getWhereParams to emptyList<ColumnConfig>()
-        )
-    }
-
     @Test
     open fun deleteTest() = testEvaluation(
         LkDelete()
@@ -31,7 +21,7 @@ open class BundledDropChangesTest : BaseLiquikotlinUnitTest() {
             .tableName(testTableName)
             .where(testWhere),
         DeleteDataChange::class,
-        *abstractModifyFields
+        *notNullModifyFields
     )
 
     @Test
@@ -96,13 +86,13 @@ open class BundledDropChangesTest : BaseLiquikotlinUnitTest() {
             .schemaName(testSchemaName)
             .indexName(testIndexName)
             .tableName(testTableName)
-//            .associatedWith(associatedWith) TODO Implement missed attribute
+            .associatedWith(testAssociatedWith)
             .catalogName(testCatalogName),
         DropIndexChange::class,
         DropIndexChange::getSchemaName to testSchemaName,
         DropIndexChange::getIndexName to testIndexName,
         DropIndexChange::getTableName to testTableName,
-//        DropIndexChange::getAssociatedWith, TODO Implement missed attribute
+        DropIndexChange::getAssociatedWith to testAssociatedWith,
         DropIndexChange::getCatalogName to testCatalogName
     )
 

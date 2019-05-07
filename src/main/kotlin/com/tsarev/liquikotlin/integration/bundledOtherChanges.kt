@@ -12,6 +12,8 @@ open class AlterSequenceIntegration : ChangeIntegration<LkAlterSequence, AlterSe
     LkAlterSequence::minValue - AlterSequenceChange::setMinValue,
     LkAlterSequence::ordered - AlterSequenceChange::setOrdered,
     LkAlterSequence::schemaName - AlterSequenceChange::setSchemaName,
+    LkAlterSequence::cacheSize - AlterSequenceChange::setCacheSize,
+    LkAlterSequence::willCycle - AlterSequenceChange::setWillCycle,
     LkAlterSequence::sequenceName - AlterSequenceChange::setSequenceName
 )
 
@@ -19,7 +21,8 @@ open class EmptyIntegration : ChangeIntegration<LkEmpty, EmptyChange>(::EmptyCha
 
 open class ExecuteCommandIntegration : ChangeIntegration<LkExecuteCommand, ExecuteShellCommandChange>(
     ::ExecuteShellCommandChange,
-    LkExecuteCommand::executable - ExecuteShellCommandChange::setExecutable
+    LkExecuteCommand::executable - ExecuteShellCommandChange::setExecutable,
+    LkExecuteCommand::os - ExecuteShellCommandChange::setOs
 )
 
 open class InsertIntegration : ChangeIntegration<LkInsert, InsertDataChange>(
@@ -38,7 +41,8 @@ open class LoadDataIntegration : ChangeIntegration<LkLoadData, LoadDataChange>(
     LkLoadData::quotchar - LoadDataChange::setQuotchar,
     LkLoadData::schemaName - LoadDataChange::setSchemaName,
     LkLoadData::separator - LoadDataChange::setSeparator,
-    LkLoadData::tableName - LoadDataChange::setTableName
+    LkLoadData::tableName - LoadDataChange::setTableName,
+    LkLoadData::relativeToChangelogFile - LoadDataChange::setRelativeToChangelogFile
 )
 
 open class LoadUpdateDataIntegration : ChangeIntegration<LkLoadUpdateData, LoadUpdateDataChange>(
@@ -50,7 +54,8 @@ open class LoadUpdateDataIntegration : ChangeIntegration<LkLoadUpdateData, LoadU
     LkLoadUpdateData::quotchar - LoadUpdateDataChange::setQuotchar,
     LkLoadUpdateData::schemaName - LoadUpdateDataChange::setSchemaName,
     LkLoadUpdateData::separator - LoadUpdateDataChange::setSeparator,
-    LkLoadUpdateData::tableName - LoadUpdateDataChange::setTableName
+    LkLoadUpdateData::tableName - LoadUpdateDataChange::setTableName,
+    LkLoadUpdateData::relativeToChangelogFile - LoadUpdateDataChange::setRelativeToChangelogFile
 )
 
 open class MergeColumnsIntegration : ChangeIntegration<LkMergeColumns, MergeColumnChange>(

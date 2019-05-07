@@ -51,7 +51,8 @@ open class DropIndexIntegration : ChangeIntegration<LkDropIndex, DropIndexChange
     LkDropIndex::catalogName - DropIndexChange::setCatalogName,
     LkDropIndex::indexName - DropIndexChange::setIndexName,
     LkDropIndex::schemaName - DropIndexChange::setSchemaName,
-    LkDropIndex::tableName - DropIndexChange::setTableName
+    LkDropIndex::tableName - DropIndexChange::setTableName,
+    LkDropIndex::associatedWith - DropIndexChange::setAssociatedWith
 )
 
 open class DropNotNullConstraintIntegration : ChangeIntegration<LkDropNotNullConstraint, DropNotNullConstraintChange>(

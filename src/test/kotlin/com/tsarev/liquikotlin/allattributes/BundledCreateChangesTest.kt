@@ -8,7 +8,6 @@ import liquibase.change.ColumnConfig
 import liquibase.change.ConstraintsConfig
 import liquibase.change.core.*
 import liquibase.statement.DatabaseFunction
-import liquibase.statement.SequenceCurrentValueFunction
 import liquibase.statement.SequenceNextValueFunction
 import org.junit.Test
 
@@ -17,33 +16,6 @@ import org.junit.Test
  * correctly without modifications.
  */
 open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
-
-    private val columnConfigFields = arrayOf(
-        ColumnConfig::getName to testColumnName,
-        ColumnConfig::getComputed to testComputed,
-        ColumnConfig::getType to testColumnType,
-        ColumnConfig::getValue to testValue,
-        ColumnConfig::getValueNumeric to testValueNumeric,
-        ColumnConfig::getValueDate to testValueDate,
-        ColumnConfig::getValueBoolean to testValueBoolean,
-        ColumnConfig::getValueBlobFile to testValueBlobFile,
-        ColumnConfig::getValueClobFile to testValueClobFile,
-        ColumnConfig::getEncoding to testEncoding,
-        ColumnConfig::getValueComputed to DatabaseFunction(testValueComputed),
-        ColumnConfig::getValueSequenceNext to SequenceNextValueFunction(testValueSequenceNext),
-        ColumnConfig::getValueSequenceCurrent to SequenceCurrentValueFunction(testValueSequenceCurrent),
-        ColumnConfig::getDefaultValue to testDefaultValue,
-        ColumnConfig::getDefaultValueNumeric to testDefaultValueNumeric,
-        ColumnConfig::getDefaultValueDate to testDefaultValueDate,
-        ColumnConfig::getDefaultValueBoolean to testDefaultValueBoolean,
-        ColumnConfig::getDefaultValueComputed to DatabaseFunction(testDefaultValueComputed),
-        ColumnConfig::getDefaultValueSequenceNext to SequenceNextValueFunction(testDefaultValueSequenceNext),
-        ColumnConfig::isAutoIncrement to testAutoIncrement,
-        ColumnConfig::getStartWith to testStartWith,
-        ColumnConfig::getIncrementBy to testIncrementBy,
-        ColumnConfig::getRemarks to testRemarks,
-        ColumnConfig::getDescending to testDescending
-    )
 
     private fun LkBaseColumnConfig<*>.setBaseColumnAttributes() = this
         .name(testColumnName)
@@ -82,7 +54,7 @@ open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
         AddColumnConfig::getAfterColumn to testAfterColumn,
         AddColumnConfig::getBeforeColumn to testBeforeColumn,
         AddColumnConfig::getPosition to testPosition,
-        *columnConfigFields
+        *notNullColumnConfigFields
     )
 
     @Test
@@ -94,7 +66,7 @@ open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
         LoadDataColumnConfig::class,
         LoadDataColumnConfig::getIndex to testIndex,
         LoadDataColumnConfig::getHeader to testHeader,
-        *columnConfigFields
+        *notNullColumnConfigFields
     )
 
     @Test
@@ -102,7 +74,7 @@ open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
         LkCommonColumnConfig()
             .setBaseColumnAttributes(),
         ColumnConfig::class,
-        * columnConfigFields
+        *notNullColumnConfigFields
     )
 
     @Test

@@ -7,6 +7,7 @@ import java.util.*
 // A
 const val testAfterColumn = "AfterColumn"
 const val testAutoIncrement = true
+const val testAssociatedWith = "MyAssociation"
 
 // B
 const val testBaseColumnNames = "baseColumnNames"
@@ -32,10 +33,6 @@ const val testComputed = true
 const val testConstraintName = "constraintName"
 const val testCycle = true
 val testCacheSize = BigInteger.valueOf(345L)!!
-val testColumnDefaultValueDate = Date()
-val testColumnIncrementBy = BigInteger.valueOf(10005L)!!
-val testColumnStartWith = BigInteger.valueOf(10005L)!!
-val testColumnValueDate = Date()
 
 // D
 const val testDbms = "Oracle"
@@ -105,7 +102,7 @@ const val testOnErrorMessage = "Error occured!"
 const val testOnFailMessage = "Execution failed!"
 const val testOnUpdate = "onUpdate"
 const val testOrdered = true
-const val testOs = "ColibriOS"
+const val testOs = "ColibriOS,Unix"
 val testOnError = PreconditionContainer.ErrorOption.MARK_RAN
 val testOnFail = PreconditionContainer.FailOption.MARK_RAN
 val testOnSqlOutput = PreconditionContainer.OnSqlOutputOption.FAIL
@@ -164,3 +161,4 @@ val testValueDate = Date()
 
 // W
 const val testWhere = "1 = 1"
+const val testWillCycle = true

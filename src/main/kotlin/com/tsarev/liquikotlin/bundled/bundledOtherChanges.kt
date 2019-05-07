@@ -11,12 +11,15 @@ open class LkAlterSequence : LbDslNode<LkAlterSequence>(LkAlterSequence::class) 
     open val ordered by nullable(Boolean::class)
     open val schemaName by nullable(String::class)
     open val sequenceName by nullable(String::class)
+    open val cacheSize by nullable(BigInteger::class)
+    open val willCycle by nullable(Boolean::class)
 }
 
 open class LkEmpty : LbDslNode<LkEmpty>(LkEmpty::class)
 
 open class LkExecuteCommand : LbDslNode<LkExecuteCommand> (LkExecuteCommand::class) {
     open val executable by nullable(String::class)
+    open val os by nullable(String::class)
 }
 
 open class LkInsert : LbDslNode<LkInsert> (LkInsert::class) {
@@ -36,6 +39,7 @@ open class LkLoadData : LbDslNode<LkLoadData> (LkLoadData::class) {
     open val schemaName by nullable(String::class)
     open val separator by nullable(String::class)
     open val tableName by nullable(String::class)
+    open val relativeToChangelogFile by nullable(Boolean::class)
 
     open val column by child(::LkLoadColumnConfig)
 }
@@ -49,6 +53,7 @@ open class LkLoadUpdateData : LbDslNode<LkLoadUpdateData> (LkLoadUpdateData::cla
     open val schemaName by nullable(String::class)
     open val separator by nullable(String::class)
     open val tableName by nullable(String::class)
+    open val relativeToChangelogFile by nullable(Boolean::class)
 
     open val column by child(::LkLoadColumnConfig)
 }

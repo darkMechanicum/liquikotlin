@@ -12,21 +12,11 @@ import org.junit.Test
  */
 open class BundledDropChangesTest : BaseLiquikotlinUnitTest() {
 
-    companion object {
-        val abstractModifyFields = arrayOf(
-            AbstractModifyDataChange::getCatalogName,
-            AbstractModifyDataChange::getSchemaName,
-            AbstractModifyDataChange::getTableName,
-            AbstractModifyDataChange::getWhereParams to emptyList<ColumnConfig>(),
-            AbstractModifyDataChange::getWhere
-        )
-    }
-
     @Test
     open fun deleteTest() = testEvaluation(
         LkDelete(),
         DeleteDataChange::class,
-        *abstractModifyFields
+        *nullModifyFields
     )
 
     @Test

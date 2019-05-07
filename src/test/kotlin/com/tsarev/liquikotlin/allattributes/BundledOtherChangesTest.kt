@@ -3,9 +3,9 @@ package com.tsarev.liquikotlin.allattributes
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.util.*
-import liquibase.change.AbstractSQLChange
 import liquibase.change.ColumnConfig
 import liquibase.change.core.*
+import liquibase.util.StringUtils
 import org.junit.Test
 
 /**
@@ -13,15 +13,6 @@ import org.junit.Test
  * correctly without modifications.
  */
 class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
-
-    companion object {
-        val abstractSql = arrayOf(
-            AbstractSQLChange::isStripComments to testStripComments,
-            AbstractSQLChange::isSplitStatements to testSplitStatements,
-            AbstractSQLChange::getEndDelimiter to testEndDelimiter,
-            AbstractSQLChange::getDbms to testDbms
-        )
-    }
 
     @Test
     fun alterSequenceTest() = testEvaluation(
@@ -32,9 +23,9 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
             .incrementBy(testIncrementBy)
             .maxValue(testMaxValue)
             .minValue(testMinValue)
-            .ordered(testOrdered),
-//            .cacheSize(cacheSize) TODO Implement missed attribute
-//            .willCycle(willCycle), TODO Implement missed attribute
+            .ordered(testOrdered)
+            .cacheSize(testCacheSize)
+            .willCycle(testWillCycle),
         AlterSequenceChange::class,
         AlterSequenceChange::getCatalogName to testCatalogName,
         AlterSequenceChange::getSchemaName to testSchemaName,
@@ -42,20 +33,20 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
         AlterSequenceChange::getIncrementBy to testIncrementBy,
         AlterSequenceChange::getMaxValue to testMaxValue,
         AlterSequenceChange::getMinValue to testMinValue,
-        AlterSequenceChange::isOrdered to testOrdered
-//        AlterSequenceChange::getCacheSize, TODO Implement missed attribute
-//        AlterSequenceChange::getWillCycle TODO Implement missed attribute
+        AlterSequenceChange::isOrdered to testOrdered,
+        AlterSequenceChange::getCacheSize to testCacheSize,
+        AlterSequenceChange::getWillCycle to testWillCycle
     )
 
     // TODO Add args testing
     @Test
     fun executeCommandTest() = testEvaluation(
         LkExecuteCommand()
-            .executable(testExecutable),
-//            .os(os), TODO Implement missed attribute
+            .executable(testExecutable)
+            .os(testOs),
         ExecuteShellCommandChange::class,
         ExecuteShellCommandChange::getExecutable to testExecutable,
-//        ExecuteShellCommandChange::getOs, TODO Implement missed attribute
+        ExecuteShellCommandChange::getOs to StringUtils.splitAndTrim(testOs, ","),
         ExecuteShellCommandChange::getArgs to emptyList<String>()
     )
 
@@ -81,30 +72,41 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
             .schemaName(testSchemaName)
             .tableName(testTableName)
             .file(testFile)
-//            .relativeToChangelogFile(relativeToChangelogFile) TODO Implement missed attribute
+            .relativeToChangelogFile(testRelativeToChangelogFile)
             .encoding(testEncoding),
         LoadDataChange::class,
         LoadDataChange::getCatalogName to testCatalogName,
         LoadDataChange::getSchemaName to testSchemaName,
         LoadDataChange::getTableName to testTableName,
         LoadDataChange::getFile to testFile,
-//        LoadDataChange::isRelativeToChangelogFile, TODO Implement missed attribute
+        LoadDataChange::isRelativeToChangelogFile to testRelativeToChangelogFile,
         LoadDataChange::getEncoding to testEncoding,
-        LoadDataChange::getSeparator to liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR + "",
-        LoadDataChange::getQuotchar to liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER + "",
+        LoadDataChange::getSeparator to "${liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR}",
+        LoadDataChange::getQuotchar to "${liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER}",
         LoadDataChange::getColumns to emptyList<LoadDataColumnConfig>()
     )
 
     @Test
     fun loadUpdateDataTest() = testEvaluation(
-        LkUpdate()
+        LkLoadUpdateData()
             .catalogName(testCatalogName)
             .schemaName(testSchemaName)
             .tableName(testTableName)
-            .where(testWhere),
-        UpdateDataChange::class,
-        *BundledDropChangesTest.abstractModifyFields,
-        UpdateDataChange::getColumns to emptyList<ColumnConfig>()
+            .file(testFile)
+            .relativeToChangelogFile(testRelativeToChangelogFile)
+            .primaryKey(testPrimaryKeyName)
+            .encoding(testEncoding),
+        LoadUpdateDataChange::class,
+        LoadDataChange::getCatalogName to testCatalogName,
+        LoadUpdateDataChange::getSchemaName to testSchemaName,
+        LoadUpdateDataChange::getTableName to testTableName,
+        LoadUpdateDataChange::getFile to testFile,
+        LoadUpdateDataChange::isRelativeToChangelogFile to testRelativeToChangelogFile,
+        LoadUpdateDataChange::getEncoding to testEncoding,
+        LoadUpdateDataChange::getSeparator to "${liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR}",
+        LoadUpdateDataChange::getQuotchar to "${liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER}",
+        LoadUpdateDataChange::getColumns to emptyList<LoadDataColumnConfig>(),
+        LoadUpdateDataChange::getPrimaryKey to testPrimaryKeyName
     )
 
     @Test
@@ -203,7 +205,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
             .endDelimiter(testEndDelimiter)
             .dbms(testDbms),
         RawSQLChange::class,
-        *abstractSql,
+        *notNullSql,
         RawSQLChange::getSql to testSql,
         RawSQLChange::getComment to testComment
     )
@@ -219,7 +221,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
             .path(testPath)
             .relativeToChangelogFile(testRelativeToChangelogFile),
         SQLFileChange::class,
-        *abstractSql,
+        *notNullSql,
         SQLFileChange::getEncoding to testEncoding,
         SQLFileChange::getPath to testPath,
         SQLFileChange::isRelativeToChangelogFile to testRelativeToChangelogFile
@@ -245,10 +247,13 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
             .catalogName(testCatalogName)
             .schemaName(testSchemaName)
             .tableName(testTableName)
+            .where(testWhere)
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
             .where(testWhere),
-//            .abstractModifyFields(), TODO Implement missed attribute
         UpdateDataChange::class,
-//        *BundledDropChangesTest.abstractModifyFields, TODO Implement missed attribute
+        *notNullModifyFields,
         UpdateDataChange::getColumns to emptyList<ColumnConfig>()
     )
 

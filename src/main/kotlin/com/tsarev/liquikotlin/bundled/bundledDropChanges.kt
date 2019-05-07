@@ -43,6 +43,7 @@ open class LkDropIndex : LbDslNode<LkDropIndex> (LkDropIndex::class) {
     open val indexName by nullable(String::class)
     open val schemaName by nullable(String::class)
     open val tableName by nullable(String::class)
+    open val associatedWith by nullable(String::class)
 }
 
 open class LkDropNotNullConstraint : LbDslNode<LkDropNotNullConstraint> (LkDropNotNullConstraint::class) {

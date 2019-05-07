@@ -3,7 +3,6 @@ package com.tsarev.liquikotlin.noattributes
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.util.testSql
-import liquibase.change.AbstractSQLChange
 import liquibase.change.ColumnConfig
 import liquibase.change.core.*
 import org.junit.Test
@@ -13,15 +12,6 @@ import org.junit.Test
  * values except required ones.
  */
 class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
-
-    companion object {
-        val abstractSql = arrayOf(
-            AbstractSQLChange::isStripComments to false,
-            AbstractSQLChange::isSplitStatements to true,
-            AbstractSQLChange::getEndDelimiter,
-            AbstractSQLChange::getDbms
-        )
-    }
 
     @Test
     fun alterSequenceTest() = testEvaluation(
@@ -81,10 +71,18 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun loadUpdateDataTest() = testEvaluation(
-        LkUpdate(),
-        UpdateDataChange::class,
-        *BundledDropChangesTest.abstractModifyFields,
-        UpdateDataChange::getColumns to emptyList<ColumnConfig>()
+        LkLoadUpdateData(),
+        LoadUpdateDataChange::class,
+        LoadUpdateDataChange::getCatalogName,
+        LoadUpdateDataChange::getSchemaName,
+        LoadUpdateDataChange::getTableName,
+        LoadUpdateDataChange::getFile,
+        LoadUpdateDataChange::isRelativeToChangelogFile,
+        LoadUpdateDataChange::getEncoding,
+        LoadUpdateDataChange::getPrimaryKey,
+        LoadUpdateDataChange::getSeparator to liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR + "",
+        LoadUpdateDataChange::getQuotchar to liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER + "",
+        LoadUpdateDataChange::getColumns to emptyList<LoadDataColumnConfig>()
     )
 
     @Test
@@ -149,7 +147,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
     fun sqlTest() = testEvaluation(
         LkSql().sql(testSql),
         RawSQLChange::class,
-        *abstractSql,
+        *nullSql,
         RawSQLChange::getSql to testSql,
         RawSQLChange::getComment
     )
@@ -158,7 +156,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
     fun sqlFileTest() = testEvaluation(
         LkSqlFile(),
         SQLFileChange::class,
-        *abstractSql,
+        *nullSql,
         SQLFileChange::getEncoding,
         SQLFileChange::getPath,
         SQLFileChange::isRelativeToChangelogFile
@@ -182,7 +180,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
     fun updateTest() = testEvaluation(
         LkUpdate(),
         UpdateDataChange::class,
-        *BundledDropChangesTest.abstractModifyFields,
+        *nullModifyFields,
         UpdateDataChange::getColumns to emptyList<ColumnConfig>()
     )
 
