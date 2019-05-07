@@ -17,17 +17,17 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
     @Test
     fun preconditionTest() = testEvaluation(
         LkPrecondition()
-            .onFail("$onFail")
-            .onError("$onError")
-            .onSqlOutput("$onSqlOutput")
-            .onFailMessage(onFailMessage)
-            .onErrorMessage(onErrorMessage),
+            .onFail("$testOnFail")
+            .onError("$testOnError")
+            .onSqlOutput("$testOnSqlOutput")
+            .onFailMessage(testOnFailMessage)
+            .onErrorMessage(testOnErrorMessage),
         PreconditionContainer::class,
-        PreconditionContainer::getOnFail to onFail,
-        PreconditionContainer::getOnError to onError,
-        PreconditionContainer::getOnSqlOutput to onSqlOutput,
-        PreconditionContainer::getOnFailMessage to onFailMessage,
-        PreconditionContainer::getOnErrorMessage to onErrorMessage
+        PreconditionContainer::getOnFail to testOnFail,
+        PreconditionContainer::getOnError to testOnError,
+        PreconditionContainer::getOnSqlOutput to testOnSqlOutput,
+        PreconditionContainer::getOnFailMessage to testOnFailMessage,
+        PreconditionContainer::getOnErrorMessage to testOnErrorMessage
     )
 
     // TODO Implement
@@ -42,137 +42,137 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun dbmsPreconditionTest() = testEvaluation(
-        LkDbmsPrecondition().type(dbms),
+        LkDbmsPrecondition().type(testDbms),
         DBMSPrecondition::class,
-        DBMSPrecondition::getType to dbms.toLowerCase()
+        DBMSPrecondition::getType to testDbms.toLowerCase()
     )
 
     @Test
     fun runningAsPreconditionTest() = testEvaluation(
-        LkRunningAsPrecondition().username(username),
+        LkRunningAsPrecondition().username(testUsername),
         RunningAsPrecondition::class,
-        RunningAsPrecondition::getUsername to username
+        RunningAsPrecondition::getUsername to testUsername
     )
 
     @Test
     fun columnExistsPreconditionTest() = testEvaluation(
         LkColumnExistsPrecondition()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .columnName(columnName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .columnName(testColumnName),
         ColumnExistsPrecondition::class,
-        ColumnExistsPrecondition::getCatalogName to catalogName,
-        ColumnExistsPrecondition::getSchemaName to schemaName,
-        ColumnExistsPrecondition::getTableName to tableName,
-        ColumnExistsPrecondition::getColumnName to columnName
+        ColumnExistsPrecondition::getCatalogName to testCatalogName,
+        ColumnExistsPrecondition::getSchemaName to testSchemaName,
+        ColumnExistsPrecondition::getTableName to testTableName,
+        ColumnExistsPrecondition::getColumnName to testColumnName
     )
 
     @Test
     fun tableExistsPreconditionTest() = testEvaluation(
         LkTableExistsPrecondition()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName),
         TableExistsPrecondition::class,
-        TableExistsPrecondition::getCatalogName to catalogName,
-        TableExistsPrecondition::getSchemaName to schemaName,
-        TableExistsPrecondition::getTableName to tableName
+        TableExistsPrecondition::getCatalogName to testCatalogName,
+        TableExistsPrecondition::getSchemaName to testSchemaName,
+        TableExistsPrecondition::getTableName to testTableName
     )
 
     @Test
     fun viewExistsPreconditionTest() = testEvaluation(
         LkViewExistsPrecondition()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .viewName(viewName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .viewName(testViewName),
         ViewExistsPrecondition::class,
-        ViewExistsPrecondition::getCatalogName to catalogName,
-        ViewExistsPrecondition::getSchemaName to schemaName,
-        ViewExistsPrecondition::getViewName to viewName
+        ViewExistsPrecondition::getCatalogName to testCatalogName,
+        ViewExistsPrecondition::getSchemaName to testSchemaName,
+        ViewExistsPrecondition::getViewName to testViewName
     )
 
     @Test
     fun foreignKeyConstraintExistsPreconditionTest() = testEvaluation(
         LkForeignKeyConstraintExistsPrecondition()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .foreignKeyTableName(foreignKeyTableName)
-            .foreignKeyName(foreignKeyName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .foreignKeyTableName(testForeignKeyTableName)
+            .foreignKeyName(testForeignKeyName),
         ForeignKeyExistsPrecondition::class,
-        ForeignKeyExistsPrecondition::getCatalogName to catalogName,
-        ForeignKeyExistsPrecondition::getSchemaName to schemaName,
-        ForeignKeyExistsPrecondition::getForeignKeyTableName to foreignKeyTableName,
-        ForeignKeyExistsPrecondition::getForeignKeyName to foreignKeyName
+        ForeignKeyExistsPrecondition::getCatalogName to testCatalogName,
+        ForeignKeyExistsPrecondition::getSchemaName to testSchemaName,
+        ForeignKeyExistsPrecondition::getForeignKeyTableName to testForeignKeyTableName,
+        ForeignKeyExistsPrecondition::getForeignKeyName to testForeignKeyName
     )
 
     @Test
     fun indexExistsPreconditionTest() = testEvaluation(
         LkIndexExistsPrecondition()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .indexName(indexName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .indexName(testIndexName),
 //            .columnNames(columnNames), TODO Implement missed attribute
         IndexExistsPrecondition::class,
-        IndexExistsPrecondition::getCatalogName to catalogName,
-        IndexExistsPrecondition::getSchemaName to schemaName,
-        IndexExistsPrecondition::getTableName to tableName,
-        IndexExistsPrecondition::getIndexName to indexName
+        IndexExistsPrecondition::getCatalogName to testCatalogName,
+        IndexExistsPrecondition::getSchemaName to testSchemaName,
+        IndexExistsPrecondition::getTableName to testTableName,
+        IndexExistsPrecondition::getIndexName to testIndexName
 //        IndexExistsPrecondition::getColumnNames TODO Implement missed attribute
     )
 
     @Test
     fun sequenceExistsPreconditionTest() = testEvaluation(
         LkSequenceExistsPrecondition()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .sequenceName(sequenceName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .sequenceName(testSequenceName),
         SequenceExistsPrecondition::class,
-        SequenceExistsPrecondition::getCatalogName to catalogName,
-        SequenceExistsPrecondition::getSchemaName to schemaName,
-        SequenceExistsPrecondition::getSequenceName to sequenceName
+        SequenceExistsPrecondition::getCatalogName to testCatalogName,
+        SequenceExistsPrecondition::getSchemaName to testSchemaName,
+        SequenceExistsPrecondition::getSequenceName to testSequenceName
     )
 
     @Test
     fun primaryKeyExistsPreconditionTest() = testEvaluation(
         LkPrimaryKeyExistsPrecondition()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .primaryKeyName(primaryKeyName)
-            .tableName(tableName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .primaryKeyName(testPrimaryKeyName)
+            .tableName(testTableName),
         PrimaryKeyExistsPrecondition::class,
-        PrimaryKeyExistsPrecondition::getCatalogName to catalogName,
-        PrimaryKeyExistsPrecondition::getSchemaName to schemaName,
-        PrimaryKeyExistsPrecondition::getPrimaryKeyName to primaryKeyName,
-        PrimaryKeyExistsPrecondition::getTableName to tableName
+        PrimaryKeyExistsPrecondition::getCatalogName to testCatalogName,
+        PrimaryKeyExistsPrecondition::getSchemaName to testSchemaName,
+        PrimaryKeyExistsPrecondition::getPrimaryKeyName to testPrimaryKeyName,
+        PrimaryKeyExistsPrecondition::getTableName to testTableName
     )
 
     @Test
     fun sqlCheckPreconditionTest() = testEvaluation(
         LkSqlCheckPrecondition()
-            .expectedResult(expectedResult)
-            .sql(sql),
+            .expectedResult(testExpectedResult)
+            .sql(testSql),
         SqlPrecondition::class,
-        SqlPrecondition::getExpectedResult to expectedResult,
-        SqlPrecondition::getSql to sql
+        SqlPrecondition::getExpectedResult to testExpectedResult,
+        SqlPrecondition::getSql to testSql
     )
 
     @Test
     fun changeLogPropertyDefinedPreconditionTest() = testEvaluation(
         LkChangeLogPropertyDefinedPrecondition()
-            .property(property)
-            .value(value),
+            .property(testProperty)
+            .value(testValue),
         ChangeLogPropertyDefinedPrecondition::class,
-        ChangeLogPropertyDefinedPrecondition::getProperty to property,
-        ChangeLogPropertyDefinedPrecondition::getValue to value
+        ChangeLogPropertyDefinedPrecondition::getProperty to testProperty,
+        ChangeLogPropertyDefinedPrecondition::getValue to testValue
     )
 
     @Test
     fun customPreconditionTest() = testEvaluation(
-        LkCustomPrecondition().className(className),
+        LkCustomPrecondition().className(testClassName),
         CustomPreconditionWrapper::class,
-        CustomPreconditionWrapper::getClassName to className
+        CustomPreconditionWrapper::getClassName to testClassName
         // TODO Add child check
     )
 

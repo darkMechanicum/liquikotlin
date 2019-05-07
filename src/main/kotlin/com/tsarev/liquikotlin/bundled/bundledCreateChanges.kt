@@ -27,6 +27,12 @@ abstract class LkBaseColumnConfig<SelfT : LkBaseColumnConfig<SelfT>>(thisClass: 
     open val defaultValueComputed by nullable(String::class)
     open val autoIncrement by nullable(Boolean::class)
     open val remarks by nullable(String::class)
+    open val valueSequenceNext by nullable(String::class)
+    open val valueSequenceCurrent by nullable(String::class)
+    open val defaultValueSequenceNext by nullable(String::class)
+    open val startWith by nullable(BigInteger::class)
+    open val incrementBy by nullable(BigInteger::class)
+    open val descending by nullable(Boolean::class)
 
     open val constraints by child(::LkConstraints)
 }
@@ -75,6 +81,10 @@ open class LkConstraints : LbDslNode<LkConstraints>(LkConstraints::class) {
     open val deleteCascade by nullable(Boolean::class)
     open val deferrable by nullable(Boolean::class)
     open val initiallyDeferred by nullable(Boolean::class)
+    open val primaryKeyTablespace by nullable(String::class)
+    open val referencedTableName by nullable(String::class)
+    open val referencedColumnNames by nullable(String::class)
+    open val checkConstraint by nullable(String::class)
 }
 
 open class LkAddDefaultValue : LbDslNode<LkAddDefaultValue>(LkAddDefaultValue::class) {
@@ -84,8 +94,8 @@ open class LkAddDefaultValue : LbDslNode<LkAddDefaultValue>(LkAddDefaultValue::c
     open val defaultValue by nullable(String::class)
     open val defaultValueBoolean by nullable(Boolean::class)
     open val defaultValueComputed by nullable(String::class)
-    open val defaultValueDate by nullable(String::class)
-    open val defaultValueNumeric by nullable(String::class)
+    open val defaultValueDate by nullable(Date::class)
+    open val defaultValueNumeric by nullable(Number::class)
     open val defaultValueSequenceNext by nullable(String::class)
     open val schemaName by nullable(String::class)
     open val tableName by nullable(String::class)
@@ -128,6 +138,7 @@ open class LkAddNotNullConstraint : LbDslNode<LkAddNotNullConstraint>(LkAddNotNu
     open val defaultNullValue by nullable(String::class)
     open val schemaName by nullable(String::class)
     open val tableName by nullable(String::class)
+    open val constraintName by nullable(String::class)
 }
 
 open class LkAddPrimaryKey : LbDslNode<LkAddPrimaryKey>(LkAddPrimaryKey::class) {
@@ -137,6 +148,10 @@ open class LkAddPrimaryKey : LbDslNode<LkAddPrimaryKey>(LkAddPrimaryKey::class) 
     open val schemaName by nullable(String::class)
     open val tableName by nullable(String::class)
     open val tablespace by nullable(String::class)
+    open val clustered by nullable(Boolean::class)
+    open val forIndexName by nullable(String::class)
+    open val forIndexSchemaName by nullable(String::class)
+    open val forIndexCatalogName by nullable(String::class)
 }
 
 open class LkAddUniqueConstraint : LbDslNode<LkAddUniqueConstraint>(LkAddUniqueConstraint::class) {
@@ -149,6 +164,9 @@ open class LkAddUniqueConstraint : LbDslNode<LkAddUniqueConstraint>(LkAddUniqueC
     open val schemaName by nullable(String::class)
     open val tableName by nullable(String::class)
     open val tablespace by nullable(String::class)
+    open val forIndexName by nullable(String::class)
+    open val forIndexSchemaName by nullable(String::class)
+    open val forIndexCatalogName by nullable(String::class)
 }
 
 open class LkCreateIndex : LbDslNode<LkCreateIndex>(LkCreateIndex::class) {
@@ -172,6 +190,7 @@ open class LkCreateProcedure : LbDslNode<LkCreateProcedure>(LkCreateProcedure::c
     open val procedureText by nullable(String::class)
     open val relativeToChangelogFile by nullable(Boolean::class)
     open val schemaName by nullable(String::class)
+    open val replaceIfExists by nullable(Boolean::class)
 }
 
 open class LkCreateSequence : LbDslNode<LkCreateSequence>(LkCreateSequence::class) {
@@ -184,6 +203,7 @@ open class LkCreateSequence : LbDslNode<LkCreateSequence>(LkCreateSequence::clas
     open val schemaName by nullable(String::class)
     open val sequenceName by nullable(String::class)
     open val startValue by nullable(BigInteger::class)
+    open val cacheSize by nullable(BigInteger::class)
 }
 
 open class LkCreateTable : LbDslNode<LkCreateTable>(LkCreateTable::class) {
@@ -202,4 +222,5 @@ open class LkCreateView : LbDslNode<LkCreateView>(LkCreateView::class) {
     open val schemaName by nullable(String::class)
     open val selectQuery by nullable(String::class)
     open val viewName by nullable(String::class)
+    open val fullDefinition by nullable(Boolean::class)
 }

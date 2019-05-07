@@ -2,7 +2,7 @@ package com.tsarev.liquikotlin.noattributes
 
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
-import com.tsarev.liquikotlin.util.sql
+import com.tsarev.liquikotlin.util.testSql
 import liquibase.change.AbstractSQLChange
 import liquibase.change.ColumnConfig
 import liquibase.change.core.*
@@ -147,10 +147,10 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun sqlTest() = testEvaluation(
-        LkSql().sql(sql),
+        LkSql().sql(testSql),
         RawSQLChange::class,
         *abstractSql,
-        RawSQLChange::getSql to sql,
+        RawSQLChange::getSql to testSql,
         RawSQLChange::getComment
     )
 

@@ -16,33 +16,33 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
 
     companion object {
         val abstractSql = arrayOf(
-            AbstractSQLChange::isStripComments to stripComments,
-            AbstractSQLChange::isSplitStatements to splitStatements,
-            AbstractSQLChange::getEndDelimiter to endDelimiter,
-            AbstractSQLChange::getDbms to dbms
+            AbstractSQLChange::isStripComments to testStripComments,
+            AbstractSQLChange::isSplitStatements to testSplitStatements,
+            AbstractSQLChange::getEndDelimiter to testEndDelimiter,
+            AbstractSQLChange::getDbms to testDbms
         )
     }
 
     @Test
     fun alterSequenceTest() = testEvaluation(
         LkAlterSequence()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .sequenceName(sequenceName)
-            .incrementBy(incrementBy)
-            .maxValue(maxValue)
-            .minValue(minValue)
-            .ordered(ordered),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .sequenceName(testSequenceName)
+            .incrementBy(testIncrementBy)
+            .maxValue(testMaxValue)
+            .minValue(testMinValue)
+            .ordered(testOrdered),
 //            .cacheSize(cacheSize) TODO Implement missed attribute
 //            .willCycle(willCycle), TODO Implement missed attribute
         AlterSequenceChange::class,
-        AlterSequenceChange::getCatalogName to catalogName,
-        AlterSequenceChange::getSchemaName to schemaName,
-        AlterSequenceChange::getSequenceName to sequenceName,
-        AlterSequenceChange::getIncrementBy to incrementBy,
-        AlterSequenceChange::getMaxValue to maxValue,
-        AlterSequenceChange::getMinValue to minValue,
-        AlterSequenceChange::isOrdered to ordered
+        AlterSequenceChange::getCatalogName to testCatalogName,
+        AlterSequenceChange::getSchemaName to testSchemaName,
+        AlterSequenceChange::getSequenceName to testSequenceName,
+        AlterSequenceChange::getIncrementBy to testIncrementBy,
+        AlterSequenceChange::getMaxValue to testMaxValue,
+        AlterSequenceChange::getMinValue to testMinValue,
+        AlterSequenceChange::isOrdered to testOrdered
 //        AlterSequenceChange::getCacheSize, TODO Implement missed attribute
 //        AlterSequenceChange::getWillCycle TODO Implement missed attribute
     )
@@ -51,10 +51,10 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
     @Test
     fun executeCommandTest() = testEvaluation(
         LkExecuteCommand()
-            .executable(executable),
+            .executable(testExecutable),
 //            .os(os), TODO Implement missed attribute
         ExecuteShellCommandChange::class,
-        ExecuteShellCommandChange::getExecutable to executable,
+        ExecuteShellCommandChange::getExecutable to testExecutable,
 //        ExecuteShellCommandChange::getOs, TODO Implement missed attribute
         ExecuteShellCommandChange::getArgs to emptyList<String>()
     )
@@ -62,34 +62,34 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
     @Test
     fun insertTest() = testEvaluation(
         LkInsert()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .dbms(dbms),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .dbms(testDbms),
         InsertDataChange::class,
-        InsertDataChange::getCatalogName to catalogName,
-        InsertDataChange::getSchemaName to schemaName,
-        InsertDataChange::getTableName to tableName,
+        InsertDataChange::getCatalogName to testCatalogName,
+        InsertDataChange::getSchemaName to testSchemaName,
+        InsertDataChange::getTableName to testTableName,
         InsertDataChange::getColumns to emptyList<ColumnConfig>(),
-        InsertDataChange::getDbms to dbms
+        InsertDataChange::getDbms to testDbms
     )
 
     @Test
     fun loadDataTest() = testEvaluation(
         LkLoadData()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .file(file)
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .file(testFile)
 //            .relativeToChangelogFile(relativeToChangelogFile) TODO Implement missed attribute
-            .encoding(encoding),
+            .encoding(testEncoding),
         LoadDataChange::class,
-        LoadDataChange::getCatalogName to catalogName,
-        LoadDataChange::getSchemaName to schemaName,
-        LoadDataChange::getTableName to tableName,
-        LoadDataChange::getFile to file,
+        LoadDataChange::getCatalogName to testCatalogName,
+        LoadDataChange::getSchemaName to testSchemaName,
+        LoadDataChange::getTableName to testTableName,
+        LoadDataChange::getFile to testFile,
 //        LoadDataChange::isRelativeToChangelogFile, TODO Implement missed attribute
-        LoadDataChange::getEncoding to encoding,
+        LoadDataChange::getEncoding to testEncoding,
         LoadDataChange::getSeparator to liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR + "",
         LoadDataChange::getQuotchar to liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER + "",
         LoadDataChange::getColumns to emptyList<LoadDataColumnConfig>()
@@ -98,10 +98,10 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
     @Test
     fun loadUpdateDataTest() = testEvaluation(
         LkUpdate()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .where(where),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .where(testWhere),
         UpdateDataChange::class,
         *BundledDropChangesTest.abstractModifyFields,
         UpdateDataChange::getColumns to emptyList<ColumnConfig>()
@@ -110,142 +110,142 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
     @Test
     fun mergeColumnsTest() = testEvaluation(
         LkMergeColumns()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .column1Name(column1Name)
-            .joinString(joinString)
-            .column2Name(column2Name)
-            .finalColumnName(finalColumnName)
-            .finalColumnType(finalColumnType),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .column1Name(testColumn1Name)
+            .joinString(testJoinString)
+            .column2Name(testColumn2Name)
+            .finalColumnName(testFinalColumnName)
+            .finalColumnType(testFinalColumnType),
         MergeColumnChange::class,
-        MergeColumnChange::getCatalogName to catalogName,
-        MergeColumnChange::getSchemaName to schemaName,
-        MergeColumnChange::getTableName to tableName,
-        MergeColumnChange::getColumn1Name to column1Name,
-        MergeColumnChange::getJoinString to joinString,
-        MergeColumnChange::getColumn2Name to column2Name,
-        MergeColumnChange::getFinalColumnName to finalColumnName,
-        MergeColumnChange::getFinalColumnType to finalColumnType
+        MergeColumnChange::getCatalogName to testCatalogName,
+        MergeColumnChange::getSchemaName to testSchemaName,
+        MergeColumnChange::getTableName to testTableName,
+        MergeColumnChange::getColumn1Name to testColumn1Name,
+        MergeColumnChange::getJoinString to testJoinString,
+        MergeColumnChange::getColumn2Name to testColumn2Name,
+        MergeColumnChange::getFinalColumnName to testFinalColumnName,
+        MergeColumnChange::getFinalColumnType to testFinalColumnType
     )
 
     @Test
     fun modifyDataTypeTest() = testEvaluation(
         LkModifyDataType()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .columnName(columnName)
-            .newDataType(newDataType),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .columnName(testColumnName)
+            .newDataType(testNewDataType),
         ModifyDataTypeChange::class,
-        ModifyDataTypeChange::getCatalogName to catalogName,
-        ModifyDataTypeChange::getSchemaName to schemaName,
-        ModifyDataTypeChange::getTableName to tableName,
-        ModifyDataTypeChange::getColumnName to columnName,
-        ModifyDataTypeChange::getNewDataType to newDataType
+        ModifyDataTypeChange::getCatalogName to testCatalogName,
+        ModifyDataTypeChange::getSchemaName to testSchemaName,
+        ModifyDataTypeChange::getTableName to testTableName,
+        ModifyDataTypeChange::getColumnName to testColumnName,
+        ModifyDataTypeChange::getNewDataType to testNewDataType
     )
 
     @Test
     fun renameColumnTest() = testEvaluation(
         LkRenameColumn()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .oldColumnName(oldColumnName)
-            .newColumnName(newColumnName)
-            .columnDataType(columnType)
-            .remarks(remarks),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .oldColumnName(testOldColumnName)
+            .newColumnName(testNewColumnName)
+            .columnDataType(testColumnType)
+            .remarks(testRemarks),
         RenameColumnChange::class,
-        RenameColumnChange::getCatalogName to catalogName,
-        RenameColumnChange::getSchemaName to schemaName,
-        RenameColumnChange::getTableName to tableName,
-        RenameColumnChange::getOldColumnName to oldColumnName,
-        RenameColumnChange::getNewColumnName to newColumnName,
-        RenameColumnChange::getColumnDataType to columnType,
-        RenameColumnChange::getRemarks to remarks
+        RenameColumnChange::getCatalogName to testCatalogName,
+        RenameColumnChange::getSchemaName to testSchemaName,
+        RenameColumnChange::getTableName to testTableName,
+        RenameColumnChange::getOldColumnName to testOldColumnName,
+        RenameColumnChange::getNewColumnName to testNewColumnName,
+        RenameColumnChange::getColumnDataType to testColumnType,
+        RenameColumnChange::getRemarks to testRemarks
     )
 
     @Test
     fun renameTableTest() = testEvaluation(
         LkRenameTable()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .oldTableName(oldTableName)
-            .newTableName(newTableName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .oldTableName(testOldTableName)
+            .newTableName(testNewTableName),
         RenameTableChange::class,
-        RenameTableChange::getCatalogName to catalogName,
-        RenameTableChange::getSchemaName to schemaName,
-        RenameTableChange::getOldTableName to oldTableName,
-        RenameTableChange::getNewTableName to newTableName
+        RenameTableChange::getCatalogName to testCatalogName,
+        RenameTableChange::getSchemaName to testSchemaName,
+        RenameTableChange::getOldTableName to testOldTableName,
+        RenameTableChange::getNewTableName to testNewTableName
     )
 
     @Test
     fun renameViewTest() = testEvaluation(
         LkRenameView()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .oldViewName(oldViewName)
-            .newViewName(newViewName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .oldViewName(testOldViewName)
+            .newViewName(testNewViewName),
         RenameViewChange::class,
-        RenameViewChange::getCatalogName to catalogName,
-        RenameViewChange::getSchemaName to schemaName,
-        RenameViewChange::getOldViewName to oldViewName,
-        RenameViewChange::getNewViewName to newViewName
+        RenameViewChange::getCatalogName to testCatalogName,
+        RenameViewChange::getSchemaName to testSchemaName,
+        RenameViewChange::getOldViewName to testOldViewName,
+        RenameViewChange::getNewViewName to testNewViewName
     )
 
     @Test
     fun sqlTest() = testEvaluation(
         LkSql()
-            .sql(sql)
-            .comment(comment)
-            .stripComments(stripComments)
-            .splitStatements(splitStatements)
-            .endDelimiter(endDelimiter)
-            .dbms(dbms),
+            .sql(testSql)
+            .comment(testComment)
+            .stripComments(testStripComments)
+            .splitStatements(testSplitStatements)
+            .endDelimiter(testEndDelimiter)
+            .dbms(testDbms),
         RawSQLChange::class,
         *abstractSql,
-        RawSQLChange::getSql to sql,
-        RawSQLChange::getComment to comment
+        RawSQLChange::getSql to testSql,
+        RawSQLChange::getComment to testComment
     )
 
     @Test
     fun sqlFileTest() = testEvaluation(
         LkSqlFile()
-            .stripComments(stripComments)
-            .splitStatements(splitStatements)
-            .endDelimiter(endDelimiter)
-            .dbms(dbms)
-            .encoding(encoding)
-            .path(path)
-            .relativeToChangelogFile(relativeToChangelogFile),
+            .stripComments(testStripComments)
+            .splitStatements(testSplitStatements)
+            .endDelimiter(testEndDelimiter)
+            .dbms(testDbms)
+            .encoding(testEncoding)
+            .path(testPath)
+            .relativeToChangelogFile(testRelativeToChangelogFile),
         SQLFileChange::class,
         *abstractSql,
-        SQLFileChange::getEncoding to encoding,
-        SQLFileChange::getPath to path,
-        SQLFileChange::isRelativeToChangelogFile to relativeToChangelogFile
+        SQLFileChange::getEncoding to testEncoding,
+        SQLFileChange::getPath to testPath,
+        SQLFileChange::isRelativeToChangelogFile to testRelativeToChangelogFile
     )
 
     @Test
     fun stopTest() = testEvaluation(
-        LkStop().message(message),
+        LkStop().message(testMessage),
         StopChange::class,
-        StopChange::getMessage to message
+        StopChange::getMessage to testMessage
     )
 
     @Test
     fun tagDatabaseTest() = testEvaluation(
-        LkTagDatabase().tag(tag),
+        LkTagDatabase().tag(testTag),
         TagDatabaseChange::class,
-        TagDatabaseChange::getTag to tag
+        TagDatabaseChange::getTag to testTag
     )
 
     @Test
     fun updateTest() = testEvaluation(
         LkUpdate()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .where(where),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .where(testWhere),
 //            .abstractModifyFields(), TODO Implement missed attribute
         UpdateDataChange::class,
 //        *BundledDropChangesTest.abstractModifyFields, TODO Implement missed attribute

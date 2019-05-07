@@ -15,10 +15,10 @@ open class BundledDropChangesTest : BaseLiquikotlinUnitTest() {
 
     companion object {
         val abstractModifyFields = arrayOf(
-            AbstractModifyDataChange::getCatalogName to catalogName,
-            AbstractModifyDataChange::getSchemaName to schemaName,
-            AbstractModifyDataChange::getTableName to tableName,
-            AbstractModifyDataChange::getWhere to where,
+            AbstractModifyDataChange::getCatalogName to testCatalogName,
+            AbstractModifyDataChange::getSchemaName to testSchemaName,
+            AbstractModifyDataChange::getTableName to testTableName,
+            AbstractModifyDataChange::getWhere to testWhere,
             AbstractModifyDataChange::getWhereParams to emptyList<ColumnConfig>()
         )
     }
@@ -26,10 +26,10 @@ open class BundledDropChangesTest : BaseLiquikotlinUnitTest() {
     @Test
     open fun deleteTest() = testEvaluation(
         LkDelete()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .where(where),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .where(testWhere),
         DeleteDataChange::class,
         *abstractModifyFields
     )
@@ -37,166 +37,166 @@ open class BundledDropChangesTest : BaseLiquikotlinUnitTest() {
     @Test
     open fun dropAllForeignKeyConstraintsTest() = testEvaluation(
         LkDropAllForeignKeyConstraints()
-            .baseTableCatalogName(baseTableSchemaName)
-            .baseTableSchemaName(baseTableSchemaName)
-            .baseTableName(baseTableSchemaName),
+            .baseTableCatalogName(testBaseTableSchemaName)
+            .baseTableSchemaName(testBaseTableSchemaName)
+            .baseTableName(testBaseTableSchemaName),
         DropAllForeignKeyConstraintsChange::class,
-        DropAllForeignKeyConstraintsChange::getBaseTableCatalogName to baseTableSchemaName,
-        DropAllForeignKeyConstraintsChange::getBaseTableSchemaName to baseTableSchemaName,
-        DropAllForeignKeyConstraintsChange::getBaseTableName to baseTableSchemaName
+        DropAllForeignKeyConstraintsChange::getBaseTableCatalogName to testBaseTableSchemaName,
+        DropAllForeignKeyConstraintsChange::getBaseTableSchemaName to testBaseTableSchemaName,
+        DropAllForeignKeyConstraintsChange::getBaseTableName to testBaseTableSchemaName
     )
 
     @Test
     open fun dropColumnTest() = testEvaluation(
         LkDropColumn()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .columnName(columnName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .columnName(testColumnName),
         DropColumnChange::class,
-        DropColumnChange::getCatalogName to catalogName,
-        DropColumnChange::getSchemaName to schemaName,
-        DropColumnChange::getTableName to tableName,
-        DropColumnChange::getColumnName to columnName,
+        DropColumnChange::getCatalogName to testCatalogName,
+        DropColumnChange::getSchemaName to testSchemaName,
+        DropColumnChange::getTableName to testTableName,
+        DropColumnChange::getColumnName to testColumnName,
         DropColumnChange::getColumns to emptyList<ColumnConfig>()
     )
 
     @Test
     open fun dropDefaultValueTest() = testEvaluation(
         LkDropDefaultValue()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .columnName(columnName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .columnName(testColumnName),
         DropDefaultValueChange::class,
-        DropDefaultValueChange::getCatalogName to catalogName,
-        DropDefaultValueChange::getSchemaName to schemaName,
-        DropDefaultValueChange::getTableName to tableName,
-        DropDefaultValueChange::getColumnName to columnName,
+        DropDefaultValueChange::getCatalogName to testCatalogName,
+        DropDefaultValueChange::getSchemaName to testSchemaName,
+        DropDefaultValueChange::getTableName to testTableName,
+        DropDefaultValueChange::getColumnName to testColumnName,
         DropDefaultValueChange::getColumnDataType
     )
 
     @Test
     open fun dropForeignKeyConstraintTest() = testEvaluation(
         LkDropForeignKeyConstraint()
-            .baseTableCatalogName(baseTableCatalogName)
-            .baseTableSchemaName(baseTableSchemaName)
-            .baseTableName(baseTableName)
-            .constraintName(constraintName),
+            .baseTableCatalogName(testBaseTableCatalogName)
+            .baseTableSchemaName(testBaseTableSchemaName)
+            .baseTableName(testBaseTableName)
+            .constraintName(testConstraintName),
         DropForeignKeyConstraintChange::class,
-        DropForeignKeyConstraintChange::getBaseTableCatalogName to baseTableCatalogName,
-        DropForeignKeyConstraintChange::getBaseTableSchemaName to baseTableSchemaName,
-        DropForeignKeyConstraintChange::getBaseTableName to baseTableName,
-        DropForeignKeyConstraintChange::getConstraintName to constraintName
+        DropForeignKeyConstraintChange::getBaseTableCatalogName to testBaseTableCatalogName,
+        DropForeignKeyConstraintChange::getBaseTableSchemaName to testBaseTableSchemaName,
+        DropForeignKeyConstraintChange::getBaseTableName to testBaseTableName,
+        DropForeignKeyConstraintChange::getConstraintName to testConstraintName
     )
 
     @Test
     open fun dropIndexTest() = testEvaluation(
         LkDropIndex()
-            .schemaName(schemaName)
-            .indexName(indexName)
-            .tableName(tableName)
+            .schemaName(testSchemaName)
+            .indexName(testIndexName)
+            .tableName(testTableName)
 //            .associatedWith(associatedWith) TODO Implement missed attribute
-            .catalogName(catalogName),
+            .catalogName(testCatalogName),
         DropIndexChange::class,
-        DropIndexChange::getSchemaName to schemaName,
-        DropIndexChange::getIndexName to indexName,
-        DropIndexChange::getTableName to tableName,
+        DropIndexChange::getSchemaName to testSchemaName,
+        DropIndexChange::getIndexName to testIndexName,
+        DropIndexChange::getTableName to testTableName,
 //        DropIndexChange::getAssociatedWith, TODO Implement missed attribute
-        DropIndexChange::getCatalogName to catalogName
+        DropIndexChange::getCatalogName to testCatalogName
     )
 
     @Test
     open fun dropNotNullConstraintTest() = testEvaluation(
         LkDropNotNullConstraint()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .columnName(columnName)
-            .columnDataType(columnType),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .columnName(testColumnName)
+            .columnDataType(testColumnType),
         DropNotNullConstraintChange::class,
-        DropNotNullConstraintChange::getCatalogName to catalogName,
-        DropNotNullConstraintChange::getSchemaName to schemaName,
-        DropNotNullConstraintChange::getTableName to tableName,
-        DropNotNullConstraintChange::getColumnName to columnName,
-        DropNotNullConstraintChange::getColumnDataType to columnType
+        DropNotNullConstraintChange::getCatalogName to testCatalogName,
+        DropNotNullConstraintChange::getSchemaName to testSchemaName,
+        DropNotNullConstraintChange::getTableName to testTableName,
+        DropNotNullConstraintChange::getColumnName to testColumnName,
+        DropNotNullConstraintChange::getColumnDataType to testColumnType
     )
 
     @Test
     open fun dropPrimaryKeyTest() = testEvaluation(
         LkDropPrimaryKey()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .constraintName(constraintName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .constraintName(testConstraintName),
         DropPrimaryKeyChange::class,
-        DropPrimaryKeyChange::getCatalogName to catalogName,
-        DropPrimaryKeyChange::getSchemaName to schemaName,
-        DropPrimaryKeyChange::getTableName to tableName,
-        DropPrimaryKeyChange::getConstraintName to constraintName
+        DropPrimaryKeyChange::getCatalogName to testCatalogName,
+        DropPrimaryKeyChange::getSchemaName to testSchemaName,
+        DropPrimaryKeyChange::getTableName to testTableName,
+        DropPrimaryKeyChange::getConstraintName to testConstraintName
     )
 
     @Test
     open fun dropProcedureTest() = testEvaluation(
         LkDropProcedure()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .procedureName(procedureName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .procedureName(testProcedureName),
         DropProcedureChange::class,
-        DropProcedureChange::getCatalogName to catalogName,
-        DropProcedureChange::getSchemaName to schemaName,
-        DropProcedureChange::getProcedureName to procedureName
+        DropProcedureChange::getCatalogName to testCatalogName,
+        DropProcedureChange::getSchemaName to testSchemaName,
+        DropProcedureChange::getProcedureName to testProcedureName
     )
 
     @Test
     open fun dropSequenceTest() = testEvaluation(
         LkDropSequence()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .sequenceName(sequenceName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .sequenceName(testSequenceName),
         DropSequenceChange::class,
-        DropSequenceChange::getCatalogName to catalogName,
-        DropSequenceChange::getSchemaName to schemaName,
-        DropSequenceChange::getSequenceName to sequenceName
+        DropSequenceChange::getCatalogName to testCatalogName,
+        DropSequenceChange::getSchemaName to testSchemaName,
+        DropSequenceChange::getSequenceName to testSequenceName
     )
 
     @Test
     open fun dropTableTest() = testEvaluation(
         LkDropTable()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .cascadeConstraints(cascadeConstraints),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .cascadeConstraints(testCascadeConstraints),
         DropTableChange::class,
-        DropTableChange::getCatalogName to catalogName,
-        DropTableChange::getSchemaName to schemaName,
-        DropTableChange::getTableName to tableName,
-        DropTableChange::isCascadeConstraints to cascadeConstraints
+        DropTableChange::getCatalogName to testCatalogName,
+        DropTableChange::getSchemaName to testSchemaName,
+        DropTableChange::getTableName to testTableName,
+        DropTableChange::isCascadeConstraints to testCascadeConstraints
     )
 
     @Test
     open fun dropUniqueConstraintTest() = testEvaluation(
         LkDropUniqueConstraint()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .constraintName(constraintName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .constraintName(testConstraintName),
         DropUniqueConstraintChange::class,
-        DropUniqueConstraintChange::getCatalogName to catalogName,
-        DropUniqueConstraintChange::getSchemaName to schemaName,
-        DropUniqueConstraintChange::getTableName to tableName,
-        DropUniqueConstraintChange::getConstraintName to constraintName
+        DropUniqueConstraintChange::getCatalogName to testCatalogName,
+        DropUniqueConstraintChange::getSchemaName to testSchemaName,
+        DropUniqueConstraintChange::getTableName to testTableName,
+        DropUniqueConstraintChange::getConstraintName to testConstraintName
     )
 
     @Test
     open fun dropViewTest() = testEvaluation(
         LkDropView()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .viewName(viewName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .viewName(testViewName),
         DropViewChange::class,
-        DropViewChange::getCatalogName to catalogName,
-        DropViewChange::getSchemaName to schemaName,
-        DropViewChange::getViewName to viewName
+        DropViewChange::getCatalogName to testCatalogName,
+        DropViewChange::getSchemaName to testSchemaName,
+        DropViewChange::getViewName to testViewName
     )
 }

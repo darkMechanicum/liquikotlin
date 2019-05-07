@@ -10,6 +10,7 @@ import liquibase.change.ColumnConfig
 import liquibase.change.ConstraintsConfig
 import liquibase.change.core.*
 import liquibase.statement.DatabaseFunction
+import liquibase.statement.SequenceCurrentValueFunction
 import liquibase.statement.SequenceNextValueFunction
 
 open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, ColumnT : ColumnConfig, ParentT : Any>(
@@ -40,7 +41,19 @@ open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, Column
         config.setDefaultValueComputed(DatabaseFunction(value))
     },
     LkBaseColumnConfig<NodeT>::autoIncrement - ColumnConfig::setAutoIncrement,
-    LkBaseColumnConfig<NodeT>::remarks - ColumnConfig::setRemarks
+    LkBaseColumnConfig<NodeT>::remarks - ColumnConfig::setRemarks,
+    LkBaseColumnConfig<NodeT>::valueSequenceNext - { config, seqName ->
+        config.setValueSequenceNext(SequenceNextValueFunction(seqName))
+    },
+    LkBaseColumnConfig<NodeT>::valueSequenceCurrent - { config, seqName ->
+        config.setValueSequenceCurrent(SequenceCurrentValueFunction(seqName))
+    },
+    LkBaseColumnConfig<NodeT>::defaultValueSequenceNext - { config, seqName ->
+        config.setDefaultValueSequenceNext(SequenceNextValueFunction(seqName))
+    },
+    LkBaseColumnConfig<NodeT>::startWith - ColumnConfig::setStartWith,
+    LkBaseColumnConfig<NodeT>::incrementBy - ColumnConfig::setIncrementBy,
+    LkBaseColumnConfig<NodeT>::descending - ColumnConfig::setDescending
 ) { init {
     propertyMappings.addAll(childMappings)
 }
@@ -114,7 +127,11 @@ open class ConstraintsIntegration : LiquibaseIntegrator<LkConstraints, Constrain
     LkConstraints::foreignKeyName - ConstraintsConfig::setForeignKeyName,
     LkConstraints::deleteCascade - ConstraintsConfig::setDeleteCascade,
     LkConstraints::deferrable - ConstraintsConfig::setDeferrable,
-    LkConstraints::initiallyDeferred - ConstraintsConfig::setInitiallyDeferred
+    LkConstraints::initiallyDeferred - ConstraintsConfig::setInitiallyDeferred,
+    LkConstraints::primaryKeyTablespace - ConstraintsConfig::setPrimaryKeyTablespace,
+    LkConstraints::referencedTableName - ConstraintsConfig::setReferencedTableName,
+    LkConstraints::referencedColumnNames - ConstraintsConfig::setReferencedColumnNames,
+    LkConstraints::checkConstraint - ConstraintsConfig::setCheckConstraint
 )
 
 open class AddDefaultValueIntegration : ChangeIntegration<LkAddDefaultValue, AddDefaultValueChange>(
@@ -127,8 +144,8 @@ open class AddDefaultValueIntegration : ChangeIntegration<LkAddDefaultValue, Add
     LkAddDefaultValue::defaultValueComputed - { change: AddDefaultValueChange, text ->
         change.setDefaultValueComputed(DatabaseFunction(text))
     },
-    LkAddDefaultValue::defaultValueDate - AddDefaultValueChange::setDefaultValueDate,
-    LkAddDefaultValue::defaultValueNumeric - AddDefaultValueChange::setDefaultValueNumeric,
+    LkAddDefaultValue::defaultValueDate - { change, value -> change.setDefaultValueDate("$value") },
+    LkAddDefaultValue::defaultValueNumeric - { change, value -> change.setDefaultValueNumeric("$value") },
     LkAddDefaultValue::defaultValueSequenceNext - { change: AddDefaultValueChange, text ->
         change.setDefaultValueSequenceNext(SequenceNextValueFunction(text))
     },
@@ -176,7 +193,8 @@ open class AddNotNullConstraintIntegration : ChangeIntegration<LkAddNotNullConst
     LkAddNotNullConstraint::columnName - AddNotNullConstraintChange::setColumnName,
     LkAddNotNullConstraint::defaultNullValue - AddNotNullConstraintChange::setDefaultNullValue,
     LkAddNotNullConstraint::schemaName - AddNotNullConstraintChange::setSchemaName,
-    LkAddNotNullConstraint::tableName - AddNotNullConstraintChange::setTableName
+    LkAddNotNullConstraint::tableName - AddNotNullConstraintChange::setTableName,
+    LkAddNotNullConstraint::constraintName - AddNotNullConstraintChange::setConstraintName
 )
 
 open class AddPrimaryKeyIntegration : ChangeIntegration<LkAddPrimaryKey, AddPrimaryKeyChange>(
@@ -186,7 +204,11 @@ open class AddPrimaryKeyIntegration : ChangeIntegration<LkAddPrimaryKey, AddPrim
     LkAddPrimaryKey::constraintName - AddPrimaryKeyChange::setConstraintName,
     LkAddPrimaryKey::schemaName - AddPrimaryKeyChange::setSchemaName,
     LkAddPrimaryKey::tableName - AddPrimaryKeyChange::setTableName,
-    LkAddPrimaryKey::tablespace - AddPrimaryKeyChange::setTablespace
+    LkAddPrimaryKey::tablespace - AddPrimaryKeyChange::setTablespace,
+    LkAddPrimaryKey::clustered - AddPrimaryKeyChange::setClustered,
+    LkAddPrimaryKey::forIndexName - AddPrimaryKeyChange::setForIndexName,
+    LkAddPrimaryKey::forIndexSchemaName - AddPrimaryKeyChange::setForIndexSchemaName,
+    LkAddPrimaryKey::forIndexCatalogName - AddPrimaryKeyChange::setForIndexCatalogName
 )
 
 open class AddUniqueConstraintIntegration : ChangeIntegration<LkAddUniqueConstraint, AddUniqueConstraintChange>(
@@ -199,7 +221,10 @@ open class AddUniqueConstraintIntegration : ChangeIntegration<LkAddUniqueConstra
     LkAddUniqueConstraint::initiallyDeferred - AddUniqueConstraintChange::setInitiallyDeferred,
     LkAddUniqueConstraint::schemaName - AddUniqueConstraintChange::setSchemaName,
     LkAddUniqueConstraint::tableName - AddUniqueConstraintChange::setTableName,
-    LkAddUniqueConstraint::tablespace - AddUniqueConstraintChange::setTablespace
+    LkAddUniqueConstraint::tablespace - AddUniqueConstraintChange::setTablespace,
+    LkAddUniqueConstraint::forIndexName - AddUniqueConstraintChange::setForIndexName,
+    LkAddUniqueConstraint::forIndexSchemaName - AddUniqueConstraintChange::setForIndexSchemaName,
+    LkAddUniqueConstraint::forIndexCatalogName - AddUniqueConstraintChange::setForIndexCatalogName
 )
 
 open class CreateIndexIntegration : ChangeIntegration<LkCreateIndex, CreateIndexChange>(
@@ -222,7 +247,8 @@ open class CreateProcedureIntegration : ChangeIntegration<LkCreateProcedure, Cre
     LkCreateProcedure::procedureName - CreateProcedureChange::setProcedureName,
     LkCreateProcedure::procedureText - CreateProcedureChange::setProcedureText,
     LkCreateProcedure::relativeToChangelogFile - CreateProcedureChange::setRelativeToChangelogFile,
-    LkCreateProcedure::schemaName - CreateProcedureChange::setSchemaName
+    LkCreateProcedure::schemaName - CreateProcedureChange::setSchemaName,
+    LkCreateProcedure::replaceIfExists - CreateProcedureChange::setReplaceIfExists
 )
 
 open class CreateSequenceIntegration : ChangeIntegration<LkCreateSequence, CreateSequenceChange>(
@@ -235,7 +261,8 @@ open class CreateSequenceIntegration : ChangeIntegration<LkCreateSequence, Creat
     LkCreateSequence::ordered - CreateSequenceChange::setOrdered,
     LkCreateSequence::schemaName - CreateSequenceChange::setSchemaName,
     LkCreateSequence::sequenceName - CreateSequenceChange::setSequenceName,
-    LkCreateSequence::startValue - CreateSequenceChange::setStartValue
+    LkCreateSequence::startValue - CreateSequenceChange::setStartValue,
+    LkCreateSequence::cacheSize - CreateSequenceChange::setCacheSize
 )
 
 open class CreateTableIntegration : ChangeIntegration<LkCreateTable, CreateTableChange>(
@@ -253,5 +280,6 @@ open class CreateViewIntegration : ChangeIntegration<LkCreateView, CreateViewCha
     LkCreateView::replaceIfExists - CreateViewChange::setReplaceIfExists,
     LkCreateView::schemaName - CreateViewChange::setSchemaName,
     LkCreateView::selectQuery - CreateViewChange::setSelectQuery,
-    LkCreateView::viewName - CreateViewChange::setViewName
+    LkCreateView::viewName - CreateViewChange::setViewName,
+    LkCreateView::fullDefinition - CreateViewChange::setFullDefinition
 )

@@ -2,7 +2,7 @@ package com.tsarev.liquikotlin.noattributes
 
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
-import com.tsarev.liquikotlin.util.primaryKeyName
+import com.tsarev.liquikotlin.util.testPrimaryKeyName
 import liquibase.precondition.CustomPreconditionWrapper
 import liquibase.precondition.core.*
 import org.junit.Ignore
@@ -109,11 +109,11 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun primaryKeyExistsPreconditionTest() = testEvaluation(
-        LkPrimaryKeyExistsPrecondition().primaryKeyName(primaryKeyName),
+        LkPrimaryKeyExistsPrecondition().primaryKeyName(testPrimaryKeyName),
         PrimaryKeyExistsPrecondition::class,
         PrimaryKeyExistsPrecondition::getCatalogName,
         PrimaryKeyExistsPrecondition::getSchemaName,
-        PrimaryKeyExistsPrecondition::getPrimaryKeyName to primaryKeyName,
+        PrimaryKeyExistsPrecondition::getPrimaryKeyName to testPrimaryKeyName,
         PrimaryKeyExistsPrecondition::getTableName
     )
 

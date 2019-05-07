@@ -2,8 +2,8 @@ package com.tsarev.liquikotlin.noattributes
 
 import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.*
-import com.tsarev.liquikotlin.util.columnName
-import com.tsarev.liquikotlin.util.tableName
+import com.tsarev.liquikotlin.util.testColumnName
+import com.tsarev.liquikotlin.util.testTableName
 import liquibase.change.AddColumnConfig
 import liquibase.change.ColumnConfig
 import liquibase.change.ConstraintsConfig
@@ -74,12 +74,14 @@ open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun addAutoIncrementTest() = testEvaluation(
-        LkAddAutoIncrement().columnName(columnName).tableName(tableName),
+        LkAddAutoIncrement()
+            .columnName(testColumnName)
+            .tableName(testTableName),
         AddAutoIncrementChange::class,
         AddAutoIncrementChange::getCatalogName,
         AddAutoIncrementChange::getSchemaName,
-        AddAutoIncrementChange::getTableName to tableName,
-        AddAutoIncrementChange::getColumnName to columnName,
+        AddAutoIncrementChange::getTableName to testTableName,
+        AddAutoIncrementChange::getColumnName to testColumnName,
         AddAutoIncrementChange::getColumnDataType,
         AddAutoIncrementChange::getStartWith,
         AddAutoIncrementChange::getIncrementBy
@@ -87,11 +89,11 @@ open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun addColumnTest() = testEvaluation(
-        LkAddColumn().tableName(tableName),
+        LkAddColumn().tableName(testTableName),
         AddColumnChange::class,
         AddColumnChange::getCatalogName,
         AddColumnChange::getSchemaName,
-        AddColumnChange::getTableName to tableName,
+        AddColumnChange::getTableName to testTableName,
         AddColumnChange::getColumns to emptyList<AddColumnConfig>()
     )
 

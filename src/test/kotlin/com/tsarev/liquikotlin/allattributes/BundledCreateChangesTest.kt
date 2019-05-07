@@ -8,6 +8,8 @@ import liquibase.change.ColumnConfig
 import liquibase.change.ConstraintsConfig
 import liquibase.change.core.*
 import liquibase.statement.DatabaseFunction
+import liquibase.statement.SequenceCurrentValueFunction
+import liquibase.statement.SequenceNextValueFunction
 import org.junit.Test
 
 /**
@@ -17,77 +19,81 @@ import org.junit.Test
 open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
 
     private val columnConfigFields = arrayOf(
-        ColumnConfig::getName to columnName,
-        ColumnConfig::getComputed to columnComputed,
-        ColumnConfig::getType to columnType,
-        ColumnConfig::getValue to columnValue,
-        ColumnConfig::getValueNumeric to columnValueNumeric,
-        ColumnConfig::getValueDate to columnValueDate,
-        ColumnConfig::getValueBoolean to columnValueBoolean,
-        ColumnConfig::getValueBlobFile to columnValueBlobFile,
-        ColumnConfig::getValueClobFile to columnValueClobFile,
-        ColumnConfig::getEncoding to columnEncoding,
-        ColumnConfig::getValueComputed to DatabaseFunction(columnValueComputed),
-//        ColumnConfig::getValueSequenceNext to columnValueSequenceNext, TODO Implement missed attribute
-//        ColumnConfig::getValueSequenceCurrent to columnValueSequenceCurrent, TODO Implement missed attribute
-        ColumnConfig::getDefaultValue to columnDefaultValue,
-        ColumnConfig::getDefaultValueNumeric to columnDefaultValueNumeric,
-        ColumnConfig::getDefaultValueDate to columnDefaultValueDate,
-        ColumnConfig::getDefaultValueBoolean to columnDefaultValueBoolean,
-        ColumnConfig::getDefaultValueComputed to DatabaseFunction(columnDefaultValueComputed),
-//        ColumnConfig::getDefaultValueSequenceNext to columnDefaultValueSequenceNext, TODO Implement missed attribute
-
-        ColumnConfig::getConstraints,
-//        ColumnConfig::isAutoIncrement to columnAutoIncrement, TODO Implement missed attribute
-//        ColumnConfig::getStartWith to columnStartWith, TODO Implement missed attribute
-//        ColumnConfig::getIncrementBy to columnIncrementBy, TODO Implement missed attribute
-        ColumnConfig::getRemarks to columnRemarks
-//        ColumnConfig::getDescending to columnDescending TODO Implement missed attribute
+        ColumnConfig::getName to testColumnName,
+        ColumnConfig::getComputed to testComputed,
+        ColumnConfig::getType to testColumnType,
+        ColumnConfig::getValue to testValue,
+        ColumnConfig::getValueNumeric to testValueNumeric,
+        ColumnConfig::getValueDate to testValueDate,
+        ColumnConfig::getValueBoolean to testValueBoolean,
+        ColumnConfig::getValueBlobFile to testValueBlobFile,
+        ColumnConfig::getValueClobFile to testValueClobFile,
+        ColumnConfig::getEncoding to testEncoding,
+        ColumnConfig::getValueComputed to DatabaseFunction(testValueComputed),
+        ColumnConfig::getValueSequenceNext to SequenceNextValueFunction(testValueSequenceNext),
+        ColumnConfig::getValueSequenceCurrent to SequenceCurrentValueFunction(testValueSequenceCurrent),
+        ColumnConfig::getDefaultValue to testDefaultValue,
+        ColumnConfig::getDefaultValueNumeric to testDefaultValueNumeric,
+        ColumnConfig::getDefaultValueDate to testDefaultValueDate,
+        ColumnConfig::getDefaultValueBoolean to testDefaultValueBoolean,
+        ColumnConfig::getDefaultValueComputed to DatabaseFunction(testDefaultValueComputed),
+        ColumnConfig::getDefaultValueSequenceNext to SequenceNextValueFunction(testDefaultValueSequenceNext),
+        ColumnConfig::isAutoIncrement to testAutoIncrement,
+        ColumnConfig::getStartWith to testStartWith,
+        ColumnConfig::getIncrementBy to testIncrementBy,
+        ColumnConfig::getRemarks to testRemarks,
+        ColumnConfig::getDescending to testDescending
     )
 
     private fun LkBaseColumnConfig<*>.setBaseColumnAttributes() = this
-        .name(columnName)
-        .type(columnType)
-        .value(columnValue)
-        .computed(columnComputed)
-        .valueNumeric(columnValueNumeric)
-        .valueBoolean(columnValueBoolean)
-        .valueDate(columnValueDate)
-        .valueComputed(columnValueComputed)
-        .valueBlobFile(columnValueBlobFile)
-        .valueClobFile(columnValueClobFile)
-        .encoding(columnEncoding)
-        .defaultValue(columnDefaultValue)
-        .defaultValueNumeric(columnDefaultValueNumeric)
-        .defaultValueBoolean(columnDefaultValueBoolean)
-        .defaultValueDate(columnDefaultValueDate)
-        .defaultValueComputed(columnDefaultValueComputed)
-        .autoIncrement(columnAutoIncrement)
-        .remarks(columnRemarks)
+        .name(testColumnName)
+        .type(testColumnType)
+        .value(testValue)
+        .computed(testComputed)
+        .valueNumeric(testValueNumeric)
+        .valueBoolean(testValueBoolean)
+        .valueDate(testValueDate)
+        .valueComputed(testValueComputed)
+        .valueBlobFile(testValueBlobFile)
+        .valueClobFile(testValueClobFile)
+        .encoding(testEncoding)
+        .defaultValue(testDefaultValue)
+        .defaultValueNumeric(testDefaultValueNumeric)
+        .defaultValueBoolean(testDefaultValueBoolean)
+        .defaultValueDate(testDefaultValueDate)
+        .defaultValueComputed(testDefaultValueComputed)
+        .autoIncrement(testAutoIncrement)
+        .remarks(testRemarks)
+        .valueSequenceNext(testValueSequenceNext)
+        .valueSequenceCurrent(testValueSequenceCurrent)
+        .defaultValueSequenceNext(testDefaultValueSequenceNext)
+        .startWith(testStartWith)
+        .incrementBy(testIncrementBy)
+        .descending(testDescending)
 
     @Test
     fun addColumnConfigTest() = testEvaluation(
         LkAddColumnConfig()
-            .afterColumn(afterColumn)
-            .beforeColumn(beforeColumn)
-            .position(position)
+            .afterColumn(testAfterColumn)
+            .beforeColumn(testBeforeColumn)
+            .position(testPosition)
             .setBaseColumnAttributes(),
         AddColumnConfig::class,
-        AddColumnConfig::getAfterColumn to afterColumn,
-        AddColumnConfig::getBeforeColumn to beforeColumn,
-        AddColumnConfig::getPosition to position,
+        AddColumnConfig::getAfterColumn to testAfterColumn,
+        AddColumnConfig::getBeforeColumn to testBeforeColumn,
+        AddColumnConfig::getPosition to testPosition,
         *columnConfigFields
     )
 
     @Test
     fun loadColumnConfigTest() = testEvaluation(
         LkLoadColumnConfig()
-            .index(index)
-            .header(header)
+            .index(testIndex)
+            .header(testHeader)
             .setBaseColumnAttributes(),
         LoadDataColumnConfig::class,
-        LoadDataColumnConfig::getIndex to index,
-        LoadDataColumnConfig::getHeader to header,
+        LoadDataColumnConfig::getIndex to testIndex,
+        LoadDataColumnConfig::getHeader to testHeader,
         *columnConfigFields
     )
 
@@ -102,337 +108,338 @@ open class BundledCreateChangesTest : BaseLiquikotlinUnitTest() {
     @Test
     fun addAutoIncrementTest() = testEvaluation(
         LkAddAutoIncrement()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .columnName(columnName)
-            .columnDataType(columnType)
-            .tableName(tableName)
-            .startWith(startWith)
-            .incrementBy(incrementBy),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .columnName(testColumnName)
+            .columnDataType(testColumnType)
+            .tableName(testTableName)
+            .startWith(testStartWith)
+            .incrementBy(testIncrementBy),
         AddAutoIncrementChange::class,
-        AddAutoIncrementChange::getCatalogName to catalogName,
-        AddAutoIncrementChange::getSchemaName to schemaName,
-        AddAutoIncrementChange::getTableName to tableName,
-        AddAutoIncrementChange::getColumnName to columnName,
-        AddAutoIncrementChange::getColumnDataType to columnType,
-        AddAutoIncrementChange::getStartWith to startWith,
-        AddAutoIncrementChange::getIncrementBy to incrementBy
+        AddAutoIncrementChange::getCatalogName to testCatalogName,
+        AddAutoIncrementChange::getSchemaName to testSchemaName,
+        AddAutoIncrementChange::getTableName to testTableName,
+        AddAutoIncrementChange::getColumnName to testColumnName,
+        AddAutoIncrementChange::getColumnDataType to testColumnType,
+        AddAutoIncrementChange::getStartWith to testStartWith,
+        AddAutoIncrementChange::getIncrementBy to testIncrementBy
     )
 
     @Test
     fun addColumnTest() = testEvaluation(
         LkAddColumn()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName),
         AddColumnChange::class,
-        AddColumnChange::getCatalogName to catalogName,
-        AddColumnChange::getSchemaName to schemaName,
-        AddColumnChange::getTableName to tableName,
+        AddColumnChange::getCatalogName to testCatalogName,
+        AddColumnChange::getSchemaName to testSchemaName,
+        AddColumnChange::getTableName to testTableName,
         AddColumnChange::getColumns to emptyList<AddColumnConfig>()
     )
 
     @Test
     fun constraintsTest() = testEvaluation(
         LkConstraints()
-            .nullable(nullable)
-            .primaryKey(primaryKey)
-            .primaryKeyName(primaryKeyName)
-//            .primaryKeyTablespace(primaryKeyTablespace) TODO Implement missed attribute
-            .references(references)
-//            .referencedTableName(referencedTableName) TODO Implement missed attribute
-//            .referencedColumnNames(referencedColumnNames) TODO Implement missed attribute
-            .unique(unique)
-            .uniqueConstraintName(uniqueConstraintName)
-//            .checkConstraint(checkConstraint) TODO Implement missed attribute
-            .deleteCascade(deleteCascade)
-            .foreignKeyName(foreignKeyName)
-            .initiallyDeferred(initiallyDeferred)
-            .deferrable(deferrable),
+            .nullable(testNullable)
+            .primaryKey(testPrimaryKey)
+            .primaryKeyName(testPrimaryKeyName)
+            .primaryKeyTablespace(testPrimaryKeyTablespace)
+            .references(testReferences)
+            .referencedTableName(testReferencedTableName)
+            .referencedColumnNames(testReferencedColumnNames)
+            .unique(testUnique)
+            .uniqueConstraintName(testUniqueConstraintName)
+            .checkConstraint(testCheckConstraint)
+            .deleteCascade(testDeleteCascade)
+            .foreignKeyName(testForeignKeyName)
+            .initiallyDeferred(testInitiallyDeferred)
+            .deferrable(testDeferrable),
         ConstraintsConfig::class,
-        ConstraintsConfig::isNullable to nullable,
-        ConstraintsConfig::isPrimaryKey to primaryKey,
-        ConstraintsConfig::getPrimaryKeyName to primaryKeyName,
-//        ConstraintsConfig::getPrimaryKeyTablespace to primaryKeyTablespace, TODO Implement missed attribute
-        ConstraintsConfig::getReferences to references,
-//        ConstraintsConfig::getReferencedTableName to referencedTableName, TODO Implement missed attribute
-//        ConstraintsConfig::getReferencedColumnNames to referencedColumnNames, TODO Implement missed attribute
-        ConstraintsConfig::isUnique to unique,
-        ConstraintsConfig::getUniqueConstraintName to uniqueConstraintName,
-//        ConstraintsConfig::getCheckConstraint to checkConstraint, TODO Implement missed attribute
-        ConstraintsConfig::isDeleteCascade to deleteCascade,
-        ConstraintsConfig::getForeignKeyName to foreignKeyName,
-        ConstraintsConfig::isInitiallyDeferred to initiallyDeferred,
-        ConstraintsConfig::isDeferrable to deferrable
+        ConstraintsConfig::isNullable to testNullable,
+        ConstraintsConfig::isNullable to testNullable,
+        ConstraintsConfig::isPrimaryKey to testPrimaryKey,
+        ConstraintsConfig::getPrimaryKeyName to testPrimaryKeyName,
+        ConstraintsConfig::getPrimaryKeyTablespace to testPrimaryKeyTablespace,
+        ConstraintsConfig::getReferences to testReferences,
+        ConstraintsConfig::getReferencedTableName to testReferencedTableName,
+        ConstraintsConfig::getReferencedColumnNames to testReferencedColumnNames,
+        ConstraintsConfig::isUnique to testUnique,
+        ConstraintsConfig::getUniqueConstraintName to testUniqueConstraintName,
+        ConstraintsConfig::getCheckConstraint to testCheckConstraint,
+        ConstraintsConfig::isDeleteCascade to testDeleteCascade,
+        ConstraintsConfig::getForeignKeyName to testForeignKeyName,
+        ConstraintsConfig::isInitiallyDeferred to testInitiallyDeferred,
+        ConstraintsConfig::isDeferrable to testDeferrable
     )
 
     @Test
     fun addDefaultValueTest() = testEvaluation(
         LkAddDefaultValue()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .columnName(columnName)
-            .columnDataType(columnType)
-            .defaultValue(defaultValue)
-            .defaultValueNumeric(defaultValueNumeric)
-            .defaultValueDate(defaultValueDate)
-            .defaultValueBoolean(defaultValueBoolean)
-            .defaultValueComputed(defaultValueComputed),
-//            .defaultValueSequenceNext(defaultValueSequenceNext), TODO Implement missed attribute
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .columnName(testColumnName)
+            .columnDataType(testColumnType)
+            .defaultValue(testDefaultValue)
+            .defaultValueNumeric(testDefaultValueNumeric)
+            .defaultValueDate(testDefaultValueDate)
+            .defaultValueBoolean(testDefaultValueBoolean)
+            .defaultValueComputed(testDefaultValueComputed)
+            .defaultValueSequenceNext(testDefaultValueSequenceNext),
         AddDefaultValueChange::class,
-        AddDefaultValueChange::getCatalogName to catalogName,
-        AddDefaultValueChange::getSchemaName to schemaName,
-        AddDefaultValueChange::getTableName to tableName,
-        AddDefaultValueChange::getColumnName to columnName,
-        AddDefaultValueChange::getColumnDataType to columnType,
-        AddDefaultValueChange::getDefaultValue to defaultValue,
-        AddDefaultValueChange::getDefaultValueNumeric to defaultValueNumeric,
-        AddDefaultValueChange::getDefaultValueDate to defaultValueDate,
-        AddDefaultValueChange::getDefaultValueBoolean to defaultValueBoolean,
-        AddDefaultValueChange::getDefaultValueComputed to DatabaseFunction(defaultValueComputed)
-//        AddDefaultValueChange::getDefaultValueSequenceNext to defaultValueSequenceNext TODO Implement missed attribute
+        AddDefaultValueChange::getCatalogName to testCatalogName,
+        AddDefaultValueChange::getSchemaName to testSchemaName,
+        AddDefaultValueChange::getTableName to testTableName,
+        AddDefaultValueChange::getColumnName to testColumnName,
+        AddDefaultValueChange::getColumnDataType to testColumnType,
+        AddDefaultValueChange::getDefaultValue to testDefaultValue,
+        AddDefaultValueChange::getDefaultValueNumeric to "$testDefaultValueNumeric",
+        AddDefaultValueChange::getDefaultValueDate to "$testDefaultValueDate",
+        AddDefaultValueChange::getDefaultValueBoolean to testDefaultValueBoolean,
+        AddDefaultValueChange::getDefaultValueComputed to DatabaseFunction(testDefaultValueComputed),
+        AddDefaultValueChange::getDefaultValueSequenceNext to SequenceNextValueFunction(testDefaultValueSequenceNext)
     )
 
     @Test
     fun addForeignKeyConstraintTest() = testEvaluation(
         LkAddForeignKeyConstraint()
-            .baseTableCatalogName(baseTableCatalogName)
-            .baseTableSchemaName(baseTableSchemaName)
-            .baseTableName(baseTableName)
-            .baseColumnNames(baseColumnNames)
-            .referencedTableCatalogName(referencedTableCatalogName)
-            .referencedTableSchemaName(referencedTableSchemaName)
-            .referencedTableName(referencedTableName)
-            .referencedColumnNames(referencedColumnNames)
-            .constraintName(constraintName)
-            .deferrable(deferrable)
-            .initiallyDeferred(initiallyDeferred)
-            .onUpdate(onUpdate)
-            .onDelete(onDelete),
+            .baseTableCatalogName(testBaseTableCatalogName)
+            .baseTableSchemaName(testBaseTableSchemaName)
+            .baseTableName(testBaseTableName)
+            .baseColumnNames(testBaseColumnNames)
+            .referencedTableCatalogName(testReferencedTableCatalogName)
+            .referencedTableSchemaName(testReferencedTableSchemaName)
+            .referencedTableName(testReferencedTableName)
+            .referencedColumnNames(testReferencedColumnNames)
+            .constraintName(testConstraintName)
+            .deferrable(testDeferrable)
+            .initiallyDeferred(testInitiallyDeferred)
+            .onUpdate(testOnUpdate)
+            .onDelete(testOnDelete),
         AddForeignKeyConstraintChange::class,
-        AddForeignKeyConstraintChange::getBaseTableCatalogName to baseTableCatalogName,
-        AddForeignKeyConstraintChange::getBaseTableSchemaName to baseTableSchemaName,
-        AddForeignKeyConstraintChange::getBaseTableName to baseTableName,
-        AddForeignKeyConstraintChange::getBaseColumnNames to baseColumnNames,
-        AddForeignKeyConstraintChange::getReferencedTableCatalogName to referencedTableCatalogName,
-        AddForeignKeyConstraintChange::getReferencedTableSchemaName to referencedTableSchemaName,
-        AddForeignKeyConstraintChange::getReferencedTableName to referencedTableName,
-        AddForeignKeyConstraintChange::getReferencedColumnNames to referencedColumnNames,
-        AddForeignKeyConstraintChange::getConstraintName to constraintName,
-        AddForeignKeyConstraintChange::getDeferrable to deferrable,
-        AddForeignKeyConstraintChange::getInitiallyDeferred to initiallyDeferred,
-        AddForeignKeyConstraintChange::getOnUpdate to onUpdate,
-        AddForeignKeyConstraintChange::getOnDelete to onDelete
+        AddForeignKeyConstraintChange::getBaseTableCatalogName to testBaseTableCatalogName,
+        AddForeignKeyConstraintChange::getBaseTableSchemaName to testBaseTableSchemaName,
+        AddForeignKeyConstraintChange::getBaseTableName to testBaseTableName,
+        AddForeignKeyConstraintChange::getBaseColumnNames to testBaseColumnNames,
+        AddForeignKeyConstraintChange::getReferencedTableCatalogName to testReferencedTableCatalogName,
+        AddForeignKeyConstraintChange::getReferencedTableSchemaName to testReferencedTableSchemaName,
+        AddForeignKeyConstraintChange::getReferencedTableName to testReferencedTableName,
+        AddForeignKeyConstraintChange::getReferencedColumnNames to testReferencedColumnNames,
+        AddForeignKeyConstraintChange::getConstraintName to testConstraintName,
+        AddForeignKeyConstraintChange::getDeferrable to testDeferrable,
+        AddForeignKeyConstraintChange::getInitiallyDeferred to testInitiallyDeferred,
+        AddForeignKeyConstraintChange::getOnUpdate to testOnUpdate,
+        AddForeignKeyConstraintChange::getOnDelete to testOnDelete
     )
 
 
     @Test
     fun addLookupTableTest() = testEvaluation(
         LkAddLookupTable()
-            .existingTableCatalogName(existingTableCatalogName)
-            .existingTableSchemaName(existingTableSchemaName)
-            .existingTableName(existingTableName)
-            .existingColumnName(existingColumnName)
-            .newTableCatalogName(newTableCatalogName)
-            .newTableSchemaName(newTableSchemaName)
-            .newTableName(newTableName)
-            .newColumnName(newColumnName)
-            .newColumnDataType(newColumnDataType)
-            .constraintName(constraintName),
+            .existingTableCatalogName(testExistingTableCatalogName)
+            .existingTableSchemaName(testExistingTableSchemaName)
+            .existingTableName(testExistingTableName)
+            .existingColumnName(testExistingColumnName)
+            .newTableCatalogName(testNewTableCatalogName)
+            .newTableSchemaName(testNewTableSchemaName)
+            .newTableName(testNewTableName)
+            .newColumnName(testNewColumnName)
+            .newColumnDataType(testNewColumnDataType)
+            .constraintName(testConstraintName),
         AddLookupTableChange::class,
-        AddLookupTableChange::getExistingTableCatalogName to existingTableCatalogName,
-        AddLookupTableChange::getExistingTableSchemaName to existingTableSchemaName,
-        AddLookupTableChange::getExistingTableName to existingTableName,
-        AddLookupTableChange::getExistingColumnName to existingColumnName,
-        AddLookupTableChange::getNewTableCatalogName to newTableCatalogName,
-        AddLookupTableChange::getNewTableSchemaName to newTableSchemaName,
-        AddLookupTableChange::getNewTableName to newTableName,
-        AddLookupTableChange::getNewColumnName to newColumnName,
-        AddLookupTableChange::getNewColumnDataType to newColumnDataType,
-        AddLookupTableChange::getConstraintName to constraintName
+        AddLookupTableChange::getExistingTableCatalogName to testExistingTableCatalogName,
+        AddLookupTableChange::getExistingTableSchemaName to testExistingTableSchemaName,
+        AddLookupTableChange::getExistingTableName to testExistingTableName,
+        AddLookupTableChange::getExistingColumnName to testExistingColumnName,
+        AddLookupTableChange::getNewTableCatalogName to testNewTableCatalogName,
+        AddLookupTableChange::getNewTableSchemaName to testNewTableSchemaName,
+        AddLookupTableChange::getNewTableName to testNewTableName,
+        AddLookupTableChange::getNewColumnName to testNewColumnName,
+        AddLookupTableChange::getNewColumnDataType to testNewColumnDataType,
+        AddLookupTableChange::getConstraintName to testConstraintName
     )
 
     @Test
     fun addNotNullConstraintTest() = testEvaluation(
         LkAddNotNullConstraint()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .columnName(columnName)
-            .defaultNullValue(defaultNullValue)
-            .columnDataType(columnType),
-//            .constraintName(constraintName), TODO Implement missed attribute
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .columnName(testColumnName)
+            .defaultNullValue(testDefaultNullValue)
+            .columnDataType(testColumnType)
+            .constraintName(testConstraintName),
         AddNotNullConstraintChange::class,
-        AddNotNullConstraintChange::getCatalogName to catalogName,
-        AddNotNullConstraintChange::getSchemaName to schemaName,
-        AddNotNullConstraintChange::getTableName to tableName,
-        AddNotNullConstraintChange::getColumnName to columnName,
-        AddNotNullConstraintChange::getDefaultNullValue to defaultNullValue,
-        AddNotNullConstraintChange::getColumnDataType to columnType
-//        AddNotNullConstraintChange::getConstraintName TODO Implement missed attribute
+        AddNotNullConstraintChange::getCatalogName to testCatalogName,
+        AddNotNullConstraintChange::getSchemaName to testSchemaName,
+        AddNotNullConstraintChange::getTableName to testTableName,
+        AddNotNullConstraintChange::getColumnName to testColumnName,
+        AddNotNullConstraintChange::getDefaultNullValue to testDefaultNullValue,
+        AddNotNullConstraintChange::getColumnDataType to testColumnType,
+        AddNotNullConstraintChange::getConstraintName to testConstraintName
     )
 
     @Test
     fun addPrimaryKeyTest() = testEvaluation(
         LkAddPrimaryKey()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .tablespace(tablespace)
-            .columnNames(columnNames)
-            .constraintName(constraintName),
-//            .clustered(clustered) TODO Implement missed attribute
-//            .forIndexName(forIndexName) TODO Implement missed attribute
-//            .forIndexSchemaName(forIndexSchemaName) TODO Implement missed attribute
-//            .forIndexCatalogName(forIndexCatalogName), TODO Implement missed attribute
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .tablespace(testTablespace)
+            .columnNames(testColumnNames)
+            .constraintName(testConstraintName)
+            .clustered(testClustered)
+            .forIndexName(testIndexName)
+            .forIndexSchemaName(testSchemaName)
+            .forIndexCatalogName(testCatalogName),
         AddPrimaryKeyChange::class,
-        AddPrimaryKeyChange::getCatalogName to catalogName,
-        AddPrimaryKeyChange::getSchemaName to schemaName,
-        AddPrimaryKeyChange::getTableName to tableName,
-        AddPrimaryKeyChange::getTablespace to tablespace,
-        AddPrimaryKeyChange::getColumnNames to columnNames,
-        AddPrimaryKeyChange::getConstraintName to constraintName
-//        AddPrimaryKeyChange::getClustered, TODO Implement missed attribute
-//        AddPrimaryKeyChange::getForIndexName, TODO Implement missed attribute
-//        AddPrimaryKeyChange::getForIndexSchemaName, TODO Implement missed attribute
-//        AddPrimaryKeyChange::getForIndexCatalogName TODO Implement missed attribute
+        AddPrimaryKeyChange::getCatalogName to testCatalogName,
+        AddPrimaryKeyChange::getSchemaName to testSchemaName,
+        AddPrimaryKeyChange::getTableName to testTableName,
+        AddPrimaryKeyChange::getTablespace to testTablespace,
+        AddPrimaryKeyChange::getColumnNames to testColumnNames,
+        AddPrimaryKeyChange::getConstraintName to testConstraintName,
+        AddPrimaryKeyChange::getClustered to testClustered,
+        AddPrimaryKeyChange::getForIndexName to testIndexName,
+        AddPrimaryKeyChange::getForIndexSchemaName to testSchemaName,
+        AddPrimaryKeyChange::getForIndexCatalogName to testCatalogName
     )
 
     @Test
     fun addUniqueConstraintTest() = testEvaluation(
         LkAddUniqueConstraint()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .columnNames(columnNames)
-            .constraintName(constraintName)
-            .tablespace(tablespace)
-            .deferrable(deferrable)
-            .initiallyDeferred(initiallyDeferred)
-            .disabled(disabled),
-//            .forIndexName(forIndexName) TODO Implement missed attribute
-//            .forIndexSchemaName(forIndexSchemaName) TODO Implement missed attribute
-//            .forIndexCatalogName(forIndexCatalogName), TODO Implement missed attribute
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .columnNames(testColumnNames)
+            .constraintName(testConstraintName)
+            .tablespace(testTablespace)
+            .deferrable(testDeferrable)
+            .initiallyDeferred(testInitiallyDeferred)
+            .disabled(testDisabled)
+            .forIndexName(testIndexName)
+            .forIndexSchemaName(testSchemaName)
+            .forIndexCatalogName(testCatalogName),
         AddUniqueConstraintChange::class,
-        AddUniqueConstraintChange::getCatalogName to catalogName,
-        AddUniqueConstraintChange::getSchemaName to schemaName,
-        AddUniqueConstraintChange::getTableName to tableName,
-        AddUniqueConstraintChange::getColumnNames to columnNames,
-        AddUniqueConstraintChange::getConstraintName to constraintName,
-        AddUniqueConstraintChange::getTablespace to tablespace,
-        AddUniqueConstraintChange::getDeferrable to deferrable,
-        AddUniqueConstraintChange::getInitiallyDeferred to initiallyDeferred,
-        AddUniqueConstraintChange::getDisabled to disabled
-//        AddUniqueConstraintChange::getForIndexName, TODO Implement missed attribute
-//        AddUniqueConstraintChange::getForIndexSchemaName, TODO Implement missed attribute
-//        AddUniqueConstraintChange::getForIndexCatalogName TODO Implement missed attribute
+        AddUniqueConstraintChange::getCatalogName to testCatalogName,
+        AddUniqueConstraintChange::getSchemaName to testSchemaName,
+        AddUniqueConstraintChange::getTableName to testTableName,
+        AddUniqueConstraintChange::getColumnNames to testColumnNames,
+        AddUniqueConstraintChange::getConstraintName to testConstraintName,
+        AddUniqueConstraintChange::getTablespace to testTablespace,
+        AddUniqueConstraintChange::getDeferrable to testDeferrable,
+        AddUniqueConstraintChange::getInitiallyDeferred to testInitiallyDeferred,
+        AddUniqueConstraintChange::getDisabled to testDisabled,
+        AddUniqueConstraintChange::getForIndexName to testIndexName,
+        AddUniqueConstraintChange::getForIndexSchemaName to testSchemaName,
+        AddUniqueConstraintChange::getForIndexCatalogName to testCatalogName
     )
 
     @Test
     fun createIndexTest() = testEvaluation(
         LkCreateIndex()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .indexName(indexName)
-            .unique(unique)
-            .tablespace(tablespace),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .indexName(testIndexName)
+            .unique(testUnique)
+            .tablespace(testTablespace),
         CreateIndexChange::class,
-        CreateIndexChange::getCatalogName to catalogName,
-        CreateIndexChange::getSchemaName to schemaName,
-        CreateIndexChange::getTableName to tableName,
-        CreateIndexChange::getIndexName to indexName,
-        CreateIndexChange::isUnique to unique,
-        CreateIndexChange::getTablespace to tablespace,
+        CreateIndexChange::getCatalogName to testCatalogName,
+        CreateIndexChange::getSchemaName to testSchemaName,
+        CreateIndexChange::getTableName to testTableName,
+        CreateIndexChange::getIndexName to testIndexName,
+        CreateIndexChange::isUnique to testUnique,
+        CreateIndexChange::getTablespace to testTablespace,
         CreateIndexChange::getColumns to emptyList<CreateIndexChange>()
     )
 
     @Test
     fun createProcedureTest() = testEvaluation(
         LkCreateProcedure()
-            .comments(comments)
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .procedureName(procedureName)
-            .procedureText(procedureText)
-            .dbms(dbms)
-            .path(path)
-            .relativeToChangelogFile(relativeToChangelogFile)
-            .encoding(encoding),
-//            .replaceIfExists(replaceIfExists), TODO Implement missed attribute
+            .comments(testComments)
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .procedureName(testProcedureName)
+            .procedureText(testProcedureText)
+            .dbms(testDbms)
+            .path(testPath)
+            .relativeToChangelogFile(testRelativeToChangelogFile)
+            .encoding(testEncoding)
+            .replaceIfExists(testReplaceIfExists),
         CreateProcedureChange::class,
-        CreateProcedureChange::getComments to comments,
-        CreateProcedureChange::getCatalogName to catalogName,
-        CreateProcedureChange::getSchemaName to schemaName,
-        CreateProcedureChange::getProcedureName to procedureName,
-        CreateProcedureChange::getProcedureText to procedureText,
-        CreateProcedureChange::getDbms to dbms,
-        CreateProcedureChange::getPath to path,
-        CreateProcedureChange::isRelativeToChangelogFile to relativeToChangelogFile,
-        CreateProcedureChange::getEncoding to encoding
-//        CreateProcedureChange::getReplaceIfExists TODO Implement missed attribute
+        CreateProcedureChange::getComments to testComments,
+        CreateProcedureChange::getCatalogName to testCatalogName,
+        CreateProcedureChange::getSchemaName to testSchemaName,
+        CreateProcedureChange::getProcedureName to testProcedureName,
+        CreateProcedureChange::getProcedureText to testProcedureText,
+        CreateProcedureChange::getDbms to testDbms,
+        CreateProcedureChange::getPath to testPath,
+        CreateProcedureChange::isRelativeToChangelogFile to testRelativeToChangelogFile,
+        CreateProcedureChange::getEncoding to testEncoding,
+        CreateProcedureChange::getReplaceIfExists to testReplaceIfExists
     )
 
     @Test
     fun createSequenceTest() = testEvaluation(
         LkCreateSequence()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .sequenceName(sequenceName)
-            .startValue(startValue)
-            .incrementBy(incrementBy)
-            .maxValue(maxValue)
-            .minValue(minValue)
-            .ordered(ordered)
-            .cycle(cycle),
-//            .cacheSize(cacheSize), TODO Implement missed attribute
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .sequenceName(testSequenceName)
+            .startValue(testStartValue)
+            .incrementBy(testIncrementBy)
+            .maxValue(testMaxValue)
+            .minValue(testMinValue)
+            .ordered(testOrdered)
+            .cycle(testCycle)
+            .cacheSize(testCacheSize),
         CreateSequenceChange::class,
-        CreateSequenceChange::getCatalogName to catalogName,
-        CreateSequenceChange::getSchemaName to schemaName,
-        CreateSequenceChange::getSequenceName to sequenceName,
-        CreateSequenceChange::getStartValue to startValue,
-        CreateSequenceChange::getIncrementBy to incrementBy,
-        CreateSequenceChange::getMaxValue to maxValue,
-        CreateSequenceChange::getMinValue to minValue,
-        CreateSequenceChange::isOrdered to ordered,
-        CreateSequenceChange::getCycle to cycle
-//        CreateSequenceChange::getCacheSize TODO Implement missed attribute
+        CreateSequenceChange::getCatalogName to testCatalogName,
+        CreateSequenceChange::getSchemaName to testSchemaName,
+        CreateSequenceChange::getSequenceName to testSequenceName,
+        CreateSequenceChange::getStartValue to testStartValue,
+        CreateSequenceChange::getIncrementBy to testIncrementBy,
+        CreateSequenceChange::getMaxValue to testMaxValue,
+        CreateSequenceChange::getMinValue to testMinValue,
+        CreateSequenceChange::isOrdered to testOrdered,
+        CreateSequenceChange::getCycle to testCycle,
+        CreateSequenceChange::getCacheSize to testCacheSize
     )
 
     @Test
     fun createTableTest() = testEvaluation(
         LkCreateTable()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .tableName(tableName)
-            .tablespace(tablespace)
-            .remarks(remarks),
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .tableName(testTableName)
+            .tablespace(testTablespace)
+            .remarks(testRemarks),
         CreateTableChange::class,
         CreateTableChange::getColumns to emptyList<ColumnConfig>(),
-        CreateTableChange::getCatalogName to catalogName,
-        CreateTableChange::getSchemaName to schemaName,
-        CreateTableChange::getTableName to tableName,
-        CreateTableChange::getTablespace to tablespace,
-        CreateTableChange::getRemarks to remarks
+        CreateTableChange::getCatalogName to testCatalogName,
+        CreateTableChange::getSchemaName to testSchemaName,
+        CreateTableChange::getTableName to testTableName,
+        CreateTableChange::getTablespace to testTablespace,
+        CreateTableChange::getRemarks to testRemarks
     )
 
     @Test
     fun createViewTest() = testEvaluation(
         LkCreateView()
-            .catalogName(catalogName)
-            .schemaName(schemaName)
-            .viewName(viewName)
-            .selectQuery(selectQuery)
-            .replaceIfExists(replaceIfExists),
-//            .fullDefinition(fullDefinition), TODO Implement missed attribute
+            .catalogName(testCatalogName)
+            .schemaName(testSchemaName)
+            .viewName(testViewName)
+            .selectQuery(testSelectQuery)
+            .replaceIfExists(testReplaceIfExists)
+            .fullDefinition(testFullDefinition),
         CreateViewChange::class,
-        CreateViewChange::getCatalogName to catalogName,
-        CreateViewChange::getSchemaName to schemaName,
-        CreateViewChange::getViewName to viewName,
-        CreateViewChange::getSelectQuery to selectQuery,
-        CreateViewChange::getReplaceIfExists to replaceIfExists
-//        CreateViewChange::getFullDefinition TODO Implement missed attribute
+        CreateViewChange::getCatalogName to testCatalogName,
+        CreateViewChange::getSchemaName to testSchemaName,
+        CreateViewChange::getViewName to testViewName,
+        CreateViewChange::getSelectQuery to testSelectQuery,
+        CreateViewChange::getReplaceIfExists to testReplaceIfExists,
+        CreateViewChange::getFullDefinition to testFullDefinition
     )
 
 }
