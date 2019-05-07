@@ -3,6 +3,7 @@ package com.tsarev.liquikotlin.util
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeDiagnosingMatcher
+import org.jetbrains.kotlin.utils.addToStdlib.assertedCast
 import org.junit.Assert
 import kotlin.reflect.KClass
 
@@ -18,6 +19,8 @@ open class GetterMatcher<T>(private val getter: (T) -> Any?, private val expecte
 
 fun assertType(expectedType: KClass<*>, value: Any) =
     Assert.assertTrue("Expected type ${expectedType.qualifiedName} for $value.", expectedType.isInstance(value))
+
+inline fun <reified T : Any> Any?.assertedCast(): T = this.assertedCast { "$this should be of type ${T::class.qualifiedName}" }
 
 fun <T> assertFields(value: T, vararg raw: Any) =
     Assert.assertThat("Actual $value fields are not equal to expected.", value, CoreMatchers.allOf(
