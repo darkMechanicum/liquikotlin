@@ -113,7 +113,7 @@ open class ChangeSetIntegration : LiquibaseIntegrator<LkChangeSet, ChangesHolder
             self.author.current,
             self.runAlways.current ?: false,
             self.runOnChange.current ?: true,
-            null, //TODO
+            changeLog.physicalFilePath,
             self.context.current,
             self.dbms.current,
             changeLog
