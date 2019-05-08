@@ -172,3 +172,4 @@ const val testContext = "Context"
 const val testRunInTransaction = true
 const val testFailOnError = true
 const val testCheckSum = "1:1234567890"
+const val testIncludePath = "test.dummy"

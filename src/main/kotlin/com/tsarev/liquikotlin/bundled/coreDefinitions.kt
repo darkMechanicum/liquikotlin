@@ -13,7 +13,6 @@ abstract class LkRefactorings<SelfT : LkRefactorings<SelfT>>(thisClass: KClass<S
     // Creating changes
     open val addAutoIncrement by child(::LkAddAutoIncrement)
     open val addColumn by child(::LkAddColumn)
-    open val constraints by child(::LkConstraints)
     open val addDefaultValue by child(::LkAddDefaultValue)
     open val addForeignKeyConstraint by child(::LkAddForeignKeyConstraint)
     open val addLookupTable by child(::LkAddLookupTable)

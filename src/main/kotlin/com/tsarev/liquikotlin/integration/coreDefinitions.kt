@@ -5,6 +5,7 @@ import com.tsarev.liquikotlin.infrastructure.LbArg
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
 import com.tsarev.liquikotlin.infrastructure.LiquibaseIntegrator
 import com.tsarev.liquikotlin.infrastructure.PropertyMapping
+import com.tsarev.liquikotlin.util.letTry
 import liquibase.change.Change
 import liquibase.changelog.ChangeLogParameters
 import liquibase.changelog.ChangeSet
@@ -17,8 +18,6 @@ import liquibase.resource.ResourceAccessor
 // --- Abstract base and utility classes ---
 
 val comparator = Comparator<String> { o1, o2 -> o1.compareTo(o2) }
-
-val defaultFilter = IncludeAllFilter { it?.endsWith(".kts") ?: false }
 
 /**
  * Utility class to hide change add differency
@@ -74,17 +73,9 @@ open class IncludeAllIntegration : LiquibaseIntegrator<LkIncludeAll, Any, Databa
     { changeLog, _, self, arg ->
         val (_, resourceAccessor) = arg!!
         val resourceFilterDef = self.resourceFilter.current
-        var resourceFilter: IncludeAllFilter = defaultFilter
-        if (!resourceFilterDef.isNullOrBlank()) {
-            try {
-                resourceFilter = Class.forName(resourceFilterDef).newInstance() as IncludeAllFilter
-                resourceFilter =
-                    IncludeAllFilter { path -> resourceFilter.include(path) && defaultFilter.include(path) }
-            } catch (e: Exception) {
-                throw SetupException(e)
-            }
-
-        }
+        val resourceFilter: IncludeAllFilter? = resourceFilterDef
+            .takeUnless { it.isNullOrBlank() }
+            .letTry { Class.forName(it).newInstance() as IncludeAllFilter }(::SetupException)
         changeLog.includeAll(
             self.path.current,
             self.relativeToChangelogFile.current,

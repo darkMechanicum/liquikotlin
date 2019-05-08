@@ -6,7 +6,11 @@ import java.io.InputStream
 /**
  * Dummy test accessor.
  */
-class DummyAccessor private constructor() : ResourceAccessor {
+class DummyAccessor(
+    private val list: MutableSet<String> = HashSet(),
+    private val resources: MutableSet<InputStream> = HashSet(),
+    private val classLoader: ClassLoader = DummyAccessor::class.java.classLoader
+) : ResourceAccessor {
 
     companion object {
         val instance = DummyAccessor()
@@ -18,9 +22,9 @@ class DummyAccessor private constructor() : ResourceAccessor {
         includeFiles: Boolean,
         includeDirectories: Boolean,
         recursive: Boolean
-    ): MutableSet<String> = HashSet()
+    ): MutableSet<String> = list
 
-    override fun getResourcesAsStream(path: String?): MutableSet<InputStream> = HashSet()
+    override fun getResourcesAsStream(path: String?): MutableSet<InputStream> = resources
 
-    override fun toClassLoader(): ClassLoader = this.javaClass.classLoader
+    override fun toClassLoader(): ClassLoader = classLoader
 }

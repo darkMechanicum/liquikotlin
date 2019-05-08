@@ -21,3 +21,18 @@ fun <T> T.letWhile(transform: (T) -> T?): T {
     }
     return current
 }
+
+/**
+ * Helper class to write compact let try constructions.
+ */
+data class ClosureLetTry<T, out R>(val closure: (T) -> R, val value: T?) {
+    operator fun invoke(exceptionSupplier: (Throwable) -> Throwable?) = try {
+        value?.let { closure.invoke(it) }
+    } catch (cause: Throwable) {
+        exceptionSupplier(cause)?.run { throw this }
+    }
+}
+/**
+ * Nullable form of compact let try expression.
+ */
+fun <T, R> T?.letTry(closure: (T) -> R) = ClosureLetTry(closure, this)

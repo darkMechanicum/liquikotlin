@@ -17,7 +17,7 @@ open class GetterMatcher<T>(private val getter: (T) -> Any?, private val expecte
             .also { if (!it) mismatchDescription.appendText("not equal to ${getter.invoke(item)}") }
 }
 
-fun assertType(expectedType: KClass<*>, value: Any) =
+fun assertType(expectedType: KClass<*>, value: Any?) =
     Assert.assertTrue("Expected type ${expectedType.qualifiedName} for $value.", expectedType.isInstance(value))
 
 inline fun <reified T : Any> Any?.assertedCast(): T = this.assertedCast { "$this should be of type ${T::class.qualifiedName}" }
@@ -36,3 +36,7 @@ fun <T> assertFields(value: T, vararg raw: Any) =
             }
         }
     ))
+
+fun List<*>.assertClasses(vararg kClass: KClass<*>) = kClass
+    .mapIndexed { index, kclass -> Assert.assertTrue(this.size > index).let { this[index] to kclass } }
+    .forEach { assertType(it.second, it.first) }

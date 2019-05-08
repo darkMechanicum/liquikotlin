@@ -7,6 +7,23 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.cast
 
+const val enableLineNumberInfo = true
+
+private val thisPackage = DefaultNode::class.qualifiedName?.substringBeforeLast('.')!!
+
+private fun getCallerLineInfo() = Thread.currentThread()
+    .stackTrace
+    .drop(1) // Skip Thread.currentThread().stackTrace method
+    .dropWhile { it.className.startsWith(thisPackage) }
+    .firstOrNull()
+
+private fun getLineInfo() = Any().takeIf { enableLineNumberInfo }
+    ?.let { getCallerLineInfo() }
+    .let {
+        "Line number is ${it?.lineNumber ?: "unknown"}." +
+                it?.let { "\n\t(IDE hint) at ${it.className}.${it.methodName}(${it.fileName}:${it.lineNumber})" }
+    }
+
 /**
  * Base node implementation with field initializers.
  */
@@ -46,6 +63,8 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
     override lateinit var childBuilders: MutableMap<String, Lazy<DefaultNode<*>>>
 
     override var hasDefault: Boolean = false
+
+    var lineInfo: String = ""
 
     private fun initDefaults() {
         parameters = HashMap()
@@ -94,12 +113,16 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
             result.realParent = self.realParent
         }
         result.isBuilder = false
+        result.lineInfo = getLineInfo()
         result
     } else {
         self
     }
 
-    final override fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>, default: FieldT?): DefaultableDelegate<FieldT> =
+    final override fun <FieldT : Any> nonNullable(
+        fieldType: KClass<FieldT>,
+        default: FieldT?
+    ): DefaultableDelegate<FieldT> =
         CommonDelegate(fieldType, default)
 
     final override fun <FieldT : Any> nullable(
@@ -149,13 +172,12 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         init {
             setDefault(default)
         }
-
         override fun invoke(value: FieldT) = self.buildNodeIfNeccessary().apply {
             this.parameters[name] = value
         }
         override val current: FieldT
             get() = propertyType.cast(
-                parameters[name] ?: throw IllegalAccessException("Property $name should be set.")
+                parameters[name] ?: throw IllegalAccessException("Property $name should be set.${this@DefaultNode.lineInfo}")
             )
     }
 
@@ -167,7 +189,6 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         init {
             setDefault(default)
         }
-
         override fun invoke(value: FieldT?) = self.buildNodeIfNeccessary().apply { parameters[name] = value }
         override val current: FieldT? get() = parameters[name]?.let { propertyType.cast(it) }
     }

@@ -1,4 +1,4 @@
-package com.tsarev.liquikotlin.hierarchy
+package com.tsarev.liquikotlin.complex
 
 import com.tsarev.liquikotlin.bundled.LkChangeLog
 import com.tsarev.liquikotlin.bundled.invoke

@@ -5,6 +5,7 @@ import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.util.testPrimaryKeyName
 import liquibase.precondition.CustomPreconditionWrapper
 import liquibase.precondition.Precondition
+import liquibase.precondition.PreconditionLogic
 import liquibase.precondition.core.*
 import org.junit.Test
 
@@ -29,14 +30,14 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
     fun andPreconditionTest() = testEvaluation(
         LkAndPrecondition(),
         AndPrecondition::class,
-        PreconditionContainer::getNestedPreconditions to emptyList<Precondition>()
+        PreconditionLogic::getNestedPreconditions to emptyList<Precondition>()
     )
 
     @Test
     fun orPreconditionTest() = testEvaluation(
         LkOrPrecondition(),
         OrPrecondition::class,
-        PreconditionContainer::getNestedPreconditions to emptyList<Precondition>()
+        PreconditionLogic::getNestedPreconditions to emptyList<Precondition>()
     )
 
     @Test
