@@ -18,6 +18,7 @@
 
 package liquibase.parser.ext
 
+import com.tsarev.liquikotlin.bundled.LkChangeLog
 import com.tsarev.liquikotlin.bundled.changelog
 import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
 import com.tsarev.liquikotlin.infrastructure.LbArg
@@ -32,6 +33,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
 import java.io.PrintStream
+import java.util.*
 import javax.script.Compilable
 import javax.script.ScriptEngineManager
 import javax.script.ScriptException
@@ -59,6 +61,11 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
          * NoOp printer to ignore junk messages.
          */
         val noOpPrinter = PrintStream(NoOpOutputStream())
+
+        /**
+         * Stack to isolate changelogs from each other.
+         */
+        val changeLogStack = ArrayDeque<LkChangeLog>()
     }
 
     override fun parse(
@@ -100,13 +107,15 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
         }
         try {
             // Save current script state, if any, since next script can ruin it.
-            changelog.pushState()
+            changeLogStack.push(changelog)
+            changelog = LkChangeLog()
+            // TODO Add type check
             val result = compiled.eval() as EvaluatableDslNode<*>
             val arg: LbArg = location to resourceAccessor
             return result.letWhile { it.parent }.eval(LiquibaseIntegrationFactory(), arg)
         } finally {
             // Restore current script state, if any.
-            changelog.popState()
+            changelog = changeLogStack.pop()
         }
     }
 

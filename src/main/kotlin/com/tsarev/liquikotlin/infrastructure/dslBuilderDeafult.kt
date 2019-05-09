@@ -1,8 +1,6 @@
 package com.tsarev.liquikotlin.infrastructure
 
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import com.tsarev.liquikotlin.bundled.LkChangeLog
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.cast
@@ -10,18 +8,20 @@ import kotlin.reflect.full.cast
 const val enableLineNumberInfo = true
 
 private val thisPackage = DefaultNode::class.qualifiedName?.substringBeforeLast('.')!!
+private val budnledPackage = LkChangeLog::class.qualifiedName?.substringBeforeLast('.')!!
 
 private fun getCallerLineInfo() = Thread.currentThread()
     .stackTrace
     .drop(1) // Skip Thread.currentThread().stackTrace method
-    .dropWhile { it.className.startsWith(thisPackage) }
+    .dropWhile { it.className.startsWith(thisPackage) || it.className.startsWith(budnledPackage) }
     .firstOrNull()
 
 private fun getLineInfo() = Any().takeIf { enableLineNumberInfo }
     ?.let { getCallerLineInfo() }
-    .let {
-        "Line number is ${it?.lineNumber ?: "unknown"}." +
-                it?.let { "\n\t(IDE hint) at ${it.className}.${it.methodName}(${it.fileName}:${it.lineNumber})" }
+    .let { trace ->
+        "Line number is ${trace?.lineNumber ?: "unknown"}." +
+                trace?.let { "\n\t(IDE hint) at ${it.className}.${it.methodName}(${it.fileName}:${it.lineNumber})" }
+                    .takeIf { trace?.className != null && trace.methodName != null && trace.fileName != null }
     }
 
 /**
@@ -44,12 +44,6 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         ) {
             child.realParent = parent
         }
-
-        // Various state stacks. Should be used only for root nodes.
-        val childrenStack = ArrayDeque<MutableList<DefaultNode<*>>>()
-        val parametersStack = ArrayDeque<MutableMap<String, Any?>>()
-        val hasDefaultStack = ArrayDeque<Boolean>()
-        val childBuildersStack = ArrayDeque<MutableMap<String, Lazy<DefaultNode<*>>>>()
     }
 
     var realParent: DefaultNode<*>? = null
@@ -77,21 +71,6 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         initDefaults()
     }
 
-    override fun pushState() {
-        childrenStack.push(children)
-        parametersStack.push(parameters)
-        hasDefaultStack.push(hasDefault)
-        childBuildersStack.push(childBuilders)
-        initDefaults()
-    }
-
-    override fun popState() {
-        children = childrenStack.pop()
-        parameters = parametersStack.pop()
-        hasDefault = hasDefaultStack.pop()
-        childBuilders = childBuildersStack.pop()
-    }
-
     override fun addChild(child: DslNode<*>) {
         if (child is DefaultNode<*>) {
             children.add(child)
@@ -101,20 +80,16 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
     }
 
     override fun buildNodeIfNeccessary(): SelfT = if (isBuilder) {
-        if (realParent?.isBuilder == true) {
-            realParent = realParent!!.buildNodeIfNeccessary()
+        constructor().apply {
+            copyParametersFrom(this@DefaultNode, true)
+            val builderParent = this@DefaultNode.realParent
+            if (builderParent != null) {
+                realParent = builderParent.buildNodeIfNeccessary()
+                addChild(realParent as DslNode<*>, this)
+            }
+            isBuilder = false
+            lineInfo = getLineInfo()
         }
-
-        val result = constructor()
-        result.copyParametersFrom(this, true)
-        if (parent != null) {
-            val parenCast = parent as DslNode<*>
-            addChild(parenCast, result)
-            result.realParent = self.realParent
-        }
-        result.isBuilder = false
-        result.lineInfo = getLineInfo()
-        result
     } else {
         self
     }

@@ -64,9 +64,7 @@ abstract class LkRefactorings<SelfT : LkRefactorings<SelfT>>(thisClass: KClass<S
 /**
  * Entry point for script.
  */
-val changelog = LkChangeLog()
-fun rootChangeset(id: Any, author: String? = null) = changelog.changeset.id(id).author(author)
-val changeset get() = changelog.changeset
+var changelog = LkChangeLog()
 
 /**
  * Changelog. Entry point for rest nodes.
