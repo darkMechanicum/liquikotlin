@@ -4,6 +4,7 @@ import com.tsarev.liquikotlin.BaseLiquikotlinUnitTest
 import com.tsarev.liquikotlin.bundled.LkChangeLog
 import com.tsarev.liquikotlin.bundled.LkChangeSet
 import com.tsarev.liquikotlin.integration.ChangesHolder
+import com.tsarev.liquikotlin.util.testId
 import com.tsarev.liquikotlin.util.testPath
 import liquibase.change.Change
 import liquibase.changelog.ChangeSet
@@ -27,7 +28,7 @@ class CoreDefinitionsTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun changeSetTest() = testEvaluation(
-        LkChangeSet(),
+        LkChangeSet().id(testId),
         ChangesHolder::class,
         ChangesHolder::changes to emptyList<Change>(),
         ChangesHolder::preconditions,

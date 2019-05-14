@@ -223,7 +223,7 @@ class AllHierarchyTest : RuleChainAwareTest() {
         })
 
 
-        val result: DatabaseChangeLog = changelog.eval(liquibaseIntegration, testPath to DummyAccessor.instance)
+        val result: DatabaseChangeLog = changelog.evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
 
         result.run {
             Assert.assertEquals(1, changeSets.size)

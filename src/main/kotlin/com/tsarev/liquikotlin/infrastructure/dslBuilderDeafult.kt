@@ -1,6 +1,7 @@
 package com.tsarev.liquikotlin.infrastructure
 
 import com.tsarev.liquikotlin.bundled.LkChangeLog
+import com.tsarev.liquikotlin.util.ignore
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.cast
@@ -59,6 +60,8 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
 
     override var hasDefault: Boolean = false
 
+    val nonNullableProperties = ArrayList<CommonProperty<*>>()
+
     var lineInfo: String = ""
 
     private fun initDefaults() {
@@ -95,6 +98,12 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         self
     }
 
+    final override fun <EvalT : Any, ArgT> eval(factory: EvaluatorFactory<ArgT>, arg: ArgT?, parentEval: Any?): EvalT? {
+        // Validate all non null properties.
+        nonNullableProperties.forEach { it.current }
+        return super.eval(factory, arg, parentEval)
+    }
+
     final override fun <FieldT : Any> nonNullable(
         fieldType: KClass<FieldT>,
         default: FieldT?
@@ -105,20 +114,6 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         fieldType: KClass<FieldT>,
         default: FieldT?
     ): NullableDefaultableDelegate<FieldT> = NullableCommonDelegate(fieldType, default)
-
-    protected fun <FieldT : Any> nonNullableWithCallback(
-        fieldType: KClass<FieldT>,
-        default: FieldT?,
-        callback: ((NameableProperty<FieldT>, String) -> Unit)
-    ): DefaultableDelegate<FieldT> =
-        CommonDelegate(fieldType, default, callback)
-
-    protected fun <FieldT : Any> nullableWithCallback(
-        fieldType: KClass<FieldT>,
-        default: FieldT?,
-        callback: ((NameableProperty<FieldT>, String) -> Unit)
-    ): NullableDefaultableDelegate<FieldT> = NullableCommonDelegate(fieldType, default, callback)
-
 
     private fun copyParametersFrom(other: DefaultNode<*>, shouldContinue: Boolean) {
         if (shouldContinue) {
@@ -171,28 +166,19 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
 
     inner class CommonDelegate<FieldT : Any>(
         private val propertyType: KClass<FieldT>,
-        override val default: FieldT?,
-        private val callback: ((NameableProperty<FieldT>, String) -> Unit)? = null
+        override val default: FieldT?
     ) : DefaultableDelegate<FieldT>() {
         private val commonProperty by lazy { CommonProperty(propertyType, propertyName, default) }
-        override operator fun getValue(thisRef: Any?, property: KProperty<*>): DefaultableProperty<FieldT> {
-            propertyName = property.name
-            callback?.invoke(commonProperty, propertyName)
-            return commonProperty
-        }
+        override fun doInit(thisRef: Any?, property: KProperty<*>) = nonNullableProperties.add(commonProperty).ignore
+        override operator fun getValue(thisRef: Any?, property: KProperty<*>) = commonProperty
     }
 
     inner class NullableCommonDelegate<FieldT : Any>(
         private val propertyType: KClass<FieldT>,
-        override val default: FieldT?,
-        private val callback: ((NameableProperty<FieldT>, String) -> Unit)? = null
+        override val default: FieldT?
     ) : NullableDefaultableDelegate<FieldT>() {
         private val nullableCommonProperty by lazy { NullableCommonProperty(propertyType, propertyName, default) }
-        override operator fun getValue(thisRef: Any?, property: KProperty<*>): NullableDefaultableProperty<FieldT> {
-            propertyName = property.name
-            callback?.invoke(nullableCommonProperty, propertyName)
-            return nullableCommonProperty
-        }
+        override operator fun getValue(thisRef: Any?, property: KProperty<*>) = nullableCommonProperty
     }
 
 }

@@ -15,7 +15,7 @@ import liquibase.statement.SequenceNextValueFunction
 
 open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, ColumnT : ColumnConfig, ParentT : Any>(
     linkedConstructor: () -> ColumnT,
-    parentSetter: (ParentT, ColumnT, NodeT, LbArg?) -> Unit,
+    parentSetter: (ParentT, ColumnT?, NodeT, LbArg?) -> Unit,
     vararg childMappings: PropertyMapping<NodeT, ColumnT, *>
 ) : LiquibaseIntegrator<NodeT, ColumnT, ParentT>(
     linkedConstructor,
@@ -60,7 +60,7 @@ open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, Column
 }
 
 open class AddColumnConfigIntegration<ParentT : Any>(
-    parentSetter: (ParentT, AddColumnConfig, LkAddColumnConfig, LbArg?) -> Unit,
+    parentSetter: (ParentT, AddColumnConfig?, LkAddColumnConfig, LbArg?) -> Unit,
     vararg childMappings: PropertyMapping<LkAddColumnConfig, AddColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkAddColumnConfig, AddColumnConfig, ParentT>(
     ::AddColumnConfig,
@@ -74,7 +74,7 @@ open class AddColumnConfigIntegration<ParentT : Any>(
 }
 
 open class LoadColumnConfigIntegration<ParentT : Any>(
-    parentSetter: (ParentT, LoadDataColumnConfig, LkLoadColumnConfig, LbArg?) -> Unit,
+    parentSetter: (ParentT, LoadDataColumnConfig?, LkLoadColumnConfig, LbArg?) -> Unit,
     vararg childMappings: PropertyMapping<LkLoadColumnConfig, LoadDataColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkLoadColumnConfig, LoadDataColumnConfig, ParentT>(
     ::LoadDataColumnConfig,
@@ -87,7 +87,7 @@ open class LoadColumnConfigIntegration<ParentT : Any>(
 }
 
 open class CommonColumnConfigIntegration<ParentT : Any>(
-    parentSetter: (ParentT, ColumnConfig, LkCommonColumnConfig, LbArg?) -> Unit,
+    parentSetter: (ParentT, ColumnConfig?, LkCommonColumnConfig, LbArg?) -> Unit,
     vararg childMappings: PropertyMapping<LkCommonColumnConfig, ColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkCommonColumnConfig, ColumnConfig, ParentT>(
     ::ColumnConfig,

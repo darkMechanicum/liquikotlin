@@ -62,9 +62,9 @@ open class LbDslNode<SelfT : LbDslNode<SelfT>>(
 
 data class PropertyMapping<FromT, ToT, PropertyT>(
     val getter: (FromT) -> PropertyT?,
-    val setter: (ToT, PropertyT) -> Any?
+    val setter: (ToT?, PropertyT) -> Any?
 ) {
-    fun map(from: FromT, to: ToT) {
+    fun map(from: FromT, to: ToT?) {
         val value = getter(from)
         if (value != null) {
             setter(to, value)
@@ -74,7 +74,7 @@ data class PropertyMapping<FromT, ToT, PropertyT>(
 
 open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, ParentT : Any>(
     val linkedConstructor: () -> LinkedT,
-    private val parentSetter: ((ParentT, LinkedT, NodeT, LbArg?) -> Unit)? = null,
+    private val parentSetter: ((ParentT, LinkedT?, NodeT, LbArg?) -> Unit)? = null,
     vararg mappings: PropertyMapping<NodeT, LinkedT, *>
 ) : EvaluatableDslNode.Evaluator<NodeT, LinkedT, LbArg>() {
 
@@ -86,13 +86,12 @@ open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, Parent
     override fun initResult(thisNode: NodeT, argument: LbArg?): LinkedT? = linkedConstructor()
 
     override fun eval(
-        childEvaluations: Collection<Any>,
+        childEvaluations: Collection<Any?>,
         argument: LbArg?,
         thisNode: NodeT,
         parentEval: Any?,
         resultEval: LinkedT?
-    ): LinkedT {
-        resultEval!!
+    ): LinkedT? {
         propertyMappings.forEach { it.map(thisNode, resultEval) }
         if (parentEval != null) {
             parentSetter?.let { it(parentEval as ParentT, resultEval, thisNode, argument) }
@@ -104,4 +103,4 @@ open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, Parent
 
 operator fun <LinkedT : SelfLinkedT, SelfLinkedT : Any, NodeT : DefaultNode<NodeT>, SelfT : DefaultNode<NodeT>, PropertyT>
         KProperty1<SelfT, DslNode.Valuable<PropertyT>>.minus(setter: (SelfLinkedT, PropertyT?) -> Any) =
-    PropertyMapping<NodeT, LinkedT, PropertyT>({ node -> this.get(node as SelfT).current }, setter)
+    PropertyMapping<NodeT, LinkedT, PropertyT>({ node -> this.get(node as SelfT).current }, { linked, prop -> linked?.run { setter.invoke(this, prop) } })

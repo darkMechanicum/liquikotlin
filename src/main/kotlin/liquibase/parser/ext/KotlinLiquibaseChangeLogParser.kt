@@ -112,7 +112,7 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
             // TODO Add type check
             val result = compiled.eval() as EvaluatableDslNode<*>
             val arg: LbArg = location to resourceAccessor
-            return result.letWhile { it.parent }.eval(LiquibaseIntegrationFactory(), arg)
+            return result.letWhile { it.parent }.evalSafe(LiquibaseIntegrationFactory(), arg)
         } finally {
             // Restore current script state, if any.
             changelog = changeLogStack.pop()

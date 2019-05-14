@@ -83,12 +83,12 @@ typealias PrinterArg = Pair<PrinterMode, PrintStream>
 class Printer<NodeT : DslNode<NodeT>> : EvaluatableDslNode.Evaluator<NodeT, MutableList<String>, PrinterArg>() {
 
     override fun eval(
-        childEvaluations: Collection<Any>,
+        childEvaluations: Collection<Any?>,
         argument: PrinterArg?,
         thisNode: NodeT,
         parentEval: Any?,
         resultEval: MutableList<String>?
-    ): MutableList<String> {
+    ): MutableList<String>? {
         resultEval!!
         val noChildren = childEvaluations.isEmpty()
         val chosenMode = (argument?.first ?: PrinterMode.PRETTY)

@@ -37,7 +37,7 @@ class SimpleHierarchyTest {
             }
         })
 
-        val result: DatabaseChangeLog = changelog.eval(liquibaseIntegration, testPath to DummyAccessor.instance)
+        val result: DatabaseChangeLog = changelog.evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
         val changeSet = result.changeSets.firstOrNull()
         val changes = changeSet?.changes
         val change = changes?.firstOrNull()
@@ -63,7 +63,7 @@ class SimpleHierarchyTest {
             }
         })
 
-        val result: DatabaseChangeLog = changelog.eval(liquibaseIntegration, testPath to DummyAccessor.instance)
+        val result: DatabaseChangeLog = changelog.evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
 
         val changelogNested = result.preconditions.nestedPreconditions
         Assert.assertEquals(1, changelogNested.size)
@@ -97,7 +97,7 @@ class SimpleHierarchyTest {
             }
         })
 
-        val result: DatabaseChangeLog = changelog.eval(liquibaseIntegration, testPath to DummyAccessor.instance)
+        val result: DatabaseChangeLog = changelog.evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
         val changeSet = result.changeSets.firstOrNull()
         val changes = changeSet?.changes
         val change = changes?.firstOrNull()
@@ -124,7 +124,7 @@ class SimpleHierarchyTest {
             }
         })
 
-        val result: DatabaseChangeLog = changelog.eval(liquibaseIntegration, testPath to DummyAccessor.instance)
+        val result: DatabaseChangeLog = changelog.evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
         val firstChange = result.changeSets[0].changes.first().assertedCast<RawSQLChange>()
         val secondChange = result.changeSets[1].changes.first().assertedCast<RawSQLChange>()
 
@@ -147,7 +147,7 @@ class SimpleHierarchyTest {
             }
         })
 
-        val result: DatabaseChangeLog = changelog.eval(liquibaseIntegration, testPath to DummyAccessor.instance)
+        val result: DatabaseChangeLog = changelog.evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
         val firstChange = result.changeSets[0].changes[0].assertedCast<CreateTableChange>()
         val secondChange = result.changeSets[0].changes[1].assertedCast<DropTableChange>()
         val thirdChange = result.changeSets[1].changes[0].assertedCast<CreateViewChange>()

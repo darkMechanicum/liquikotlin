@@ -35,7 +35,7 @@ abstract class SchAndCatIntegration<SelfT : PreconditionWithSchAndCat<SelfT>, Li
 // --- Bundled preconditions ---
 
 open class PreconditionContainerIntegration<ParentT : Any>(
-    parentSetter: (ParentT, PreconditionContainer, LkPrecondition, LbArg?) -> Unit
+    parentSetter: (ParentT, PreconditionContainer?, LkPrecondition, LbArg?) -> Unit
 ) : LiquibaseIntegrator<LkPrecondition, PreconditionContainer, ParentT>(
     ::PreconditionContainer,
     parentSetter,

@@ -37,8 +37,8 @@ open class ChangeIntegration<NodeT : LbDslNode<NodeT>, ChangeT : Change>(
 ) : LiquibaseIntegrator<NodeT, ChangeT, ChangesHolder>(
     linkedConstructor,
     { holder, change, _, arg ->
-        arg?.let { change.setResourceAccessor(it.second) }
-        holder.changes.add(change)
+        arg?.let { change!!.setResourceAccessor(it.second) }
+        holder.changes.add(change!!)
     }
 ) { init {
     propertyMappings.addAll(childMappings)
@@ -118,6 +118,7 @@ open class ChangeSetIntegration : LiquibaseIntegrator<LkChangeSet, ChangesHolder
             self.dbms.current,
             changeLog
         )
+        holder!!
         holder.changes.forEach { result.addChange(it) }
         result.rollback.apply { holder.rollback?.changes?.forEach { this.changes.add(it) } }
         result.comments = holder.comments.joinToString()

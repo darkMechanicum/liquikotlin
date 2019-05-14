@@ -66,7 +66,7 @@ open class OutdatedVerificator {
         override fun initResult(thisNode: NodeT, argument: Any?) = this@OutdatedVerificator.initResult()
 
         override fun eval(
-            childEvaluations: Collection<Any>,
+            childEvaluations: Collection<Any?>,
             argument: Any?,
             thisNode: NodeT,
             parentEval: Any?,

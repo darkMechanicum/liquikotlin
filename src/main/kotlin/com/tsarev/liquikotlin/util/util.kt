@@ -36,3 +36,8 @@ data class ClosureLetTry<T, out R>(val closure: (T) -> R, val value: T?) {
  * Nullable form of compact let try expression.
  */
 fun <T, R> T?.letTry(closure: (T) -> R) = ClosureLetTry(closure, this)
+
+/**
+ * Simple function to escape `fun method() = smth.doSmth.let { }` in Unit methods.
+ */
+val Any?.ignore get() = run { }
