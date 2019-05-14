@@ -70,6 +70,7 @@ var changelog = LkChangeLog()
  * Changelog. Entry point for rest nodes.
  */
 open class LkChangeLog : LbDslNode<LkChangeLog>(LkChangeLog::class) {
+    @Primary
     open val logicalFilePath by nullable(String::class)
 
     open val precondition by child(::LkPrecondition)
@@ -80,11 +81,13 @@ open class LkChangeLog : LbDslNode<LkChangeLog>(LkChangeLog::class) {
 }
 
 open class LkInclude : LbDslNode<LkInclude>(LkInclude::class) {
+    @Primary
     open val path by nonNullable(String::class)
     open val relativeToChangelogFile by nonNullable(Boolean::class, false)
 }
 
 open class LkIncludeAll : LbDslNode<LkIncludeAll>(LkIncludeAll::class) {
+    @Primary
     open val path by nonNullable(String::class)
     open val resourceFilter by nullable(String::class)
     open val relativeToChangelogFile by nonNullable(Boolean::class, false)
@@ -95,6 +98,7 @@ open class LkIncludeAll : LbDslNode<LkIncludeAll>(LkIncludeAll::class) {
  * Changelog property.
  */
 open class LkProperty : LbDslNode<LkProperty>(LkProperty::class) {
+    @Primary
     open val name by nonNullable(String::class)
     open val value by nonNullable(String::class)
     open val context by nullable(String::class)
@@ -102,7 +106,9 @@ open class LkProperty : LbDslNode<LkProperty>(LkProperty::class) {
 }
 
 open class LkChangeSet : LkRefactorings<LkChangeSet>(LkChangeSet::class) {
+    @Primary
     open val id by nonNullable(Any::class)
+    @Primary
     open val author by nullable(String::class)
     open val dbms by nullable(String::class)
     open val runAlways by nullable(Boolean::class, true) // TODO What is correct default?
@@ -120,9 +126,11 @@ open class LkChangeSet : LkRefactorings<LkChangeSet>(LkChangeSet::class) {
 open class LkRollback : LkRefactorings<LkRollback>(LkRollback::class)
 
 open class LkValidCheckSum : LbDslNode<LkValidCheckSum>(LkValidCheckSum::class) {
+    @Primary
     open val checkSum by nonNullable(String::class)
 }
 
 open class LkComment : LbDslNode<LkComment>(LkComment::class) {
+    @Primary
     open val text by nonNullable(String::class)
 }

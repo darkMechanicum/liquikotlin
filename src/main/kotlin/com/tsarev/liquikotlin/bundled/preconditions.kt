@@ -58,44 +58,54 @@ open class LkAndPrecondition : LkPreconditionLogic<LkAndPrecondition>(LkAndPreco
 open class LkOrPrecondition : LkPreconditionLogic<LkOrPrecondition>(LkOrPrecondition::class)
 
 open class LkDbmsPrecondition : LbDslNode<LkDbmsPrecondition>(LkDbmsPrecondition::class) {
+    @Primary
     open val type by nullable(String::class)
 }
 
 open class LkRunningAsPrecondition : LbDslNode<LkRunningAsPrecondition>(LkRunningAsPrecondition::class) {
+    @Primary
     open val username by nullable(String::class)
 }
 
 open class LkChangeSetExecutedPrecondition :
     LbDslNode<LkChangeSetExecutedPrecondition>(LkChangeSetExecutedPrecondition::class) {
+    @Primary
     open val id by nullable(String::class)
+    @Primary
     open val author by nullable(String::class)
     open val changeLogFile by nullable(String::class)
 }
 
 open class LkColumnExistsPrecondition :
     PreconditionWithSchAndCat<LkColumnExistsPrecondition>(LkColumnExistsPrecondition::class) {
+    @Primary
     open val tableName by nullable(String::class)
+    @Primary
     open val columnName by nullable(String::class)
 }
 
 open class LkTableExistsPrecondition :
     PreconditionWithSchAndCat<LkTableExistsPrecondition>(LkTableExistsPrecondition::class) {
+    @Primary
     open val tableName by nullable(String::class)
 }
 
 open class LkViewExistsPrecondition :
     PreconditionWithSchAndCat<LkViewExistsPrecondition>(LkViewExistsPrecondition::class) {
+    @Primary
     open val viewName by nullable(String::class)
 }
 
 open class LkForeignKeyConstraintExistsPrecondition :
     PreconditionWithSchAndCat<LkForeignKeyConstraintExistsPrecondition>(LkForeignKeyConstraintExistsPrecondition::class) {
+    @Primary
     open val foreignKeyName by nullable(String::class)
     open val foreignKeyTableName by nullable(String::class)
 }
 
 open class LkIndexExistsPrecondition :
     PreconditionWithSchAndCat<LkIndexExistsPrecondition>(LkIndexExistsPrecondition::class) {
+    @Primary
     open val indexName by nullable(String::class)
     open val tableName by nullable(String::class)
     open val columnNames by nullable(String::class)
@@ -103,32 +113,38 @@ open class LkIndexExistsPrecondition :
 
 open class LkSequenceExistsPrecondition :
     PreconditionWithSchAndCat<LkSequenceExistsPrecondition>(LkSequenceExistsPrecondition::class) {
+    @Primary
     open val sequenceName by nullable(String::class)
 }
 
 open class LkPrimaryKeyExistsPrecondition :
     PreconditionWithSchAndCat<LkPrimaryKeyExistsPrecondition>(LkPrimaryKeyExistsPrecondition::class) {
+    @Primary
     open val primaryKeyName by nonNullable(String::class)
     open val tableName by nullable(String::class)
 }
 
 open class LkSqlCheckPrecondition : LbDslNode<LkSqlCheckPrecondition>(LkSqlCheckPrecondition::class) {
     open val expectedResult by nullable(String::class)
+    @Primary
     open val sql by nullable(String::class)
 }
 
 open class LkChangeLogPropertyDefinedPrecondition :
     LbDslNode<LkChangeLogPropertyDefinedPrecondition>(LkChangeLogPropertyDefinedPrecondition::class) {
+    @Primary
     open val property by nullable(String::class)
     open val value by nullable(String::class)
 }
 
 open class LkCustomPrecondition : LbDslNode<LkCustomPrecondition>(LkCustomPrecondition::class) {
+    @Primary
     open val className by nullable(String::class)
     open val param by child(::LkCustomPreconditionParam)
 }
 
 open class LkCustomPreconditionParam : LbDslNode<LkCustomPreconditionParam>(LkCustomPreconditionParam::class) {
+    @Primary
     open val name by nullable(String::class)
     open val value by nullable(Any::class)
 }

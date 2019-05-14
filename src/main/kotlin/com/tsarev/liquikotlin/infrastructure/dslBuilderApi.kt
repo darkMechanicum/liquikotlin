@@ -78,12 +78,14 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
     /**
      * Create non nullable property.
      */
-    protected abstract fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>): ChainableDelegate<ChainableProperty<FieldT>>
+    protected open fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>) =
+        ChainableDelegate { propertyFactory.createNonNullable(it, fieldType) }
 
     /**
      * Create nullable property.
      */
-    protected abstract fun <FieldT : Any> nullable(fieldType: KClass<FieldT>): ChainableDelegate<NullableChainableProperty<FieldT>>
+    protected open fun <FieldT : Any> nullable(fieldType: KClass<FieldT>) =
+        ChainableDelegate { propertyFactory.createNullable(it, fieldType) }
 
     /**
      * Abstract property with name.
@@ -136,13 +138,58 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
     }
 
     /**
+     * This node property factory.
+     */
+    abstract val propertyFactory: PropertyFactory
+
+    /**
+     * Abstract factory to allow [DslNode] define their own property creation logic.
+     */
+    abstract inner class PropertyFactory {
+
+        /**
+         * Create non nullable property.
+         */
+        abstract fun <FieldT : Any> createNonNullable(
+            propField: KProperty<*>,
+            propClass: KClass<FieldT>
+        ): ChainableProperty<FieldT>
+
+        /**
+         * Create nullable property.
+         */
+        abstract fun <FieldT : Any> createNullable(
+            propField: KProperty<*>,
+            propClass: KClass<FieldT>
+        ): NullableChainableProperty<FieldT>
+
+    }
+
+    /**
      * Delegate for chainable properties.
      */
     inner class ChainableDelegate<out PropT : NameableProperty<*>>(private val constructor: (KProperty<*>) -> PropT) {
+
+        private val laters = ArrayList<ChainableDelegate<PropT>.() -> Unit>()
+
         lateinit var propDefinition: KProperty<*>
+
         private val prop by lazy { constructor.invoke(propDefinition) }
-        operator fun provideDelegate(thisRef: Any?, property: KProperty<*>) = this.apply { propDefinition = property }
+
+        operator fun provideDelegate(thisRef: Any?, property: KProperty<*>) =
+            this.apply {
+                propDefinition = property
+                laters.forEach { this.it() }
+                prop /* Touch lazy property. */
+            }
+
         operator fun getValue(thisRef: Any?, property: KProperty<*>): PropT = prop
+
+        /**
+         * Util function to add logic after [propDefinition] is known.
+         * Useful to fill metainfo in here.
+         */
+        fun andLater(block: ChainableDelegate<PropT>.() -> Unit) = apply { laters.add(block) }
     }
 
 }
@@ -186,18 +233,14 @@ abstract class DefaultableDslNode<SelfT : DefaultableDslNode<SelfT>> : DslNode<S
     /**
      * Create non nullable property.
      */
-    protected abstract fun <FieldT : Any> nonNullable(
-        fieldType: KClass<FieldT>,
-        default: FieldT? = null
-    ): ChainableDelegate<DefaultableProperty<FieldT>>
+    protected open fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>, default: FieldT? = null) =
+        ChainableDelegate { propertyFactory.createNonNullable(it, fieldType).apply { setDefault(default) } }
 
     /**
      * Create nullable property.
      */
-    protected abstract fun <FieldT : Any> nullable(
-        fieldType: KClass<FieldT>,
-        default: FieldT? = null
-    ): ChainableDelegate<NullableDefaultableProperty<FieldT>>
+    protected open fun <FieldT : Any> nullable(fieldType: KClass<FieldT>, default: FieldT? = null) =
+        ChainableDelegate { propertyFactory.createNullable(it, fieldType).apply { setDefault(default) } }
 
     final override fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>) =
         nonNullable(fieldType, null)
@@ -242,13 +285,66 @@ abstract class DefaultableDslNode<SelfT : DefaultableDslNode<SelfT>> : DslNode<S
         }
     }
 
+    /**
+     * Property factory specialization.
+     */
+    abstract override val propertyFactory: DefaultablePropertyFactory
+
+    /**
+     * Abstract factory to allow [DslNode] define their own defaultable property creation logic.
+     */
+    abstract inner class DefaultablePropertyFactory : PropertyFactory() {
+
+        /**
+         * Create non nullable property.
+         */
+        abstract override fun <FieldT : Any> createNonNullable(
+            propField: KProperty<*>,
+            propClass: KClass<FieldT>
+        ): DefaultableProperty<FieldT>
+
+        /**
+         * Create nullable property.
+         */
+        abstract override fun <FieldT : Any> createNullable(
+            propField: KProperty<*>,
+            propClass: KClass<FieldT>
+        ): NullableDefaultableProperty<FieldT>
+
+    }
+
+}
+
+/**
+ * Base node class with property defaults support.
+ */
+abstract class MetaAwareDslNode<SelfT : MetaAwareDslNode<SelfT>> : DefaultableDslNode<SelfT>() {
+
+    /**
+     * Various property meta information.
+     */
+    data class PropertyMeta(
+        val name: String,
+        val getter: DslNode.Valuable<*>,
+        val type: KClass<*>,
+        val annotations: List<Annotation>,
+        val definingProp: KProperty<*>,
+        val isNullable: Boolean,
+        val hasDefaultByDefinition: Boolean
+    )
+
+    /**
+     * All defined properties meta info.
+     */
+    abstract val propertyMeta: Map<String, PropertyMeta>
+
 }
 
 /**
  * Base node class with property defaults support.
  */
 abstract class EvaluatableDslNode<SelfT : EvaluatableDslNode<SelfT>> :
-    DefaultableDslNode<SelfT>() {
+    MetaAwareDslNode<SelfT>() {
 
     /**
      * Parent node.

@@ -60,6 +60,9 @@ open class LbDslNode<SelfT : LbDslNode<SelfT>>(
 
 }
 
+/**
+ * Single property mapping to original domain model.
+ */
 data class PropertyMapping<FromT, ToT, PropertyT>(
     val getter: (FromT) -> PropertyT?,
     val setter: (ToT?, PropertyT) -> Any?
@@ -72,6 +75,9 @@ data class PropertyMapping<FromT, ToT, PropertyT>(
     }
 }
 
+/**
+ * Base integrator class for liquibase domain model.
+ */
 open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, ParentT : Any>(
     val linkedConstructor: () -> LinkedT,
     private val parentSetter: ((ParentT, LinkedT?, NodeT, LbArg?) -> Unit)? = null,
@@ -101,6 +107,9 @@ open class LiquibaseIntegrator<NodeT : DefaultNode<NodeT>, LinkedT : Any, Parent
 
 }
 
+/**
+ * Util function for fast [PropertyMapping] creation.
+ */
 operator fun <LinkedT : SelfLinkedT, SelfLinkedT : Any, NodeT : DefaultNode<NodeT>, SelfT : DefaultNode<NodeT>, PropertyT>
         KProperty1<SelfT, DslNode.Valuable<PropertyT>>.minus(setter: (SelfLinkedT, PropertyT?) -> Any) =
     PropertyMapping<NodeT, LinkedT, PropertyT>({ node -> this.get(node as SelfT).current }, { linked, prop -> linked?.run { setter.invoke(this, prop) } })

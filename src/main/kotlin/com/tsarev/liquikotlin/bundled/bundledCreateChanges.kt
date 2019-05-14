@@ -9,7 +9,9 @@ import kotlin.reflect.KClass
 
 abstract class LkBaseColumnConfig<SelfT : LkBaseColumnConfig<SelfT>>(thisClass: KClass<SelfT>) :
     LbDslNode<SelfT>(thisClass) {
+    @Primary
     open val name by nullable(String::class)
+    @Primary
     open val type by nullable(String::class)
     open val value by nullable(String::class)
     open val computed by nullable(Boolean::class)
@@ -55,31 +57,41 @@ open class LkCommonColumnConfig : LkBaseColumnConfig<LkCommonColumnConfig>(LkCom
 open class LkAddAutoIncrement : LbDslNode<LkAddAutoIncrement>(LkAddAutoIncrement::class) {
     open val catalogName by nullable(String::class)
     open val columnDataType by nullable(String::class)
+    @Primary
     open val columnName by nonNullable(String::class)
     open val incrementBy by nullable(BigInteger::class)
     open val schemaName by nullable(String::class)
     open val startWith by nullable(BigInteger::class)
+    @Primary
     open val tableName by nonNullable(String::class)
 }
 
 open class LkAddColumn : LbDslNode<LkAddColumn>(LkAddColumn::class) {
     open val catalogName by nullable(String::class)
     open val schemaName by nullable(String::class)
+    @Primary
     open val tableName by nonNullable(String::class)
 
     open val column by child(::LkAddColumnConfig)
 }
 
 open class LkConstraints : LbDslNode<LkConstraints>(LkConstraints::class) {
+    @Primary
     open val nullable by nullable(Boolean::class)
+    @Primary
     open val primaryKey by nullable(Boolean::class)
     open val primaryKeyName by nullable(String::class)
+    @Primary
     open val unique by nullable(Boolean::class)
     open val uniqueConstraintName by nullable(String::class)
     open val references by nullable(String::class)
+    @Primary
     open val foreignKeyName by nullable(String::class)
+    @Primary
     open val deleteCascade by nullable(Boolean::class)
+    @Primary
     open val deferrable by nullable(Boolean::class)
+    @Primary
     open val initiallyDeferred by nullable(Boolean::class)
     open val primaryKeyTablespace by nullable(String::class)
     open val referencedTableName by nullable(String::class)
@@ -90,6 +102,7 @@ open class LkConstraints : LbDslNode<LkConstraints>(LkConstraints::class) {
 open class LkAddDefaultValue : LbDslNode<LkAddDefaultValue>(LkAddDefaultValue::class) {
     open val catalogName by nullable(String::class)
     open val columnDataType by nullable(String::class)
+    @Primary
     open val columnName by nullable(String::class)
     open val defaultValue by nullable(String::class)
     open val defaultValueBoolean by nullable(Boolean::class)
@@ -98,12 +111,15 @@ open class LkAddDefaultValue : LbDslNode<LkAddDefaultValue>(LkAddDefaultValue::c
     open val defaultValueNumeric by nullable(Number::class)
     open val defaultValueSequenceNext by nullable(String::class)
     open val schemaName by nullable(String::class)
+    @Primary
     open val tableName by nullable(String::class)
 }
 
 open class LkAddForeignKeyConstraint : LbDslNode<LkAddForeignKeyConstraint>(LkAddForeignKeyConstraint::class) {
+    @Primary
     open val baseColumnNames by nullable(String::class)
     open val baseTableCatalogName by nullable(String::class)
+    @Primary
     open val baseTableName by nullable(String::class)
     open val baseTableSchemaName by nullable(String::class)
     open val constraintName by nullable(String::class)
@@ -125,8 +141,10 @@ open class LkAddLookupTable : LbDslNode<LkAddLookupTable>(LkAddLookupTable::clas
     open val existingTableName by nullable(String::class)
     open val existingTableSchemaName by nullable(String::class)
     open val newColumnDataType by nullable(String::class)
+    @Primary
     open val newColumnName by nullable(String::class)
     open val newTableCatalogName by nullable(String::class)
+    @Primary
     open val newTableName by nullable(String::class)
     open val newTableSchemaName by nullable(String::class)
 }
@@ -134,18 +152,22 @@ open class LkAddLookupTable : LbDslNode<LkAddLookupTable>(LkAddLookupTable::clas
 open class LkAddNotNullConstraint : LbDslNode<LkAddNotNullConstraint>(LkAddNotNullConstraint::class) {
     open val catalogName by nullable(String::class)
     open val columnDataType by nullable(String::class)
+    @Primary
     open val columnName by nullable(String::class)
     open val defaultNullValue by nullable(String::class)
     open val schemaName by nullable(String::class)
+    @Primary
     open val tableName by nullable(String::class)
     open val constraintName by nullable(String::class)
 }
 
 open class LkAddPrimaryKey : LbDslNode<LkAddPrimaryKey>(LkAddPrimaryKey::class) {
     open val catalogName by nullable(String::class)
+    @Primary
     open val columnNames by nullable(String::class)
     open val constraintName by nullable(String::class)
     open val schemaName by nullable(String::class)
+    @Primary
     open val tableName by nullable(String::class)
     open val tablespace by nullable(String::class)
     open val clustered by nullable(Boolean::class)
@@ -156,12 +178,14 @@ open class LkAddPrimaryKey : LbDslNode<LkAddPrimaryKey>(LkAddPrimaryKey::class) 
 
 open class LkAddUniqueConstraint : LbDslNode<LkAddUniqueConstraint>(LkAddUniqueConstraint::class) {
     open val catalogName by nullable(String::class)
+    @Primary
     open val columnNames by nullable(String::class)
     open val constraintName by nullable(String::class)
     open val deferrable by nullable(Boolean::class)
     open val disabled by nullable(Boolean::class)
     open val initiallyDeferred by nullable(Boolean::class)
     open val schemaName by nullable(String::class)
+    @Primary
     open val tableName by nullable(String::class)
     open val tablespace by nullable(String::class)
     open val forIndexName by nullable(String::class)
@@ -171,8 +195,10 @@ open class LkAddUniqueConstraint : LbDslNode<LkAddUniqueConstraint>(LkAddUniqueC
 
 open class LkCreateIndex : LbDslNode<LkCreateIndex>(LkCreateIndex::class) {
     open val catalogName by nullable(String::class)
+    @Primary
     open val indexName by nullable(String::class)
     open val schemaName by nullable(String::class)
+    @Primary
     open val tableName by nullable(String::class)
     open val tablespace by nullable(String::class)
     open val unique by nullable(Boolean::class)
@@ -186,6 +212,7 @@ open class LkCreateProcedure : LbDslNode<LkCreateProcedure>(LkCreateProcedure::c
     open val dbms by nullable(String::class)
     open val encoding by nullable(String::class)
     open val path by nullable(String::class)
+    @Primary
     open val procedureName by nullable(String::class)
     open val procedureText by nullable(String::class)
     open val relativeToChangelogFile by nullable(Boolean::class)
@@ -201,6 +228,7 @@ open class LkCreateSequence : LbDslNode<LkCreateSequence>(LkCreateSequence::clas
     open val minValue by nullable(BigInteger::class)
     open val ordered by nullable(Boolean::class)
     open val schemaName by nullable(String::class)
+    @Primary
     open val sequenceName by nullable(String::class)
     open val startValue by nullable(BigInteger::class)
     open val cacheSize by nullable(BigInteger::class)
@@ -210,6 +238,7 @@ open class LkCreateTable : LbDslNode<LkCreateTable>(LkCreateTable::class) {
     open val catalogName by nullable(String::class)
     open val remarks by nullable(String::class)
     open val schemaName by nullable(String::class)
+    @Primary
     open val tableName by nullable(String::class)
     open val tablespace by nullable(String::class)
 
@@ -221,6 +250,7 @@ open class LkCreateView : LbDslNode<LkCreateView>(LkCreateView::class) {
     open val replaceIfExists by nullable(Boolean::class)
     open val schemaName by nullable(String::class)
     open val selectQuery by nullable(String::class)
+    @Primary
     open val viewName by nullable(String::class)
     open val fullDefinition by nullable(Boolean::class)
 }

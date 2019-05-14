@@ -2,6 +2,7 @@ package com.tsarev.liquikotlin.infrastructure
 
 import com.tsarev.liquikotlin.bundled.LkChangeLog
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.cast
 
 const val enableLineNumberInfo = true
@@ -58,6 +59,8 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
 
     override var hasDefault: Boolean = false
 
+    override val propertyMeta: MutableMap<String, PropertyMeta> = HashMap()
+
     private val nonNullableProperties = ArrayList<CommonProperty<*>>()
 
     var lineInfo: String = ""
@@ -102,16 +105,6 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         return super.eval(factory, arg, parentEval)
     }
 
-    final override fun <FieldT : Any> nonNullable(
-        fieldType: KClass<FieldT>,
-        default: FieldT?
-    ) = ChainableDelegate { CommonProperty(fieldType, it.name, default) }
-
-    final override fun <FieldT : Any> nullable(
-        fieldType: KClass<FieldT>,
-        default: FieldT?
-    ) = ChainableDelegate { NullableCommonProperty(fieldType, it.name, default) }
-
     private fun copyParametersFrom(other: DefaultNode<*>, shouldContinue: Boolean) {
         if (shouldContinue) {
             copySelfParameters(other as DefaultNode<SelfT>)
@@ -131,32 +124,62 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         this.hasDefault = other.hasDefault
     }
 
+    override val propertyFactory = DefaultPropertyFactory()
+
+    /**
+     * Default implementation of [DefaultableDslNode.DefaultablePropertyFactory].
+     */
+    inner class DefaultPropertyFactory : DefaultablePropertyFactory() {
+        override fun <FieldT : Any> createNonNullable(propField: KProperty<*>, propClass: KClass<FieldT>) =
+            CommonProperty(propClass, propField.name).also {
+                propertyMeta[propField.name] =
+                    PropertyMeta(propField.name, it, propClass, propField.annotations, propField, false, false)
+            }
+
+        override fun <FieldT : Any> createNullable(propField: KProperty<*>, propClass: KClass<FieldT>) =
+            NullableCommonProperty(propClass, propField.name).also {
+                propertyMeta[propField.name] =
+                    PropertyMeta(propField.name, it, propClass, propField.annotations, propField, true, false)
+            }
+    }
+
+    /**
+     * Add meta info about default value.
+     */
+    final override fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>, default: FieldT?) =
+        super.nonNullable(fieldType, default)
+            .andLater { propertyMeta.computeIfPresent(propDefinition.name) { _, old -> old.copy(hasDefaultByDefinition = true) } }
+
+    /**
+     * Add meta info about default value.
+     */
+    final override fun <FieldT : Any> nullable(fieldType: KClass<FieldT>, default: FieldT?) =
+        super.nullable(fieldType, default)
+            .andLater { propertyMeta.computeIfPresent(propDefinition.name) { _, old -> old.copy(hasDefaultByDefinition = true) } }
+
+    /**
+     * Default non nullable property implementation.
+     */
     open inner class CommonProperty<FieldT : Any>(
         override val propertyType: KClass<FieldT>,
-        override val name: String,
-        default: FieldT?
+        override val name: String
     ) :
         DefaultableProperty<FieldT>() {
-        init {
-            setDefault(default)
-        }
-        override fun invoke(value: FieldT) = self.buildNodeIfNeccessary().apply {
-            this.parameters[name] = value
-        }
+        override fun invoke(value: FieldT) = self.buildNodeIfNeccessary().apply { this.parameters[name] = value }
         override val current: FieldT
             get() = propertyType.cast(
-                parameters[name] ?: throw IllegalAccessException("Property $name should be set.${this@DefaultNode.lineInfo}")
+                parameters[name]
+                    ?: throw IllegalAccessException("Property $name should be set.${this@DefaultNode.lineInfo}")
             )
     }
 
+    /**
+     * Default nullable property implementation.
+     */
     open inner class NullableCommonProperty<FieldT : Any>(
         override val propertyType: KClass<FieldT>,
-        override val name: String,
-        default: FieldT?
+        override val name: String
     ) : NullableDefaultableProperty<FieldT>() {
-        init {
-            setDefault(default)
-        }
         override fun invoke(value: FieldT?) = self.buildNodeIfNeccessary().apply { parameters[name] = value }
         override val current: FieldT? get() = parameters[name]?.let { propertyType.cast(it) }
     }

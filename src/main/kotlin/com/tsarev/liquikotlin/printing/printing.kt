@@ -3,8 +3,23 @@ package com.tsarev.liquikotlin.printing
 import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.infrastructure.DslNode
 import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
+import com.tsarev.liquikotlin.infrastructure.MetaAwareDslNode
 import java.io.PrintStream
 import kotlin.reflect.KClass
+
+/**
+ * Utility property to collect all primary props with static callback.
+ */
+val DslNode<*>.primaryProps
+    get() = (this as? MetaAwareDslNode<*>)
+        ?.propertyMeta
+        ?.values
+        ?.filter { it.annotations.any { Primary::class.isInstance(it) } }
+        ?.map { it.name to it.getter.current }
+        ?.filter { it.second != null }
+        ?.takeIf { it.isNotEmpty() }
+        ?.joinToString(separator = ", ") { "${it.first}:${it.second}" }
+        ?: identificationRules[this::class]?.let { it(this) }
 
 /**
  * Rules which field is more valuable for printing in pretty mode.
@@ -38,7 +53,7 @@ const val lastChildBranchingSymbol = '└'
 const val branchSymbol = '─'
 const val spaceSymbol = ' '
 const val beforeChild = "$linkingSymbol"
-val identificationPattern: Pattern = { " - $it" }
+val identificationPattern: Pattern = { "[$it]" }
 val commonPattern: Pattern = { "$linkingSymbol${"$spaceSymbol".repeat(indent - 1)}$it" }
 val branchPattern: Pattern = { "$branchingSymbol${"$branchSymbol".repeat(indent - 2)}$spaceSymbol$it" }
 val lastBranchPattern: Pattern = { "$lastChildBranchingSymbol${"$branchSymbol".repeat(indent - 2)}$spaceSymbol$it" }
@@ -61,14 +76,8 @@ enum class PrinterMode(
         this addStart "${node::class.qualifiedName}"
         this addLine "$specialPrefix${node.parameters}"
     }),
-    PRETTY({ node, _ ->
-        val identification = identificationRules[node::class]?.let { it(node) }
-        this addStart "${node::class.simpleName}${identification withPattern identificationPattern}"
-    }),
-    MINIMUM({ node, _ ->
-        this addStart "${node::class.simpleName}"
-    }, true);
-
+    PRETTY({ node, _ -> this addStart "${node::class.simpleName}${node.primaryProps withPattern identificationPattern}" }),
+    MINIMUM({ node, _ -> this addStart "${node::class.simpleName}" }, true);
 }
 
 /**
@@ -116,7 +125,20 @@ class Printer<NodeT : DslNode<NodeT>> : EvaluatableDslNode.Evaluator<NodeT, Muta
     override fun initResult(thisNode: NodeT, argument: PrinterArg?) = ArrayList<String>()
 }
 
+/**
+ * Print tree.
+ */
+fun EvaluatableDslNode<*>.print(mode: PrinterMode = PrinterMode.PRETTY, stream: PrintStream = System.out) =
+    run { this.eval<MutableList<String>, PrinterArg>(PrintingEvaluatorFactory.instance, mode to stream) }
+
+/**
+ * Factory that creates printers for nodes.
+ */
 open class PrintingEvaluatorFactory : EvaluatableDslNode.EvaluatorFactory<PrinterArg>() {
+
+    companion object {
+        val instance = PrintingEvaluatorFactory()
+    }
 
     // TODO Add include and includeAll support.
     // TODO Add default values support.
