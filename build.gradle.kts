@@ -22,4 +22,5 @@ dependencies {
     compile("de.swirtz:ktsRunner:0.0.7")
 
     testCompile("junit", "junit", "4.12")
+    testCompile("com.h2database", "h2", "1.4.199")
 }

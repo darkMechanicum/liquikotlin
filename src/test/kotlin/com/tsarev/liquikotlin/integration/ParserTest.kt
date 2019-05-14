@@ -1,13 +1,13 @@
 package com.tsarev.liquikotlin.integration
 
+import com.tsarev.liquikotlin.util.RuleChainAwareTest
 import com.tsarev.liquikotlin.util.assertedCast
+import com.tsarev.liquikotlin.util.patchedAbs
 import liquibase.change.core.RawSQLChange
 import liquibase.changelog.DatabaseChangeLog
 import liquibase.parser.ext.KotlinLiquibaseChangeLogParser
 import liquibase.resource.FileSystemResourceAccessor
 import org.junit.Assert
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
@@ -41,30 +41,17 @@ const val thirdScript = """
 /**
  * Testing parser work.
  */
-class ParserTest {
+class ParserTest : RuleChainAwareTest() {
 
-    @get:Rule
-    val tempFolder = TemporaryFolder()
+    private val tempFolder by rule { TemporaryFolder() }
 
-    private lateinit var firstFile: File
+    private val firstFile by init { tempFolder.newFile(firstFileName).setContent(firstScript) }
 
-    private lateinit var secondFile: File
+    private val secondFile by init { tempFolder.newFile(secondFileName).setContent(secondScript) }
 
-    private lateinit var thirdFile: File
+    private val thirdFile by init { tempFolder.newFile(thirdFileName).setContent(thirdScript) }
 
     private val parser = KotlinLiquibaseChangeLogParser()
-
-    @Before
-    fun initFiles() {
-        firstFile = tempFolder.newFile(firstFileName).setContent(firstScript)
-        secondFile = tempFolder.newFile(secondFileName).setContent(secondScript)
-        thirdFile = tempFolder.newFile(thirdFileName).setContent(thirdScript)
-    }
-
-    /**
-     * Path with replaced '\'s since liquibase interprets them incorrectly in win environment.
-     */
-    private val File.patchedAbs get() = this.absolutePath.replace('\\', '/')
 
     private fun File.setContent(content: String): File = this.apply {
         PrintStream(this).use {
@@ -72,10 +59,12 @@ class ParserTest {
         }
     }
 
+    /**
+     * Assert that two first changes from two change sets are RawSQLChange with specific query.
+     */
     private fun DatabaseChangeLog.assertChanges() {
         val firstChange = changeSets.firstOrNull()?.changes?.firstOrNull()
         val secondChange = changeSets.getOrNull(1)?.changes?.firstOrNull()
-
         Assert.assertEquals(firstSql, firstChange.assertedCast<RawSQLChange>().sql)
         Assert.assertEquals(secondSql, secondChange.assertedCast<RawSQLChange>().sql)
     }

@@ -12,14 +12,13 @@ import liquibase.precondition.CustomPreconditionWrapper
 import liquibase.precondition.PreconditionLogic
 import liquibase.precondition.core.*
 import org.junit.Assert
-import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 /**
  * Comprehensive test that checks all node types.
  */
-class AllHierarchyTest {
+class AllHierarchyTest : RuleChainAwareTest() {
 
     /**
      * Test integration factory.
@@ -29,8 +28,7 @@ class AllHierarchyTest {
     /**
      * Temp filder to use within include all.
      */
-    @get:Rule
-    val tempDir = TemporaryFolder()
+    val tempDir by rule { TemporaryFolder() }
 
     @Test
     fun testAllNodes() {

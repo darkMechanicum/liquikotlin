@@ -1,7 +1,27 @@
 import com.tsarev.liquikotlin.bundled.changelog
-import com.tsarev.liquikotlin.bundled.invoke
-import com.tsarev.liquikotlin.bundled.minus
+import com.tsarev.liquikotlin.util.*
 
-changelog.changeset(1).sql - "first";
-changelog.changeset(2).sql - "second";
-changelog.include("file.dummy").relativeToChangelogFile(true)
+/*
+ * This is a test script. See [H2RunTest].
+ */
+
+changelog.changeset.author.setDefault("darkMechanicum")
+
+changelog - {
+    property.name(testProperty).value(testValue)
+
+    changeset.id(1) - {
+        comment.text(testComment)
+
+        rollback - {
+            dropTable.tableName(testTableName)
+        }
+
+        createTable.tableName(testTableName) - {
+            column
+                .name(testColumnName)
+                .type(testColumnType)
+                .constraints.nullable(testNullable)
+        }
+    }
+}

@@ -173,3 +173,6 @@ const val testRunInTransaction = true
 const val testFailOnError = true
 const val testCheckSum = "1:1234567890"
 const val testIncludePath = "test.dummy"
+const val testSecondColumnName = "mySecondColumn"
+const val testSecondConstraintName = "constraintName"
+const val primaryNullable = false

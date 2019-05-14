@@ -9,6 +9,9 @@ import kotlin.reflect.KClass
 
 typealias Getter<T> = (T) -> Any?
 
+/**
+ * Matcher that invokes getter and compares result with expected value.
+ */
 open class GetterMatcher<T>(private val getter: (T) -> Any?, private val expected: Any? = null) :
     TypeSafeDiagnosingMatcher<T>() {
     override fun describeTo(description: Description?) = description?.appendText("$expected").let { }
@@ -17,11 +20,21 @@ open class GetterMatcher<T>(private val getter: (T) -> Any?, private val expecte
             .also { if (!it) mismatchDescription.appendText("not equal to ${getter.invoke(item)}") }
 }
 
+/**
+ * Assert passed value has specfied type.
+ */
 fun assertType(expectedType: KClass<*>, value: Any?) =
     Assert.assertTrue("Expected type ${expectedType.qualifiedName} for $value.", expectedType.isInstance(value))
 
-inline fun <reified T : Any> Any?.assertedCast(): T = this.assertedCast { "$this should be of type ${T::class.qualifiedName}" }
+/**
+ * Asserted cast with default message.
+ */
+inline fun <reified T : Any> Any?.assertedCast(): T =
+    this.assertedCast { "$this should be of type ${T::class.qualifiedName}" }
 
+/**
+ * Bulk equals getters assertions.
+ */
 fun <T> assertFields(value: T, vararg raw: Any) =
     Assert.assertThat("Actual $value fields are not equal to expected.", value, CoreMatchers.allOf(
         raw.map {
@@ -37,6 +50,17 @@ fun <T> assertFields(value: T, vararg raw: Any) =
         }
     ))
 
+/**
+ * Assert that passed list elements are of specified classes in the same order.
+ */
 fun List<*>.assertClasses(vararg kClass: KClass<*>) = kClass
     .mapIndexed { index, kclass -> Assert.assertTrue(this.size > index).let { this[index] to kclass } }
     .forEach { assertType(it.second, it.first) }
+
+/**
+ * Ignore exceptions within this block.
+ */
+fun <T> T.ignore(block: T.() -> Unit) = try {
+    this.block()
+} catch (ignore: Throwable) {
+}
