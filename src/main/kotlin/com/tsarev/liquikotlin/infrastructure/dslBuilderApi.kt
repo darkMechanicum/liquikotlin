@@ -78,12 +78,12 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
     /**
      * Create non nullable property.
      */
-    protected abstract fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>): ChainableDelegate<FieldT>
+    protected abstract fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>): ChainableDelegate<ChainableProperty<FieldT>>
 
     /**
      * Create nullable property.
      */
-    protected abstract fun <FieldT : Any> nullable(fieldType: KClass<FieldT>): NullableChainableDelegate<FieldT>
+    protected abstract fun <FieldT : Any> nullable(fieldType: KClass<FieldT>): ChainableDelegate<NullableChainableProperty<FieldT>>
 
     /**
      * Abstract property with name.
@@ -135,38 +135,14 @@ abstract class DslNode<SelfT : DslNode<SelfT>> : Selfable<SelfT> {
         abstract operator fun invoke(value: FieldT?): SelfT
     }
 
-    abstract inner class DelegateBase {
-
-        lateinit var propertyName: String
-
-        /**
-         * Set property name for this delegate.
-         */
-        open operator fun provideDelegate(thisRef: Any?, property: KProperty<*>) =
-            this.apply { propertyName = property.name }.apply { doInit(thisRef, property) }
-
-        /**
-         * Additional delegate initialization.
-         */
-        open fun doInit(thisRef: Any?, property: KProperty<*>) {}
-    }
-
     /**
-     * Delegate of declared node property.
+     * Delegate for chainable properties.
      */
-    abstract inner class ChainableDelegate<FieldT : Any> : DelegateBase() {
-        override fun provideDelegate(thisRef: Any?, property: KProperty<*>) =
-            super.provideDelegate(thisRef, property).let { this }
-        abstract operator fun getValue(thisRef: Any?, property: KProperty<*>): ChainableProperty<FieldT>
-    }
-
-    /**
-     * Delegate of declared nullable node property
-     */
-    abstract inner class NullableChainableDelegate<FieldT : Any> : DelegateBase() {
-        override fun provideDelegate(thisRef: Any?, property: KProperty<*>) =
-            super.provideDelegate(thisRef, property).let { this }
-        abstract operator fun getValue(thisRef: Any?, property: KProperty<*>): NullableChainableProperty<FieldT>
+    inner class ChainableDelegate<out PropT : NameableProperty<*>>(private val constructor: (KProperty<*>) -> PropT) {
+        lateinit var propDefinition: KProperty<*>
+        private val prop by lazy { constructor.invoke(propDefinition) }
+        operator fun provideDelegate(thisRef: Any?, property: KProperty<*>) = this.apply { propDefinition = property }
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): PropT = prop
     }
 
 }
@@ -213,7 +189,7 @@ abstract class DefaultableDslNode<SelfT : DefaultableDslNode<SelfT>> : DslNode<S
     protected abstract fun <FieldT : Any> nonNullable(
         fieldType: KClass<FieldT>,
         default: FieldT? = null
-    ): DefaultableDelegate<FieldT>
+    ): ChainableDelegate<DefaultableProperty<FieldT>>
 
     /**
      * Create nullable property.
@@ -221,7 +197,7 @@ abstract class DefaultableDslNode<SelfT : DefaultableDslNode<SelfT>> : DslNode<S
     protected abstract fun <FieldT : Any> nullable(
         fieldType: KClass<FieldT>,
         default: FieldT? = null
-    ): NullableDefaultableDelegate<FieldT>
+    ): ChainableDelegate<NullableDefaultableProperty<FieldT>>
 
     final override fun <FieldT : Any> nonNullable(fieldType: KClass<FieldT>) =
         nonNullable(fieldType, null)
@@ -266,29 +242,6 @@ abstract class DefaultableDslNode<SelfT : DefaultableDslNode<SelfT>> : DslNode<S
         }
     }
 
-    /**
-     * Delegate of declared node property.
-     */
-    abstract inner class DefaultableDelegate<FieldT : Any> : ChainableDelegate<FieldT>() {
-        abstract val default: FieldT?
-        override fun provideDelegate(thisRef: Any?, property: KProperty<*>) =
-            super.provideDelegate(thisRef, property).let { this }
-        abstract override operator fun getValue(thisRef: Any?, property: KProperty<*>): DefaultableProperty<FieldT>
-    }
-
-    /**
-     * Delegate of declared nullable node property
-     */
-    abstract inner class NullableDefaultableDelegate<FieldT : Any> : NullableChainableDelegate<FieldT>() {
-        abstract val default: FieldT?
-        override fun provideDelegate(thisRef: Any?, property: KProperty<*>) =
-            super.provideDelegate(thisRef, property).let { this }
-        abstract override operator fun getValue(
-            thisRef: Any?,
-            property: KProperty<*>
-        ): NullableDefaultableProperty<FieldT>
-    }
-
 }
 
 /**
@@ -315,8 +268,8 @@ abstract class EvaluatableDslNode<SelfT : EvaluatableDslNode<SelfT>> :
     /**
      * Get evaluator from this node.
      */
-    fun <EvalT : Any, ArgT> getEvaluator(factory: EvaluatorFactory<ArgT>)
-            = factory.getEvaluatorFor<SelfT, EvalT>(this.self)
+    fun <EvalT : Any, ArgT> getEvaluator(factory: EvaluatorFactory<ArgT>) =
+        factory.getEvaluatorFor<SelfT, EvalT>(this.self)
 
     /**
      * Evaluate node with null check.
@@ -342,7 +295,7 @@ abstract class EvaluatableDslNode<SelfT : EvaluatableDslNode<SelfT>> :
         /**
          * Get evaluator for node.
          */
-        abstract fun <NodeT: DslNode<NodeT>, EvalT : Any> getEvaluatorFor(node: NodeT): Evaluator<NodeT, EvalT, ArgT>
+        abstract fun <NodeT : DslNode<NodeT>, EvalT : Any> getEvaluatorFor(node: NodeT): Evaluator<NodeT, EvalT, ArgT>
     }
 
     /**
