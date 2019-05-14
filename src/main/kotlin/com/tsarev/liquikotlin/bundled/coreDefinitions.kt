@@ -42,7 +42,7 @@ abstract class LkRefactorings<SelfT : LkRefactorings<SelfT>>(thisClass: KClass<S
 
     // Other changes
     open val alterSequence by child(::LkAlterSequence)
-    open val empty by child(::LkEmpty)
+    open val empty by builtChild(::LkEmpty)
     open val executeCommand by child(::LkExecuteCommand)
     open val insert by child(::LkInsert)
     open val loadData by child(::LkLoadData)

@@ -98,7 +98,7 @@ class AllHierarchyTest : RuleChainAwareTest() {
 
                     // Other changes.
                     alterSequence.sequenceName(testSequenceName)
-//                    empty // TODO Add instant construction support.
+                    empty
                     executeCommand.executable(testExecutable)
                     insert.tableName(testTableName) - {
                         column.name(testColumnName)
@@ -189,7 +189,7 @@ class AllHierarchyTest : RuleChainAwareTest() {
 
                 // Other changes.
                 alterSequence.sequenceName(testSequenceName)
-//              empty // TODO Add instant construction support.
+                empty
                 executeCommand.executable(testExecutable)
                 insert.tableName(testTableName) - {
                     column.name(testColumnName)
@@ -233,8 +233,8 @@ class AllHierarchyTest : RuleChainAwareTest() {
             preconditions.assertNestedPreconditions()
 
             changeSets.first().run {
-                Assert.assertEquals(41, rollback.changes.size)
-                Assert.assertEquals(41, changes.size)
+                Assert.assertEquals(42, rollback.changes.size)
+                Assert.assertEquals(42, changes.size)
                 Assert.assertEquals(testComment, comments)
                 Assert.assertEquals(1, validCheckSums.size)
                 Assert.assertEquals(CheckSum.parse(testCheckSum), validCheckSums.first())
@@ -311,6 +311,7 @@ class AllHierarchyTest : RuleChainAwareTest() {
         DropUniqueConstraintChange::class,
         DropViewChange::class,
         AlterSequenceChange::class,
+        EmptyChange::class,
         ExecuteShellCommandChange::class,
         InsertDataChange::class,
         LoadDataChange::class,
@@ -334,10 +335,10 @@ class AllHierarchyTest : RuleChainAwareTest() {
         (get(1) as AddColumnChange).assertColumns()
         (get(8) as CreateIndexChange).assertColumns()
         (get(11) as CreateTableChange).assertColumns()
-        (get(28) as InsertDataChange).assertColumns()
-        (get(29) as LoadDataChange).assertColumns()
-        (get(30) as LoadUpdateDataChange).assertColumns()
-        (get(40) as UpdateDataChange).assertColumns()
+        (get(29) as InsertDataChange).assertColumns()
+        (get(30) as LoadDataChange).assertColumns()
+        (get(31) as LoadUpdateDataChange).assertColumns()
+        (get(41) as UpdateDataChange).assertColumns()
     }
 
     /**

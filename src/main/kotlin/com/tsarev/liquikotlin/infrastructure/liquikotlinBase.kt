@@ -34,6 +34,22 @@ open class LbDslNode<SelfT : LbDslNode<SelfT>>(
             )
             return result
         }
+
+        /**
+         * Add lazy child node.
+         */
+        inline fun <reified ChildT : DefaultNode<ChildT>, SelfT : DefaultNode<SelfT>>
+                DefaultNode<SelfT>.builtChild(noinline constructor: () -> ChildT): Lazy<ChildT> {
+            return lazy {
+                constructor().also {
+                    addChild(
+                        self,
+                        it,
+                        true
+                    )
+                }
+            }
+        }
     }
 
     data class RequiredFlag(var hasNone: Boolean = true)

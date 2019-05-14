@@ -40,9 +40,10 @@ abstract class DefaultNode<SelfT : DefaultNode<SelfT>> :
         }
 
         fun <SelfT : DefaultNode<SelfT>, ChildT : DefaultNode<ChildT>> addChild(
-            parent: SelfT, child: ChildT
+            parent: SelfT, child: ChildT, asNode: Boolean = false
         ) {
             child.realParent = parent
+            if (asNode) parent.addChild(child)
         }
     }
 

@@ -15,7 +15,6 @@ open class LkAlterSequence : LbDslNode<LkAlterSequence>(LkAlterSequence::class) 
     open val willCycle by nullable(Boolean::class)
 }
 
-// TODO Add lazy builder callback for instant creation upon use.
 open class LkEmpty : LbDslNode<LkEmpty>(LkEmpty::class)
 
 open class LkExecuteCommand : LbDslNode<LkExecuteCommand> (LkExecuteCommand::class) {

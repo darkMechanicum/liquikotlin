@@ -4,7 +4,6 @@ import com.tsarev.liquikotlin.util.*
 import liquibase.Liquibase
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.FileSystemResourceAccessor
-import org.junit.Rule
 import org.junit.Test
 import java.io.File
 import java.sql.Connection
@@ -15,7 +14,6 @@ import java.sql.DriverManager
  */
 class H2RunTest : RuleChainAwareTest() {
 
-    @get:Rule
     val conn: Connection by resource { DriverManager.getConnection("jdbc:h2:mem:test") }
 
     @Test
