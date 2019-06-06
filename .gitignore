@@ -1,0 +1,9 @@
+
+# Ignore idea project files.
+/.idea/*
+
+# Ignore gradle hidden directory.
+/.gradle/*
+
+# Ignore build folder.
+/build/*
