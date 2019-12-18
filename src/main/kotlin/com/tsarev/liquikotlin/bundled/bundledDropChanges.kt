@@ -1,6 +1,7 @@
 package com.tsarev.liquikotlin.bundled
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
+import com.tsarev.liquikotlin.infrastructure.api.nullable
 
 open class LkDelete : LbDslNode<LkDelete> (LkDelete::class) {
     open val catalogName by nullable(String::class)

@@ -2,9 +2,10 @@ package com.tsarev.liquikotlin.integration
 
 import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.infrastructure.minus
+import com.tsarev.liquikotlin.infrastructure.notNull
 import liquibase.change.core.*
 
-open class AlterSequenceIntegration : ChangeIntegration<LkAlterSequence, AlterSequenceChange>(
+open class AlterSequenceIntegration : ChangeIntegration<AlterSequenceChange>(
     ::AlterSequenceChange,
     LkAlterSequence::catalogName - AlterSequenceChange::setCatalogName,
     LkAlterSequence::incrementBy - AlterSequenceChange::setIncrementBy,
@@ -17,15 +18,15 @@ open class AlterSequenceIntegration : ChangeIntegration<LkAlterSequence, AlterSe
     LkAlterSequence::sequenceName - AlterSequenceChange::setSequenceName
 )
 
-open class EmptyIntegration : ChangeIntegration<LkEmpty, EmptyChange>(::EmptyChange)
+open class EmptyIntegration : ChangeIntegration<EmptyChange>(::EmptyChange)
 
-open class ExecuteCommandIntegration : ChangeIntegration<LkExecuteCommand, ExecuteShellCommandChange>(
+open class ExecuteCommandIntegration : ChangeIntegration<ExecuteShellCommandChange>(
     ::ExecuteShellCommandChange,
     LkExecuteCommand::executable - ExecuteShellCommandChange::setExecutable,
     LkExecuteCommand::os - ExecuteShellCommandChange::setOs
 )
 
-open class InsertIntegration : ChangeIntegration<LkInsert, InsertDataChange>(
+open class InsertIntegration : ChangeIntegration<InsertDataChange>(
     ::InsertDataChange,
     LkInsert::catalogName - InsertDataChange::setCatalogName,
     LkInsert::dbms - InsertDataChange::setDbms,
@@ -33,7 +34,7 @@ open class InsertIntegration : ChangeIntegration<LkInsert, InsertDataChange>(
     LkInsert::tableName - InsertDataChange::setTableName
 )
 
-open class LoadDataIntegration : ChangeIntegration<LkLoadData, LoadDataChange>(
+open class LoadDataIntegration : ChangeIntegration<LoadDataChange>(
     ::LoadDataChange,
     LkLoadData::catalogName - LoadDataChange::setCatalogName,
     LkLoadData::encoding - LoadDataChange::setEncoding,
@@ -45,7 +46,7 @@ open class LoadDataIntegration : ChangeIntegration<LkLoadData, LoadDataChange>(
     LkLoadData::relativeToChangelogFile - LoadDataChange::setRelativeToChangelogFile
 )
 
-open class LoadUpdateDataIntegration : ChangeIntegration<LkLoadUpdateData, LoadUpdateDataChange>(
+open class LoadUpdateDataIntegration : ChangeIntegration<LoadUpdateDataChange>(
     ::LoadUpdateDataChange,
     LkLoadUpdateData::catalogName - LoadUpdateDataChange::setCatalogName,
     LkLoadUpdateData::encoding - LoadUpdateDataChange::setEncoding,
@@ -58,7 +59,7 @@ open class LoadUpdateDataIntegration : ChangeIntegration<LkLoadUpdateData, LoadU
     LkLoadUpdateData::relativeToChangelogFile - LoadUpdateDataChange::setRelativeToChangelogFile
 )
 
-open class MergeColumnsIntegration : ChangeIntegration<LkMergeColumns, MergeColumnChange>(
+open class MergeColumnsIntegration : ChangeIntegration<MergeColumnChange>(
     ::MergeColumnChange,
     LkMergeColumns::catalogName - MergeColumnChange::setCatalogName,
     LkMergeColumns::column1Name - MergeColumnChange::setColumn1Name,
@@ -70,7 +71,7 @@ open class MergeColumnsIntegration : ChangeIntegration<LkMergeColumns, MergeColu
     LkMergeColumns::tableName - MergeColumnChange::setTableName
 )
 
-open class ModifyDataTypeIntegration : ChangeIntegration<LkModifyDataType, ModifyDataTypeChange>(
+open class ModifyDataTypeIntegration : ChangeIntegration<ModifyDataTypeChange>(
     ::ModifyDataTypeChange,
     LkModifyDataType::catalogName - ModifyDataTypeChange::setCatalogName,
     LkModifyDataType::columnName - ModifyDataTypeChange::setColumnName,
@@ -79,7 +80,7 @@ open class ModifyDataTypeIntegration : ChangeIntegration<LkModifyDataType, Modif
     LkModifyDataType::tableName - ModifyDataTypeChange::setTableName
 )
 
-open class RenameColumnIntegration : ChangeIntegration<LkRenameColumn, RenameColumnChange>(
+open class RenameColumnIntegration : ChangeIntegration<RenameColumnChange>(
     ::RenameColumnChange,
     LkRenameColumn::catalogName - RenameColumnChange::setCatalogName,
     LkRenameColumn::columnDataType - RenameColumnChange::setColumnDataType,
@@ -90,7 +91,7 @@ open class RenameColumnIntegration : ChangeIntegration<LkRenameColumn, RenameCol
     LkRenameColumn::tableName - RenameColumnChange::setTableName
 )
 
-open class RenameTableIntegration : ChangeIntegration<LkRenameTable, RenameTableChange>(
+open class RenameTableIntegration : ChangeIntegration<RenameTableChange>(
     ::RenameTableChange,
     LkRenameTable::catalogName - RenameTableChange::setCatalogName,
     LkRenameTable::newTableName - RenameTableChange::setNewTableName,
@@ -98,7 +99,7 @@ open class RenameTableIntegration : ChangeIntegration<LkRenameTable, RenameTable
     LkRenameTable::schemaName - RenameTableChange::setSchemaName
 )
 
-open class RenameViewIntegration : ChangeIntegration<LkRenameView, RenameViewChange>(
+open class RenameViewIntegration : ChangeIntegration<RenameViewChange>(
     ::RenameViewChange,
     LkRenameView::catalogName - RenameViewChange::setCatalogName,
     LkRenameView::newViewName - RenameViewChange::setNewViewName,
@@ -106,17 +107,17 @@ open class RenameViewIntegration : ChangeIntegration<LkRenameView, RenameViewCha
     LkRenameView::schemaName - RenameViewChange::setSchemaName
 )
 
-open class SqlIntegration : ChangeIntegration<LkSql, RawSQLChange>(
+open class SqlIntegration : ChangeIntegration<RawSQLChange>(
     ::RawSQLChange,
     LkSql::comment - RawSQLChange::setComment,
     LkSql::dbms - RawSQLChange::setDbms,
     LkSql::endDelimiter - RawSQLChange::setEndDelimiter,
     LkSql::splitStatements - RawSQLChange::setSplitStatements,
-    LkSql::sql - RawSQLChange::setSql,
+    LkSql::sql notNull RawSQLChange::setSql,
     LkSql::stripComments - RawSQLChange::setStripComments
 )
 
-open class SqlFileIntegration : ChangeIntegration<LkSqlFile, SQLFileChange>(
+open class SqlFileIntegration : ChangeIntegration<SQLFileChange>(
     ::SQLFileChange,
     LkSqlFile::dbms - SQLFileChange::setDbms,
     LkSqlFile::encoding - SQLFileChange::setEncoding,
@@ -127,17 +128,17 @@ open class SqlFileIntegration : ChangeIntegration<LkSqlFile, SQLFileChange>(
     LkSqlFile::stripComments - SQLFileChange::setStripComments
 )
 
-open class StopIntegration : ChangeIntegration<LkStop, StopChange>(
+open class StopIntegration : ChangeIntegration<StopChange>(
     ::StopChange,
     LkStop::message - StopChange::setMessage
 )
 
-open class TagDatabaseIntegration : ChangeIntegration<LkTagDatabase, TagDatabaseChange>(
+open class TagDatabaseIntegration : ChangeIntegration<TagDatabaseChange>(
     ::TagDatabaseChange,
     LkTagDatabase::tag - TagDatabaseChange::setTag
 )
 
-open class UpdateIntegration : ChangeIntegration<LkUpdate, UpdateDataChange>(
+open class UpdateIntegration : ChangeIntegration<UpdateDataChange>(
     ::UpdateDataChange,
     LkUpdate::catalogName - UpdateDataChange::setCatalogName,
     LkUpdate::schemaName - UpdateDataChange::setSchemaName,

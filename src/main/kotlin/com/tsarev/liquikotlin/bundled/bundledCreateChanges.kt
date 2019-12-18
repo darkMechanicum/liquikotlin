@@ -1,6 +1,10 @@
 package com.tsarev.liquikotlin.bundled
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
+import com.tsarev.liquikotlin.infrastructure.api.child
+import com.tsarev.liquikotlin.infrastructure.api.nullable
+import com.tsarev.liquikotlin.infrastructure.api.prop
+import com.tsarev.liquikotlin.infrastructure.default.DefaultSelf
 import java.math.BigInteger
 import java.util.*
 import kotlin.reflect.KClass
@@ -8,7 +12,7 @@ import kotlin.reflect.KClass
 // --- Generalized classes ---
 
 abstract class LkBaseColumnConfig<SelfT : LkBaseColumnConfig<SelfT>>(thisClass: KClass<SelfT>) :
-    LbDslNode<SelfT>(thisClass) {
+    DefaultSelf<SelfT>(thisClass) {
     @Primary
     open val name by nullable(String::class)
     @Primary
@@ -58,19 +62,19 @@ open class LkAddAutoIncrement : LbDslNode<LkAddAutoIncrement>(LkAddAutoIncrement
     open val catalogName by nullable(String::class)
     open val columnDataType by nullable(String::class)
     @Primary
-    open val columnName by nonNullable(String::class)
+    open val columnName by prop(String::class)
     open val incrementBy by nullable(BigInteger::class)
     open val schemaName by nullable(String::class)
     open val startWith by nullable(BigInteger::class)
     @Primary
-    open val tableName by nonNullable(String::class)
+    open val tableName by prop(String::class)
 }
 
 open class LkAddColumn : LbDslNode<LkAddColumn>(LkAddColumn::class) {
     open val catalogName by nullable(String::class)
     open val schemaName by nullable(String::class)
     @Primary
-    open val tableName by nonNullable(String::class)
+    open val tableName by prop(String::class)
 
     open val column by child(::LkAddColumnConfig)
 }

@@ -1,10 +1,8 @@
 package com.tsarev.liquikotlin.integration
 
 import com.tsarev.liquikotlin.bundled.*
-import com.tsarev.liquikotlin.infrastructure.LbArg
-import com.tsarev.liquikotlin.infrastructure.LiquibaseIntegrator
-import com.tsarev.liquikotlin.infrastructure.PropertyMapping
-import com.tsarev.liquikotlin.infrastructure.minus
+import com.tsarev.liquikotlin.infrastructure.*
+import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
 import liquibase.change.AddColumnConfig
 import liquibase.change.ColumnConfig
 import liquibase.change.ConstraintsConfig
@@ -15,9 +13,9 @@ import liquibase.statement.SequenceNextValueFunction
 
 open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, ColumnT : ColumnConfig, ParentT : Any>(
     linkedConstructor: () -> ColumnT,
-    parentSetter: (ParentT, ColumnT?, NodeT, LbArg?) -> Unit,
-    vararg childMappings: PropertyMapping<NodeT, ColumnT, *>
-) : LiquibaseIntegrator<NodeT, ColumnT, ParentT>(
+    parentSetter: (ParentT, ColumnT?, DefaultNode, LbArg?) -> Unit,
+    vararg childMappings: PropertyMapping<DefaultNode, ColumnT, *>
+) : LiquibaseIntegrator<ColumnT, ParentT>(
     linkedConstructor,
     parentSetter,
     LkBaseColumnConfig<NodeT>::name - ColumnConfig::setName,
@@ -60,8 +58,8 @@ open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, Column
 }
 
 open class AddColumnConfigIntegration<ParentT : Any>(
-    parentSetter: (ParentT, AddColumnConfig?, LkAddColumnConfig, LbArg?) -> Unit,
-    vararg childMappings: PropertyMapping<LkAddColumnConfig, AddColumnConfig, *>
+    parentSetter: (ParentT, AddColumnConfig?, DefaultNode, LbArg?) -> Unit,
+    vararg childMappings: PropertyMapping<DefaultNode, AddColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkAddColumnConfig, AddColumnConfig, ParentT>(
     ::AddColumnConfig,
     parentSetter,
@@ -74,8 +72,8 @@ open class AddColumnConfigIntegration<ParentT : Any>(
 }
 
 open class LoadColumnConfigIntegration<ParentT : Any>(
-    parentSetter: (ParentT, LoadDataColumnConfig?, LkLoadColumnConfig, LbArg?) -> Unit,
-    vararg childMappings: PropertyMapping<LkLoadColumnConfig, LoadDataColumnConfig, *>
+    parentSetter: (ParentT, LoadDataColumnConfig?, DefaultNode, LbArg?) -> Unit,
+    vararg childMappings: PropertyMapping<DefaultNode, LoadDataColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkLoadColumnConfig, LoadDataColumnConfig, ParentT>(
     ::LoadDataColumnConfig,
     parentSetter,
@@ -87,8 +85,8 @@ open class LoadColumnConfigIntegration<ParentT : Any>(
 }
 
 open class CommonColumnConfigIntegration<ParentT : Any>(
-    parentSetter: (ParentT, ColumnConfig?, LkCommonColumnConfig, LbArg?) -> Unit,
-    vararg childMappings: PropertyMapping<LkCommonColumnConfig, ColumnConfig, *>
+    parentSetter: (ParentT, ColumnConfig?, DefaultNode, LbArg?) -> Unit,
+    vararg childMappings: PropertyMapping<DefaultNode, ColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkCommonColumnConfig, ColumnConfig, ParentT>(
     ::ColumnConfig,
     parentSetter
@@ -97,25 +95,25 @@ open class CommonColumnConfigIntegration<ParentT : Any>(
 }
 }
 
-open class AddAutoIncrementIntegration : ChangeIntegration<LkAddAutoIncrement, AddAutoIncrementChange>(
+open class AddAutoIncrementIntegration : ChangeIntegration<AddAutoIncrementChange>(
     ::AddAutoIncrementChange,
     LkAddAutoIncrement::catalogName - AddAutoIncrementChange::setCatalogName,
     LkAddAutoIncrement::columnDataType - AddAutoIncrementChange::setColumnDataType,
-    LkAddAutoIncrement::columnName - AddAutoIncrementChange::setColumnName,
+    LkAddAutoIncrement::columnName notNull AddAutoIncrementChange::setColumnName,
     LkAddAutoIncrement::incrementBy - AddAutoIncrementChange::setIncrementBy,
     LkAddAutoIncrement::schemaName - AddAutoIncrementChange::setSchemaName,
     LkAddAutoIncrement::startWith - AddAutoIncrementChange::setStartWith,
-    LkAddAutoIncrement::tableName - AddAutoIncrementChange::setTableName
+    LkAddAutoIncrement::tableName notNull AddAutoIncrementChange::setTableName
 )
 
-open class AddColumnIntegration : ChangeIntegration<LkAddColumn, AddColumnChange>(
+open class AddColumnIntegration : ChangeIntegration<AddColumnChange>(
     ::AddColumnChange,
     LkAddColumn::catalogName - AddColumnChange::setCatalogName,
     LkAddColumn::schemaName - AddColumnChange::setSchemaName,
-    LkAddColumn::tableName - AddColumnChange::setTableName
+    LkAddColumn::tableName notNull AddColumnChange::setTableName
 )
 
-open class ConstraintsIntegration : LiquibaseIntegrator<LkConstraints, ConstraintsConfig, ColumnConfig>(
+open class ConstraintsIntegration : LiquibaseIntegrator<ConstraintsConfig, ColumnConfig>(
     ::ConstraintsConfig,
     { columnConfig, constraintsConfig, _, _ -> columnConfig.constraints = constraintsConfig },
     LkConstraints::nullable - ConstraintsConfig::setNullable,
@@ -134,7 +132,7 @@ open class ConstraintsIntegration : LiquibaseIntegrator<LkConstraints, Constrain
     LkConstraints::checkConstraint - ConstraintsConfig::setCheckConstraint
 )
 
-open class AddDefaultValueIntegration : ChangeIntegration<LkAddDefaultValue, AddDefaultValueChange>(
+open class AddDefaultValueIntegration : ChangeIntegration<AddDefaultValueChange>(
     ::AddDefaultValueChange,
     LkAddDefaultValue::catalogName - AddDefaultValueChange::setCatalogName,
     LkAddDefaultValue::columnDataType - AddDefaultValueChange::setColumnDataType,
@@ -144,8 +142,8 @@ open class AddDefaultValueIntegration : ChangeIntegration<LkAddDefaultValue, Add
     LkAddDefaultValue::defaultValueComputed - { change: AddDefaultValueChange, text ->
         change.setDefaultValueComputed(DatabaseFunction(text))
     },
-    LkAddDefaultValue::defaultValueDate - { change, value -> change.setDefaultValueDate("$value") },
-    LkAddDefaultValue::defaultValueNumeric - { change, value -> change.setDefaultValueNumeric("$value") },
+    LkAddDefaultValue::defaultValueDate - { change: AddDefaultValueChange, value -> change.setDefaultValueDate("$value") },
+    LkAddDefaultValue::defaultValueNumeric - { change: AddDefaultValueChange, value -> change.setDefaultValueNumeric("$value") },
     LkAddDefaultValue::defaultValueSequenceNext - { change: AddDefaultValueChange, text ->
         change.setDefaultValueSequenceNext(SequenceNextValueFunction(text))
     },
@@ -154,7 +152,7 @@ open class AddDefaultValueIntegration : ChangeIntegration<LkAddDefaultValue, Add
 )
 
 open class AddForeignKeyConstraintIntegration :
-    ChangeIntegration<LkAddForeignKeyConstraint, AddForeignKeyConstraintChange>(
+    ChangeIntegration<AddForeignKeyConstraintChange>(
         ::AddForeignKeyConstraintChange,
         LkAddForeignKeyConstraint::baseColumnNames - AddForeignKeyConstraintChange::setBaseColumnNames,
         LkAddForeignKeyConstraint::baseTableCatalogName - AddForeignKeyConstraintChange::setBaseTableCatalogName,
@@ -172,7 +170,7 @@ open class AddForeignKeyConstraintIntegration :
         LkAddForeignKeyConstraint::referencesUniqueColumn - AddForeignKeyConstraintChange::setReferencesUniqueColumn
     )
 
-open class AddLookupTableIntegration : ChangeIntegration<LkAddLookupTable, AddLookupTableChange>(
+open class AddLookupTableIntegration : ChangeIntegration<AddLookupTableChange>(
     ::AddLookupTableChange,
     LkAddLookupTable::constraintName - AddLookupTableChange::setConstraintName,
     LkAddLookupTable::existingColumnName - AddLookupTableChange::setExistingColumnName,
@@ -186,7 +184,7 @@ open class AddLookupTableIntegration : ChangeIntegration<LkAddLookupTable, AddLo
     LkAddLookupTable::newTableSchemaName - AddLookupTableChange::setNewTableSchemaName
 )
 
-open class AddNotNullConstraintIntegration : ChangeIntegration<LkAddNotNullConstraint, AddNotNullConstraintChange>(
+open class AddNotNullConstraintIntegration : ChangeIntegration<AddNotNullConstraintChange>(
     ::AddNotNullConstraintChange,
     LkAddNotNullConstraint::catalogName - AddNotNullConstraintChange::setCatalogName,
     LkAddNotNullConstraint::columnDataType - AddNotNullConstraintChange::setColumnDataType,
@@ -197,7 +195,7 @@ open class AddNotNullConstraintIntegration : ChangeIntegration<LkAddNotNullConst
     LkAddNotNullConstraint::constraintName - AddNotNullConstraintChange::setConstraintName
 )
 
-open class AddPrimaryKeyIntegration : ChangeIntegration<LkAddPrimaryKey, AddPrimaryKeyChange>(
+open class AddPrimaryKeyIntegration : ChangeIntegration<AddPrimaryKeyChange>(
     ::AddPrimaryKeyChange,
     LkAddPrimaryKey::catalogName - AddPrimaryKeyChange::setCatalogName,
     LkAddPrimaryKey::columnNames - AddPrimaryKeyChange::setColumnNames,
@@ -211,7 +209,7 @@ open class AddPrimaryKeyIntegration : ChangeIntegration<LkAddPrimaryKey, AddPrim
     LkAddPrimaryKey::forIndexCatalogName - AddPrimaryKeyChange::setForIndexCatalogName
 )
 
-open class AddUniqueConstraintIntegration : ChangeIntegration<LkAddUniqueConstraint, AddUniqueConstraintChange>(
+open class AddUniqueConstraintIntegration : ChangeIntegration<AddUniqueConstraintChange>(
     ::AddUniqueConstraintChange,
     LkAddUniqueConstraint::catalogName - AddUniqueConstraintChange::setCatalogName,
     LkAddUniqueConstraint::columnNames - AddUniqueConstraintChange::setColumnNames,
@@ -227,7 +225,7 @@ open class AddUniqueConstraintIntegration : ChangeIntegration<LkAddUniqueConstra
     LkAddUniqueConstraint::forIndexCatalogName - AddUniqueConstraintChange::setForIndexCatalogName
 )
 
-open class CreateIndexIntegration : ChangeIntegration<LkCreateIndex, CreateIndexChange>(
+open class CreateIndexIntegration : ChangeIntegration<CreateIndexChange>(
     ::CreateIndexChange,
     LkCreateIndex::catalogName - CreateIndexChange::setCatalogName,
     LkCreateIndex::indexName - CreateIndexChange::setIndexName,
@@ -237,7 +235,7 @@ open class CreateIndexIntegration : ChangeIntegration<LkCreateIndex, CreateIndex
     LkCreateIndex::unique - CreateIndexChange::setUnique
 )
 
-open class CreateProcedureIntegration : ChangeIntegration<LkCreateProcedure, CreateProcedureChange>(
+open class CreateProcedureIntegration : ChangeIntegration<CreateProcedureChange>(
     ::CreateProcedureChange,
     LkCreateProcedure::catalogName - CreateProcedureChange::setCatalogName,
     LkCreateProcedure::comments - CreateProcedureChange::setComments,
@@ -251,7 +249,7 @@ open class CreateProcedureIntegration : ChangeIntegration<LkCreateProcedure, Cre
     LkCreateProcedure::replaceIfExists - CreateProcedureChange::setReplaceIfExists
 )
 
-open class CreateSequenceIntegration : ChangeIntegration<LkCreateSequence, CreateSequenceChange>(
+open class CreateSequenceIntegration : ChangeIntegration<CreateSequenceChange>(
     ::CreateSequenceChange,
     LkCreateSequence::catalogName - CreateSequenceChange::setCatalogName,
     LkCreateSequence::cycle - CreateSequenceChange::setCycle,
@@ -265,7 +263,7 @@ open class CreateSequenceIntegration : ChangeIntegration<LkCreateSequence, Creat
     LkCreateSequence::cacheSize - CreateSequenceChange::setCacheSize
 )
 
-open class CreateTableIntegration : ChangeIntegration<LkCreateTable, CreateTableChange>(
+open class CreateTableIntegration : ChangeIntegration<CreateTableChange>(
     ::CreateTableChange,
     LkCreateTable::catalogName - CreateTableChange::setCatalogName,
     LkCreateTable::remarks - CreateTableChange::setRemarks,
@@ -274,7 +272,7 @@ open class CreateTableIntegration : ChangeIntegration<LkCreateTable, CreateTable
     LkCreateTable::tablespace - CreateTableChange::setTablespace
 )
 
-open class CreateViewIntegration : ChangeIntegration<LkCreateView, CreateViewChange>(
+open class CreateViewIntegration : ChangeIntegration<CreateViewChange>(
     ::CreateViewChange,
     LkCreateView::catalogName - CreateViewChange::setCatalogName,
     LkCreateView::replaceIfExists - CreateViewChange::setReplaceIfExists,

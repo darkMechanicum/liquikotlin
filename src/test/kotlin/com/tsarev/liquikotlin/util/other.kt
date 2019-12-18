@@ -1,8 +1,11 @@
 package com.tsarev.liquikotlin.util
 
 import com.tsarev.liquikotlin.bundled.*
-import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
 import com.tsarev.liquikotlin.infrastructure.LbArg
+import com.tsarev.liquikotlin.infrastructure.api.EvalAction
+import com.tsarev.liquikotlin.infrastructure.api.EvalFactory
+import com.tsarev.liquikotlin.infrastructure.api.EvaluateAble
+import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
 import com.tsarev.liquikotlin.integration.*
 import liquibase.change.core.*
 import liquibase.changelog.DatabaseChangeLog
@@ -11,7 +14,7 @@ import java.io.File
 import java.io.InputStream
 import kotlin.reflect.KClass
 
-fun <ArgT> EvaluatableDslNode<*>.generalEval(factory: EvaluatableDslNode.EvaluatorFactory<ArgT>, arg: ArgT? = null) =
+fun <ArgT, NodeT: EvaluateAble<NodeT>> EvaluateAble<NodeT>.generalEval(factory: EvalFactory<ArgT, NodeT>, arg: ArgT? = null) =
     this.eval<Any, ArgT>(factory, arg)
 
 /**
@@ -63,7 +66,7 @@ class TestLiquibaseIntegrationFactory : LiquibaseIntegrationFactory() {
         )
     }
 
-    private val extendedWithParent: Map<Pair<KClass<*>, KClass<*>>, EvaluatableDslNode.Evaluator<*, *, LbArg>> = mapOf(
+    private val extendedWithParent: Map<Pair<KClass<*>, KClass<*>>, EvalAction<DefaultNode, *, LbArg>> = mapOf(
         LkAddColumnConfig::class to LkAddColumn::class to AddColumnConfigIntegration<AddColumnChange>(dummy),
         LkAddColumnConfig::class to LkCreateIndex::class to AddColumnConfigIntegration<CreateIndexChange>(dummy),
         LkAddColumnConfig::class to LkInsert::class to AddColumnConfigIntegration<InsertDataChange>(dummy),
@@ -75,9 +78,9 @@ class TestLiquibaseIntegrationFactory : LiquibaseIntegrationFactory() {
         LkPrecondition::class to LkChangeLog::class to PreconditionContainerIntegration<DatabaseChangeLog>(dummy)
     )
 
-    override val single: Map<KClass<*>, EvaluatableDslNode.Evaluator<*, *, LbArg>>
+    override val single: Map<KClass<*>, EvalAction<DefaultNode, *, LbArg>>
         get() = extendedSingle
 
-    override val withParent: Map<Pair<KClass<*>, KClass<*>>, EvaluatableDslNode.Evaluator<*, *, LbArg>>
+    override val withParent: Map<Pair<KClass<*>, KClass<*>>, EvalAction<DefaultNode, *, LbArg>>
         get() = extendedWithParent
 }

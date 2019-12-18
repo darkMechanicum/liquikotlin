@@ -20,8 +20,9 @@ package liquibase.parser.ext
 
 import com.tsarev.liquikotlin.bundled.LkChangeLog
 import com.tsarev.liquikotlin.bundled.changelog
-import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
 import com.tsarev.liquikotlin.infrastructure.LbArg
+import com.tsarev.liquikotlin.infrastructure.api.Self
+import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
 import com.tsarev.liquikotlin.util.letWhile
 import liquibase.changelog.ChangeLogParameters
@@ -110,9 +111,9 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
             changeLogStack.push(changelog)
             changelog = LkChangeLog()
             // TODO Add type check
-            val result = compiled.eval() as EvaluatableDslNode<*>
+            val result = compiled.eval() as Self<*, DefaultNode>
             val arg: LbArg = location to resourceAccessor
-            return result.letWhile { it.parent }.evalSafe(LiquibaseIntegrationFactory(), arg)
+            return result.node.letWhile { it.parent?.value }.eval(LiquibaseIntegrationFactory(), arg)!!
         } finally {
             // Restore current script state, if any.
             changelog = changeLogStack.pop()

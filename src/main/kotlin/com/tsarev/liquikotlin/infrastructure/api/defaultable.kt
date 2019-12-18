@@ -13,7 +13,7 @@ open class MetaWithDefault(
     val hasDefault: () -> Boolean
 ) : PropMeta(name, type, annotations, definingProp, getter, isNullable)
 
-interface DefaultPropertyAble<NodeT> : PropertyAble<NodeT>, MetaAble
+interface DefaultPropertyAble<NodeT> : PropertyAble<NodeT>, MetaAble<MetaWithDefault>
         where NodeT : DefaultPropertyAble<NodeT> {
 
     // Nullable properties.
@@ -49,6 +49,9 @@ interface DefaultPropertyAble<NodeT> : PropertyAble<NodeT>, MetaAble
         pClass: KClass<FieldT>,
         self: SelfT
     ): DfltChPr<SelfT, FieldT, NodeT>
+
+    /** Metas with [MetaWithDefault.hasDefault] flag. */
+    override val metas: MutableMap<String, MetaWithDefault>
 
     /** Meta with [MetaWithDefault.hasDefault] flag. */
     override fun getMeta(pName: String): MetaWithDefault?

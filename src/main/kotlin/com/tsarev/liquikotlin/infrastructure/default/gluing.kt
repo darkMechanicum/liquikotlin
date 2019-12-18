@@ -13,12 +13,14 @@ abstract class SkeletonNode<NodeT : SkeletonNode<NodeT>>(
     private val builderAble: BuilderAble<NodeT>,
     private val defaultPropertyAble: DefaultPropertyAble<NodeT>,
     private val evaluateAble: EvaluateAble<NodeT>,
-    private val copyAble: CopyAble<NodeT>
+    private val copyAble: CopyAble<NodeT>,
+    private val selfClassAble: SelfClassAble<NodeT>
 ) : TreeAble<NodeT> by treeAble,
     BuilderAble<NodeT> by builderAble,
     DefaultPropertyAble<NodeT> by defaultPropertyAble,
     EvaluateAble<NodeT> by evaluateAble,
-    CopyAble<NodeT> by copyAble {
+    CopyAble<NodeT> by copyAble,
+    SelfClassAble<NodeT> by selfClassAble {
 
     override fun init(root: NodeT) {}
 
@@ -39,13 +41,15 @@ abstract class SkeletonNode<NodeT : SkeletonNode<NodeT>>(
  * Implementation of [SkeletonNode] with default delegates.
  */
 class DefaultNode(
+    selfClass: KClass<*>,
     buildCtor: DefaultNode.() -> DefaultNode = { this } // No building by default.
 ) : SkeletonNode<DefaultNode>(
     DefaultTreeAble(),
     DefaultBuilderAble(buildCtor),
     DefaultPropertyAbleImpl(),
     DefaultEvaluateAble(),
-    DefaultCopyAble { DefaultNode() }
+    DefaultCopyAble { DefaultNode(selfClass) },
+    DefaultSelfClassAble(selfClass)
 ) {
     override val realNode get() = this
 }
@@ -60,7 +64,7 @@ open class DefaultSelf<SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) :
         (child as? DefaultSelf<*>)?.let {
             it.parent = this
             this.children.add(it)
-            it.node.parent = node
+            it.node.parent = lazy { this@DefaultSelf.node }
         }
     }
 
@@ -77,8 +81,9 @@ open class DefaultSelf<SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) :
 
     private val lastTemplate get () = templateStack.lastOrNull() ?: initNode()
 
-    private fun initNode() = DefaultNode { DefaultNode().also { this@DefaultSelf.realNode = it } }
-        .also { templateStack.add(it) }
+    private fun initNode() = DefaultNode(this@DefaultSelf::class) {
+        DefaultNode(this@DefaultSelf::class).also { this@DefaultSelf.realNode = it }
+    }.also { templateStack.add(it) }
 
     private fun clearRealNodeRec() {
         if (parent != null) realNode = null
@@ -86,7 +91,9 @@ open class DefaultSelf<SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) :
     }
 
     private fun copyTemplateRec() {
-        templateStack.add(lastTemplate.copy())
+        templateStack.add(lastTemplate.copy().also {
+            it.parent = this@DefaultSelf.parent?.let { lazy { it.node } }
+        })
         children.forEach { it.copyTemplateRec() }
     }
 
@@ -95,13 +102,21 @@ open class DefaultSelf<SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) :
         children.forEach { it.popTemplateRec() }
     }
 
+    private var shouldNodeUp = false
+
     override fun nodeDown() {
-        children.forEach { it.copyTemplateRec() }
-        lastTemplate.build()
+        if (realNode == null) {
+            children.forEach { it.copyTemplateRec() }
+            lastTemplate.build()
+            shouldNodeUp = true
+        }
     }
 
     override fun nodeUp() {
-        children.forEach { it.popTemplateRec() }
+        if (shouldNodeUp) {
+            children.forEach { it.popTemplateRec() }
+            shouldNodeUp = false
+        }
         clearRealNodeRec()
     }
 

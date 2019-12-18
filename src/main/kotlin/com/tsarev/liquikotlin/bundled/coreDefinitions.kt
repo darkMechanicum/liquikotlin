@@ -1,6 +1,10 @@
 package com.tsarev.liquikotlin.bundled
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
+import com.tsarev.liquikotlin.infrastructure.api.builtChild
+import com.tsarev.liquikotlin.infrastructure.api.child
+import com.tsarev.liquikotlin.infrastructure.api.nullable
+import com.tsarev.liquikotlin.infrastructure.api.prop
 import kotlin.reflect.KClass
 
 // --- Abstract base and utility classes ---
@@ -82,16 +86,16 @@ open class LkChangeLog : LbDslNode<LkChangeLog>(LkChangeLog::class) {
 
 open class LkInclude : LbDslNode<LkInclude>(LkInclude::class) {
     @Primary
-    open val path by nonNullable(String::class)
-    open val relativeToChangelogFile by nonNullable(Boolean::class, false)
+    open val path by prop(String::class)
+    open val relativeToChangelogFile by prop(Boolean::class, false)
 }
 
 open class LkIncludeAll : LbDslNode<LkIncludeAll>(LkIncludeAll::class) {
     @Primary
-    open val path by nonNullable(String::class)
+    open val path by prop(String::class)
     open val resourceFilter by nullable(String::class)
-    open val relativeToChangelogFile by nonNullable(Boolean::class, false)
-    open val errorIfMissingOrEmpty by nonNullable(Boolean::class, true)
+    open val relativeToChangelogFile by prop(Boolean::class, false)
+    open val errorIfMissingOrEmpty by prop(Boolean::class, true)
 }
 
 /**
@@ -99,15 +103,15 @@ open class LkIncludeAll : LbDslNode<LkIncludeAll>(LkIncludeAll::class) {
  */
 open class LkProperty : LbDslNode<LkProperty>(LkProperty::class) {
     @Primary
-    open val name by nonNullable(String::class)
-    open val value by nonNullable(String::class)
+    open val name by prop(String::class)
+    open val value by prop(String::class)
     open val context by nullable(String::class)
     open val dbms by nullable(String::class)
 }
 
 open class LkChangeSet : LkRefactorings<LkChangeSet>(LkChangeSet::class) {
     @Primary
-    open val id by nonNullable(Any::class)
+    open val id by prop(Any::class)
     @Primary
     open val author by nullable(String::class)
     open val dbms by nullable(String::class)
@@ -127,10 +131,10 @@ open class LkRollback : LkRefactorings<LkRollback>(LkRollback::class)
 
 open class LkValidCheckSum : LbDslNode<LkValidCheckSum>(LkValidCheckSum::class) {
     @Primary
-    open val checkSum by nonNullable(String::class)
+    open val checkSum by prop(String::class)
 }
 
 open class LkComment : LbDslNode<LkComment>(LkComment::class) {
     @Primary
-    open val text by nonNullable(String::class)
+    open val text by prop(String::class)
 }

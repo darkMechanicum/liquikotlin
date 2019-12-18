@@ -1,6 +1,9 @@
 package com.tsarev.liquikotlin.bundled
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
+import com.tsarev.liquikotlin.infrastructure.api.child
+import com.tsarev.liquikotlin.infrastructure.api.nullable
+import com.tsarev.liquikotlin.infrastructure.api.prop
 import kotlin.reflect.KClass
 
 // --- Abstract base classes ---
@@ -120,7 +123,7 @@ open class LkSequenceExistsPrecondition :
 open class LkPrimaryKeyExistsPrecondition :
     PreconditionWithSchAndCat<LkPrimaryKeyExistsPrecondition>(LkPrimaryKeyExistsPrecondition::class) {
     @Primary
-    open val primaryKeyName by nonNullable(String::class)
+    open val primaryKeyName by prop(String::class)
     open val tableName by nullable(String::class)
 }
 
@@ -145,6 +148,6 @@ open class LkCustomPrecondition : LbDslNode<LkCustomPrecondition>(LkCustomPrecon
 
 open class LkCustomPreconditionParam : LbDslNode<LkCustomPreconditionParam>(LkCustomPreconditionParam::class) {
     @Primary
-    open val name by nullable(String::class)
+    open val name by prop(String::class)
     open val value by nullable(Any::class)
 }

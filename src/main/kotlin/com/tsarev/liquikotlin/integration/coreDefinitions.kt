@@ -1,10 +1,8 @@
 package com.tsarev.liquikotlin.integration
 
 import com.tsarev.liquikotlin.bundled.*
-import com.tsarev.liquikotlin.infrastructure.LbArg
-import com.tsarev.liquikotlin.infrastructure.LbDslNode
-import com.tsarev.liquikotlin.infrastructure.LiquibaseIntegrator
-import com.tsarev.liquikotlin.infrastructure.PropertyMapping
+import com.tsarev.liquikotlin.infrastructure.*
+import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
 import com.tsarev.liquikotlin.util.letTry
 import liquibase.change.Change
 import liquibase.changelog.ChangeLogParameters
@@ -31,10 +29,10 @@ open class ChangesHolder {
     open val validCheckSums: MutableCollection<String> = ArrayList()
 }
 
-open class ChangeIntegration<NodeT : LbDslNode<NodeT>, ChangeT : Change>(
+open class ChangeIntegration<ChangeT : Change>(
     linkedConstructor: () -> ChangeT,
-    vararg childMappings: PropertyMapping<NodeT, ChangeT, *>
-) : LiquibaseIntegrator<NodeT, ChangeT, ChangesHolder>(
+    vararg childMappings: PropertyMapping<DefaultNode, ChangeT, *>
+) : LiquibaseIntegrator<ChangeT, ChangesHolder>(
     linkedConstructor,
     { holder, change, _, arg ->
         arg?.let { change!!.setResourceAccessor(it.second) }
@@ -50,37 +48,37 @@ open class ChangeIntegration<NodeT : LbDslNode<NodeT>, ChangeT : Change>(
 /**
  * Changelog. Entry point for rest nodes.
  */
-open class ChangeLogIntegration : LiquibaseIntegrator<LkChangeLog, DatabaseChangeLog, Any>(::DatabaseChangeLog) {
-    override fun initResult(thisNode: LkChangeLog, argument: LbArg?): DatabaseChangeLog? {
+open class ChangeLogIntegration : LiquibaseIntegrator<DatabaseChangeLog, Any>(::DatabaseChangeLog) {
+    override fun doBefore(thisNode: DefaultNode, argument: LbArg?): DatabaseChangeLog? {
         val (physicalPath, _) = argument!!
         val result = DatabaseChangeLog(physicalPath).apply { changeLogParameters = ChangeLogParameters() }
-        val resultPath = thisNode.logicalFilePath.current ?: physicalPath
+        val resultPath = thisNode.getNullable(LkChangeLog::logicalFilePath) ?: physicalPath
         result.logicalFilePath = resultPath
         return result
     }
 }
 
-open class IncludeIntegration : LiquibaseIntegrator<LkInclude, Any, DatabaseChangeLog>(
+open class IncludeIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
     ::Any,
     { changeLog, _, self, arg ->
         val (_, resourceAccessor) = (arg as Pair<*, ResourceAccessor>)
-        changeLog.include(self.path.current, self.relativeToChangelogFile.current, resourceAccessor)
+        changeLog.include(self.get(LkInclude::path), self.get(LkInclude::relativeToChangelogFile), resourceAccessor)
     }
 )
 
-open class IncludeAllIntegration : LiquibaseIntegrator<LkIncludeAll, Any, DatabaseChangeLog>(
+open class IncludeAllIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
     ::Any,
     { changeLog, _, self, arg ->
         val (_, resourceAccessor) = arg!!
-        val resourceFilterDef = self.resourceFilter.current
+        val resourceFilterDef: String? = self.getNullable(LkIncludeAll::resourceFilter)
         val resourceFilter: IncludeAllFilter? = resourceFilterDef
             .takeUnless { it.isNullOrBlank() }
             .letTry { Class.forName(it).newInstance() as IncludeAllFilter }(::SetupException)
         changeLog.includeAll(
-            self.path.current,
-            self.relativeToChangelogFile.current,
+            self.get(LkIncludeAll::path),
+            self.get(LkIncludeAll::relativeToChangelogFile),
             resourceFilter,
-            self.errorIfMissingOrEmpty.current,
+            self.get(LkIncludeAll::errorIfMissingOrEmpty),
             comparator,
             resourceAccessor
         )
@@ -90,62 +88,62 @@ open class IncludeAllIntegration : LiquibaseIntegrator<LkIncludeAll, Any, Databa
 /**
  * Changelog property.
  */
-open class PropertyIntegration : LiquibaseIntegrator<LkProperty, Any, DatabaseChangeLog>(
+open class PropertyIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
     ::Any,
     { changeLog, _, self, _ ->
         changeLog.changeLogParameters.set(
-            self.name.current,
-            self.value.current,
-            self.context.current,
+            self.get(LkProperty::name),
+            self.get(LkProperty::value),
+            self.getNullable(LkProperty::context),
             null,
-            self.dbms.current,
+            self.getNullable(LkProperty::dbms),
             true,
             changeLog
         )
     }
 )
 
-open class ChangeSetIntegration : LiquibaseIntegrator<LkChangeSet, ChangesHolder, DatabaseChangeLog>(
+open class ChangeSetIntegration : LiquibaseIntegrator<ChangesHolder, DatabaseChangeLog>(
     ::ChangesHolder,
     { changeLog, holder, self, _ ->
         val result = ChangeSet(
-            self.id.current.toString(),
-            self.author.current,
-            self.runAlways.current ?: false,
-            self.runOnChange.current ?: true,
+            self.get(LkChangeSet::id).toString(),
+            self.getNullable(LkChangeSet::author),
+            self.getNullable(LkChangeSet::runAlways) ?: false,
+            self.getNullable(LkChangeSet::runOnChange) ?: true,
             changeLog.physicalFilePath,
-            self.context.current,
-            self.dbms.current,
+            self.getNullable(LkChangeSet::context),
+            self.getNullable(LkChangeSet::dbms),
             changeLog
         )
         holder!!
         holder.changes.forEach { result.addChange(it) }
         result.rollback.apply { holder.rollback?.changes?.forEach { this.changes.add(it) } }
         result.comments = holder.comments.joinToString()
-        result.failOnError = self.failOnError.current
+        result.failOnError = self.getNullable(LkChangeSet::failOnError)
         holder.validCheckSums.map { result.addValidCheckSum(it) }
         result.preconditions = holder.preconditions
         changeLog.addChangeSet(result)
     }
 )
 
-open class RollbackIntegration : LiquibaseIntegrator<LkRollback, ChangesHolder, ChangesHolder>(
+open class RollbackIntegration : LiquibaseIntegrator<ChangesHolder, ChangesHolder>(
     ::ChangesHolder,
     { holder, it, _, _ ->
         holder.rollback = it
     }
 )
 
-open class ValidCheckSumIntegration : LiquibaseIntegrator<LkValidCheckSum, Any, ChangesHolder>(
+open class ValidCheckSumIntegration : LiquibaseIntegrator<Any, ChangesHolder>(
     ::Any,
     { holder, _, self, _ ->
-        holder.validCheckSums.add(self.checkSum.current)
+        holder.validCheckSums.add(self.get(LkValidCheckSum::checkSum))
     }
 )
 
-open class CommentIntegration : LiquibaseIntegrator<LkComment, Any, ChangesHolder>(
+open class CommentIntegration : LiquibaseIntegrator<Any, ChangesHolder>(
     ::Any,
     { holder, _, self, _ ->
-        holder.comments.add(self.text.current)
+        holder.comments.add(self.get(LkComment::text))
     }
 )

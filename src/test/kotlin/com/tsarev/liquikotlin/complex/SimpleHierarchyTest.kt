@@ -3,6 +3,7 @@ package com.tsarev.liquikotlin.complex
 import com.tsarev.liquikotlin.bundled.LkChangeLog
 import com.tsarev.liquikotlin.bundled.invoke
 import com.tsarev.liquikotlin.bundled.minus
+import com.tsarev.liquikotlin.infrastructure.evalSafe
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
 import com.tsarev.liquikotlin.util.*
 import liquibase.change.core.CreateTableChange
@@ -88,8 +89,8 @@ class SimpleHierarchyTest {
     fun testSingleChangeSetWithDefault() {
         val root = LkChangeLog()
 
-        root.changeset.sql.splitStatements.setDefault(testSplitStatements)
-        root.changeset.sql.stripComments.setDefault(testStripComments)
+        root.changeset.sql.splitStatements.default = testSplitStatements
+        root.changeset.sql.stripComments.default = testStripComments
 
         val changelog = (root - {
             changeset(1) - {
@@ -111,14 +112,14 @@ class SimpleHierarchyTest {
     fun defaultsNotIntersectTest() {
         val changelog = (LkChangeLog() - {
             changeset(1) - {
-                sql.splitStatements.setDefault(testSplitStatements)
-                sql.stripComments.setDefault(testStripComments)
+                sql.splitStatements.default = testSplitStatements
+                sql.stripComments.default = testStripComments
 
                 sql - testSql
             }
             changeset(2) - {
-                sql.splitStatements.setDefault(!testSplitStatements)
-                sql.stripComments.setDefault(!testStripComments)
+                sql.splitStatements.default = !testSplitStatements
+                sql.stripComments.default = !testStripComments
 
                 sql - testSql
             }

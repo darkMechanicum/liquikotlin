@@ -1,6 +1,7 @@
 package com.tsarev.liquikotlin.complex
 
 import com.tsarev.liquikotlin.bundled.LkChangeLog
+import com.tsarev.liquikotlin.infrastructure.evalSafe
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
 import com.tsarev.liquikotlin.util.*
 import liquibase.change.Change

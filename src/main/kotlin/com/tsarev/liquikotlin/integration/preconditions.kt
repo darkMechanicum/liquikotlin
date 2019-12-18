@@ -2,15 +2,16 @@ package com.tsarev.liquikotlin.integration
 
 import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.infrastructure.*
+import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
 import liquibase.precondition.CustomPreconditionWrapper
 import liquibase.precondition.Precondition
 import liquibase.precondition.PreconditionLogic
 import liquibase.precondition.core.*
 
-open class BasePreconditionIntegration<SelfT : LbDslNode<SelfT>, LinkedT : Precondition>(
+open class BasePreconditionIntegration<LinkedT : Precondition>(
     linkedConstructor: () -> LinkedT,
-    vararg childMappings: PropertyMapping<SelfT, LinkedT, *>
-) : LiquibaseIntegrator<SelfT, LinkedT, PreconditionLogic>(
+    vararg childMappings: PropertyMapping<DefaultNode, LinkedT, *>
+) : LiquibaseIntegrator<LinkedT, PreconditionLogic>(
     linkedConstructor,
     { container, precondition, _, _ -> container.addNestedPrecondition(precondition) }
 ) { init {
@@ -22,8 +23,8 @@ abstract class SchAndCatIntegration<SelfT : PreconditionWithSchAndCat<SelfT>, Li
     linkedConstructor: () -> LinkedT,
     schemaSetter: (LinkedT, String?) -> Any,
     catalogSetter: (LinkedT, String?) -> Any,
-    vararg childMappings: PropertyMapping<SelfT, LinkedT, *>
-) : BasePreconditionIntegration<SelfT, LinkedT>(
+    vararg childMappings: PropertyMapping<DefaultNode, LinkedT, *>
+) : BasePreconditionIntegration<LinkedT>(
     linkedConstructor,
     PreconditionWithSchAndCat<SelfT>::schemaName - schemaSetter,
     PreconditionWithSchAndCat<SelfT>::catalogName - catalogSetter
@@ -35,8 +36,8 @@ abstract class SchAndCatIntegration<SelfT : PreconditionWithSchAndCat<SelfT>, Li
 // --- Bundled preconditions ---
 
 open class PreconditionContainerIntegration<ParentT : Any>(
-    parentSetter: (ParentT, PreconditionContainer?, LkPrecondition, LbArg?) -> Unit
-) : LiquibaseIntegrator<LkPrecondition, PreconditionContainer, ParentT>(
+    parentSetter: (ParentT, PreconditionContainer?, DefaultNode, LbArg?) -> Unit
+) : LiquibaseIntegrator<PreconditionContainer, ParentT>(
     ::PreconditionContainer,
     parentSetter,
     LkPrecondition::onFail - PreconditionContainer::setOnFail,
@@ -46,23 +47,23 @@ open class PreconditionContainerIntegration<ParentT : Any>(
     LkPrecondition::onSqlOutput - PreconditionContainer::setOnSqlOutput
 )
 
-open class AndPreconditionIntegration : BasePreconditionIntegration<LkAndPrecondition, AndPrecondition>(::AndPrecondition)
+open class AndPreconditionIntegration : BasePreconditionIntegration<AndPrecondition>(::AndPrecondition)
 
-open class OrPreconditionIntegration : BasePreconditionIntegration<LkOrPrecondition, OrPrecondition>(::OrPrecondition)
+open class OrPreconditionIntegration : BasePreconditionIntegration<OrPrecondition>(::OrPrecondition)
 
-open class DbmsPreconditionIntegration : BasePreconditionIntegration<LkDbmsPrecondition, DBMSPrecondition>(
+open class DbmsPreconditionIntegration : BasePreconditionIntegration<DBMSPrecondition>(
     ::DBMSPrecondition,
     LkDbmsPrecondition::type - DBMSPrecondition::setType
 )
 
 open class RunningAsPreconditionIntegration :
-    BasePreconditionIntegration<LkRunningAsPrecondition, RunningAsPrecondition>(
+    BasePreconditionIntegration<RunningAsPrecondition>(
         ::RunningAsPrecondition,
         LkRunningAsPrecondition::username - RunningAsPrecondition::setUsername
     )
 
 open class ChangeSetExecutedPreconditionIntegration :
-    BasePreconditionIntegration<LkChangeSetExecutedPrecondition, ChangeSetExecutedPrecondition>(
+    BasePreconditionIntegration<ChangeSetExecutedPrecondition>(
         ::ChangeSetExecutedPrecondition,
         LkChangeSetExecutedPrecondition::id - ChangeSetExecutedPrecondition::setId,
         LkChangeSetExecutedPrecondition::author - ChangeSetExecutedPrecondition::setAuthor,
@@ -129,32 +130,32 @@ open class PrimaryKeyExistsPreconditionIntegration :
         PrimaryKeyExistsPrecondition::setSchemaName,
         PrimaryKeyExistsPrecondition::setCatalogName
         ,
-        LkPrimaryKeyExistsPrecondition::primaryKeyName - PrimaryKeyExistsPrecondition::setPrimaryKeyName,
+        LkPrimaryKeyExistsPrecondition::primaryKeyName notNull PrimaryKeyExistsPrecondition::setPrimaryKeyName,
         LkPrimaryKeyExistsPrecondition::tableName - PrimaryKeyExistsPrecondition::setTableName
     )
 
-open class SqlCheckPreconditionIntegration : BasePreconditionIntegration<LkSqlCheckPrecondition, SqlPrecondition>(
+open class SqlCheckPreconditionIntegration : BasePreconditionIntegration<SqlPrecondition>(
     ::SqlPrecondition,
     LkSqlCheckPrecondition::expectedResult - SqlPrecondition::setExpectedResult,
     LkSqlCheckPrecondition::sql - SqlPrecondition::setSql
 )
 
 open class ChangeLogPropertyDefinedPreconditionIntegration :
-    BasePreconditionIntegration<LkChangeLogPropertyDefinedPrecondition, ChangeLogPropertyDefinedPrecondition>(
+    BasePreconditionIntegration<ChangeLogPropertyDefinedPrecondition>(
         ::ChangeLogPropertyDefinedPrecondition,
         LkChangeLogPropertyDefinedPrecondition::property - ChangeLogPropertyDefinedPrecondition::setProperty,
         LkChangeLogPropertyDefinedPrecondition::value - ChangeLogPropertyDefinedPrecondition::setValue
     )
 
-open class CustomPreconditionIntegration : BasePreconditionIntegration<LkCustomPrecondition, CustomPreconditionWrapper>(
+open class CustomPreconditionIntegration : BasePreconditionIntegration<CustomPreconditionWrapper>(
     ::CustomPreconditionWrapper,
     LkCustomPrecondition::className - CustomPreconditionWrapper::setClassName
 )
 
 open class CustomPreconditionParamIntegration :
-    LiquibaseIntegrator<LkCustomPreconditionParam, Any, CustomPreconditionWrapper>(
+    LiquibaseIntegrator<Any, CustomPreconditionWrapper>(
         ::Any,
         { wrapper, _, self, _ ->
-            wrapper.setParam(self.name.current, self.value.current?.toString())
+            wrapper.setParam(self.get(LkCustomPreconditionParam::name), self.getNullable(LkCustomPreconditionParam::value)?.toString())
         }
     )

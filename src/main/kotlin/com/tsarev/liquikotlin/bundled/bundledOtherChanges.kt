@@ -1,6 +1,9 @@
 package com.tsarev.liquikotlin.bundled
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
+import com.tsarev.liquikotlin.infrastructure.api.child
+import com.tsarev.liquikotlin.infrastructure.api.nullable
+import com.tsarev.liquikotlin.infrastructure.api.prop
 import java.math.BigInteger
 
 open class LkAlterSequence : LbDslNode<LkAlterSequence>(LkAlterSequence::class) {
@@ -126,7 +129,7 @@ open class LkSql : LbDslNode<LkSql> (LkSql::class) {
     open val endDelimiter by nullable(String::class)
     open val splitStatements by nullable(Boolean::class)
     @Primary
-    open val sql by nonNullable(String::class)
+    open val sql by prop(String::class)
     open val stripComments by nullable(Boolean::class)
 }
 

@@ -4,7 +4,7 @@ import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.infrastructure.minus
 import liquibase.change.core.*
 
-open class DeleteIntegration : ChangeIntegration<LkDelete, DeleteDataChange>(
+open class DeleteIntegration : ChangeIntegration<DeleteDataChange>(
     ::DeleteDataChange,
     LkDelete::catalogName - DeleteDataChange::setCatalogName,
     LkDelete::schemaName - DeleteDataChange::setSchemaName,
@@ -13,14 +13,14 @@ open class DeleteIntegration : ChangeIntegration<LkDelete, DeleteDataChange>(
 )
 
 open class DropAllForeignKeyConstraintsIntegration :
-    ChangeIntegration<LkDropAllForeignKeyConstraints, DropAllForeignKeyConstraintsChange>(
+    ChangeIntegration<DropAllForeignKeyConstraintsChange>(
         ::DropAllForeignKeyConstraintsChange,
         LkDropAllForeignKeyConstraints::baseTableCatalogName - DropAllForeignKeyConstraintsChange::setBaseTableCatalogName,
         LkDropAllForeignKeyConstraints::baseTableName - DropAllForeignKeyConstraintsChange::setBaseTableName,
         LkDropAllForeignKeyConstraints::baseTableSchemaName - DropAllForeignKeyConstraintsChange::setBaseTableSchemaName
     )
 
-open class DropColumnIntegration : ChangeIntegration<LkDropColumn, DropColumnChange>(
+open class DropColumnIntegration : ChangeIntegration<DropColumnChange>(
     ::DropColumnChange,
     LkDropColumn::catalogName - DropColumnChange::setCatalogName,
     LkDropColumn::columnName - DropColumnChange::setColumnName,
@@ -28,7 +28,7 @@ open class DropColumnIntegration : ChangeIntegration<LkDropColumn, DropColumnCha
     LkDropColumn::tableName - DropColumnChange::setTableName
 )
 
-open class DropDefaultValueIntegration : ChangeIntegration<LkDropDefaultValue, DropDefaultValueChange>(
+open class DropDefaultValueIntegration : ChangeIntegration<DropDefaultValueChange>(
     ::DropDefaultValueChange,
     LkDropDefaultValue::catalogName - DropDefaultValueChange::setCatalogName,
     LkDropDefaultValue::columnDataType - DropDefaultValueChange::setColumnDataType,
@@ -38,7 +38,7 @@ open class DropDefaultValueIntegration : ChangeIntegration<LkDropDefaultValue, D
 )
 
 open class DropForeignKeyConstraintIntegration :
-    ChangeIntegration<LkDropForeignKeyConstraint, DropForeignKeyConstraintChange>(
+    ChangeIntegration<DropForeignKeyConstraintChange>(
         ::DropForeignKeyConstraintChange,
         LkDropForeignKeyConstraint::baseTableCatalogName - DropForeignKeyConstraintChange::setBaseTableCatalogName,
         LkDropForeignKeyConstraint::baseTableName - DropForeignKeyConstraintChange::setBaseTableName,
@@ -46,7 +46,7 @@ open class DropForeignKeyConstraintIntegration :
         LkDropForeignKeyConstraint::constraintName - DropForeignKeyConstraintChange::setConstraintName
     )
 
-open class DropIndexIntegration : ChangeIntegration<LkDropIndex, DropIndexChange>(
+open class DropIndexIntegration : ChangeIntegration<DropIndexChange>(
     ::DropIndexChange,
     LkDropIndex::catalogName - DropIndexChange::setCatalogName,
     LkDropIndex::indexName - DropIndexChange::setIndexName,
@@ -55,7 +55,7 @@ open class DropIndexIntegration : ChangeIntegration<LkDropIndex, DropIndexChange
     LkDropIndex::associatedWith - DropIndexChange::setAssociatedWith
 )
 
-open class DropNotNullConstraintIntegration : ChangeIntegration<LkDropNotNullConstraint, DropNotNullConstraintChange>(
+open class DropNotNullConstraintIntegration : ChangeIntegration<DropNotNullConstraintChange>(
     ::DropNotNullConstraintChange,
     LkDropNotNullConstraint::catalogName - DropNotNullConstraintChange::setCatalogName,
     LkDropNotNullConstraint::columnDataType - DropNotNullConstraintChange::setColumnDataType,
@@ -64,7 +64,7 @@ open class DropNotNullConstraintIntegration : ChangeIntegration<LkDropNotNullCon
     LkDropNotNullConstraint::tableName - DropNotNullConstraintChange::setTableName
 )
 
-open class DropPrimaryKeyIntegration : ChangeIntegration<LkDropPrimaryKey, DropPrimaryKeyChange>(
+open class DropPrimaryKeyIntegration : ChangeIntegration<DropPrimaryKeyChange>(
     ::DropPrimaryKeyChange,
     LkDropPrimaryKey::catalogName - DropPrimaryKeyChange::setCatalogName,
     LkDropPrimaryKey::constraintName - DropPrimaryKeyChange::setConstraintName,
@@ -72,21 +72,21 @@ open class DropPrimaryKeyIntegration : ChangeIntegration<LkDropPrimaryKey, DropP
     LkDropPrimaryKey::tableName - DropPrimaryKeyChange::setTableName
 )
 
-open class DropProcedureIntegration : ChangeIntegration<LkDropProcedure, DropProcedureChange>(
+open class DropProcedureIntegration : ChangeIntegration<DropProcedureChange>(
     ::DropProcedureChange,
     LkDropProcedure::catalogName - DropProcedureChange::setCatalogName,
     LkDropProcedure::procedureName - DropProcedureChange::setProcedureName,
     LkDropProcedure::schemaName - DropProcedureChange::setSchemaName
 )
 
-open class DropSequenceIntegration : ChangeIntegration<LkDropSequence, DropSequenceChange>(
+open class DropSequenceIntegration : ChangeIntegration<DropSequenceChange>(
     ::DropSequenceChange,
     LkDropSequence::catalogName - DropSequenceChange::setCatalogName,
     LkDropSequence::schemaName - DropSequenceChange::setSchemaName,
     LkDropSequence::sequenceName - DropSequenceChange::setSequenceName
 )
 
-open class DropTableIntegration : ChangeIntegration<LkDropTable, DropTableChange>(
+open class DropTableIntegration : ChangeIntegration<DropTableChange>(
     ::DropTableChange,
     LkDropTable::cascadeConstraints - DropTableChange::setCascadeConstraints,
     LkDropTable::catalogName - DropTableChange::setCatalogName,
@@ -94,7 +94,7 @@ open class DropTableIntegration : ChangeIntegration<LkDropTable, DropTableChange
     LkDropTable::tableName - DropTableChange::setTableName
 )
 
-open class DropUniqueConstraintIntegration : ChangeIntegration<LkDropUniqueConstraint, DropUniqueConstraintChange>(
+open class DropUniqueConstraintIntegration : ChangeIntegration<DropUniqueConstraintChange>(
     ::DropUniqueConstraintChange,
     LkDropUniqueConstraint::catalogName - DropUniqueConstraintChange::setCatalogName,
     LkDropUniqueConstraint::constraintName - DropUniqueConstraintChange::setConstraintName,
@@ -103,7 +103,7 @@ open class DropUniqueConstraintIntegration : ChangeIntegration<LkDropUniqueConst
     LkDropUniqueConstraint::uniqueColumns - DropUniqueConstraintChange::setUniqueColumns
 )
 
-open class DropViewIntegration : ChangeIntegration<LkDropView, DropViewChange>(
+open class DropViewIntegration : ChangeIntegration<DropViewChange>(
     ::DropViewChange,
     LkDropView::catalogName - DropViewChange::setCatalogName,
     LkDropView::schemaName - DropViewChange::setSchemaName,

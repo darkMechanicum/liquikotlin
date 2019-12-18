@@ -63,9 +63,18 @@ abstract class ChildAbleSelf<SelfT : ChildAbleSelf<SelfT, NodeT>, NodeT : Node<N
  * Utility method to create child node.
  */
 fun <ChildT, SelfT, NodeT> SelfT.child(childCtor: () -> ChildT)
-        where SelfT : ChildAbleSelf<SelfT, NodeT>,
+        where SelfT : ChildAbleSelf<out SelfT, NodeT>,
               ChildT : ChildAbleSelf<ChildT, NodeT>,
               NodeT : TreeAble<NodeT> = lazy { childCtor().also { this.onChildAdded(it) } }
+
+/**
+ * Utility method to create non builder child node.
+ */
+fun <ChildT, SelfT, NodeT> SelfT.builtChild(childCtor: () -> ChildT)
+        where SelfT : ChildAbleSelf<out SelfT, NodeT>,
+              ChildT : ChildAbleSelf<ChildT, NodeT>,
+              NodeT : TreeAble<NodeT>,
+              NodeT : BuilderAble<NodeT> = lazy { childCtor().also { this.onChildAdded(it); it.node.isBuilder = false } }
 
 /**
  * Node that is aware of its own type.
@@ -132,7 +141,18 @@ interface CopyAble<NodeT : CopyAble<NodeT>> : Node<NodeT> {
  */
 interface PropertyAble<NodeT : PropertyAble<NodeT>> : Node<NodeT> {
 
+    companion object {
+        inline fun <reified FieldT : Any> PropertyAble<*>.getAnyProperty(pName: String) =
+                this.getAnyProperty(FieldT::class, pName)
+    }
+
     val properties: MutableMap<String, Any?>
+
+    fun <FieldT: Any> getProperty(pClass: KClass<FieldT>, pName: String): FieldT
+
+    fun <FieldT: Any> getNullableProperty(pClass: KClass<FieldT>, pName: String): FieldT?
+
+    fun <FieldT: Any> getAnyProperty(pClass: KClass<FieldT>, pName: String): FieldT?
 
     // Nullable properties.
     fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createNlbDelegate(pClass: KClass<FieldT>, self: SelfT) =
@@ -232,11 +252,11 @@ open class PropMeta(
 /**
  * Node that know its managed (which is created with delgation) properties meta info.
  */
-interface MetaAble {
+interface MetaAble<MetaT : PropMeta> {
 
-    val metas: Collection<PropMeta>
+    val metas: MutableMap<String, MetaT>
 
-    fun getMeta(pName: String): PropMeta?
+    fun getMeta(pName: String): MetaT?
 }
 
 /**
@@ -244,15 +264,19 @@ interface MetaAble {
  */
 interface EvaluateAble<NodeT : EvaluateAble<NodeT>> : Node<NodeT> {
 
-    fun <EvalT : Any, ArgT> eval(factory: EvalFactory<ArgT>, arg: ArgT?, parentEval: Any? = null): EvalT?
+    fun <EvalT : Any, ArgT> eval(factory: EvalFactory<ArgT, NodeT>, arg: ArgT?, parentEval: Any? = null): EvalT?
+
+    fun <EvalT : Any, ArgT> evalSafe(factory: EvalFactory<ArgT, NodeT>, arg: ArgT?, parentEval: Any? = null) =
+            eval<EvalT, ArgT>(factory, arg, parentEval)!!
+
 }
 
 /**
  * Factory to obtain specific [EvalAction] for each node.
  */
-interface EvalFactory<ArgT> {
+interface EvalFactory<ArgT, NodeT : Node<NodeT>> {
 
-    fun <NodeT : Node<NodeT>, EvalT : Any> getAction(node: NodeT): EvalAction<NodeT, EvalT, ArgT>
+    fun <EvalT : Any> getAction(node: NodeT): EvalAction<NodeT, EvalT, ArgT>
 }
 
 /**
@@ -289,7 +313,7 @@ interface TreeAble<NodeT : TreeAble<NodeT>> : Node<NodeT> {
     /**
      * Node parent.
      */
-    var parent: NodeT?
+    var parent: Lazy<NodeT>?
 
     /**
      * Node children.
@@ -299,6 +323,17 @@ interface TreeAble<NodeT : TreeAble<NodeT>> : Node<NodeT> {
 }
 
 /**
+ * Node, that knows its self class.
+ */
+interface SelfClassAble<NodeT : SelfClassAble<NodeT>> : Node<NodeT> {
+
+    /**
+     * Self class.
+     */
+    val selfClass: KClass<*>
+}
+
+/**
  * Utility method to obtain tree root from any tree element.
  */
-val <NodeT : TreeAble<NodeT>> NodeT.root: NodeT get() = this.letWhile { it.parent }
+val <NodeT : TreeAble<NodeT>> NodeT.root: NodeT get() = this.letWhile { it.parent?.value }
