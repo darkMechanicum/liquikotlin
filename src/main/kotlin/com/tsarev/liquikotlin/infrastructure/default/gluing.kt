@@ -61,25 +61,39 @@ open class DefaultSelf<SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) :
     ChildAbleSelf<SelfT, DefaultNode>(selfClass) {
 
     override fun onChildAdded(child: Self<*, DefaultNode>) {
-        (child as? DefaultSelf<*>)?.let {
-            it.parent = this
-            this.children.add(it)
-            it.node.parent = lazy { this@DefaultSelf.node }
+        (child as? DefaultSelf<*>)?.let { doOnChildAdded(it) } ?: throw RuntimeException("Unexpected type for child node: ${child::class}")
+    }
+
+    override fun onChildAccessed(child: Self<*, DefaultNode>) {
+        (child as? DefaultSelf<*>)?.let { doOnChildAccessed(it) } ?: throw RuntimeException("Unexpected type for child node: ${child::class}")
+    }
+
+    private fun doOnChildAdded(it: DefaultSelf<*>) {
+        it.parent = this
+        this.children.add(it)
+        it.node.parent = lazy { this@DefaultSelf.node }
+    }
+
+    private fun doOnChildAccessed(it: DefaultSelf<*>) {
+        if (it.realNode != null) {
+            it.clearRealNodeRec()
+            it.popTemplateRec()
         }
+        it.copyTemplateRec()
     }
 
     private val templateStack = ArrayList<DefaultNode>()
 
     private var realNode: DefaultNode? = null
 
-    var parent: DefaultSelf<*>? = null
+    private var parent: DefaultSelf<*>? = null
 
     private val children = ArrayList<DefaultSelf<*>>()
 
     override val node: DefaultNode
         get() = realNode ?: lastTemplate
 
-    private val lastTemplate get () = templateStack.lastOrNull() ?: initNode()
+    private val lastTemplate get() = templateStack.lastOrNull() ?: initNode()
 
     private fun initNode() = DefaultNode(this@DefaultSelf::class) {
         DefaultNode(this@DefaultSelf::class).also { this@DefaultSelf.realNode = it }
@@ -100,24 +114,6 @@ open class DefaultSelf<SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) :
     private fun popTemplateRec() {
         if (templateStack.size > 0) templateStack.removeAt(templateStack.size - 1)
         children.forEach { it.popTemplateRec() }
-    }
-
-    private var shouldNodeUp = false
-
-    override fun nodeDown() {
-        if (realNode == null) {
-            children.forEach { it.copyTemplateRec() }
-            lastTemplate.build()
-            shouldNodeUp = true
-        }
-    }
-
-    override fun nodeUp() {
-        if (shouldNodeUp) {
-            children.forEach { it.popTemplateRec() }
-            shouldNodeUp = false
-        }
-        clearRealNodeRec()
     }
 
 }

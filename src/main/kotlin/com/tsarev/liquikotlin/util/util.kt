@@ -1,5 +1,8 @@
 package com.tsarev.liquikotlin.util
 
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+
 /**
  * Generate two way map from passed pairs.
  */
@@ -41,3 +44,14 @@ fun <T, R> T?.letTry(closure: (T) -> R) = ClosureLetTry(closure, this)
  * Simple function to escape `fun method() = smth.doSmth.let { }` in Unit methods.
  */
 val Any?.ignore get() = run { }
+
+/**
+ * Observing delegate with lazy value initialization.
+ */
+class LazyObservingDelegate<T : Any>(
+    private val ctor: () -> T,
+    private val callback: (T) -> Unit
+) : ReadOnlyProperty<Any, T> {
+    val value by lazy(ctor)
+    override fun getValue(thisRef: Any, property: KProperty<*>) = value.also { callback(it) }
+}

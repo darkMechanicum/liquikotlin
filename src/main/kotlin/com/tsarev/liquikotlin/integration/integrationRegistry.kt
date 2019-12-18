@@ -113,9 +113,7 @@ open class LiquibaseIntegrationFactory : EvalFactory<LbArg, DefaultNode> {
         val nodeParent = node.parent
         if (nodeParent != null) {
             val key = node.selfClass to nodeParent.value.selfClass
-            if (withParent[key] != null) {
-                return withParent[key] as EvalAction<DefaultNode, EvalT, LbArg>
-            }
+            withParent[key]?.let { return@getAction it as EvalAction<DefaultNode, EvalT, LbArg> }
         }
         return single.getValue(node.selfClass) as EvalAction<DefaultNode, EvalT, LbArg>
     }

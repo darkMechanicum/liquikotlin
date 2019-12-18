@@ -5,7 +5,7 @@ import com.tsarev.liquikotlin.util.*
  * This is a test script. See [H2RunTest].
  */
 
-changelog.changeset.author.setDefault("darkMechanicum")
+changelog.changeset.author.default = "darkMechanicum"
 
 changelog - {
     property.name(testProperty).value(testValue)

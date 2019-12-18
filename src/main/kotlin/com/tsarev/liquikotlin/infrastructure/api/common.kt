@@ -1,5 +1,6 @@
 package com.tsarev.liquikotlin.infrastructure.api
 
+import com.tsarev.liquikotlin.util.LazyObservingDelegate
 import com.tsarev.liquikotlin.util.letWhile
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
@@ -19,16 +20,6 @@ abstract class Self<SelfT : Self<SelfT, NodeT>, NodeT : Node<NodeT>>(
     internal abstract val node: NodeT
 
     /**
-     * Get in the context.
-     */
-    protected abstract fun nodeDown()
-
-    /**
-     * Get out of the context.
-     */
-    protected abstract fun nodeUp()
-
-    /**
      * Self link.
      */
     val self get() = selfClass.cast(this)
@@ -36,14 +27,7 @@ abstract class Self<SelfT : Self<SelfT, NodeT>, NodeT : Node<NodeT>>(
     /**
      * Closure support.
      */
-    operator fun minus(modification: SelfT.() -> Unit): SelfT = self.apply {
-        try {
-            nodeDown()
-            modification()
-        } finally {
-            nodeUp()
-        }
-    }
+    operator fun minus(modification: SelfT.() -> Unit): SelfT = self.apply(modification)
 }
 
 /**
@@ -57,6 +41,11 @@ abstract class ChildAbleSelf<SelfT : ChildAbleSelf<SelfT, NodeT>, NodeT : Node<N
      */
     internal abstract fun onChildAdded(child: Self<*, NodeT>)
 
+    /**
+     * Child access listener.
+     */
+    internal abstract fun onChildAccessed(child: Self<*, NodeT>)
+
 }
 
 /**
@@ -65,7 +54,10 @@ abstract class ChildAbleSelf<SelfT : ChildAbleSelf<SelfT, NodeT>, NodeT : Node<N
 fun <ChildT, SelfT, NodeT> SelfT.child(childCtor: () -> ChildT)
         where SelfT : ChildAbleSelf<out SelfT, NodeT>,
               ChildT : ChildAbleSelf<ChildT, NodeT>,
-              NodeT : TreeAble<NodeT> = lazy { childCtor().also { this.onChildAdded(it) } }
+              NodeT : TreeAble<NodeT> = LazyObservingDelegate(
+    { childCtor().also { this.onChildAdded(it) } },
+    { this.onChildAccessed(it) }
+)
 
 /**
  * Utility method to create non builder child node.
@@ -74,7 +66,10 @@ fun <ChildT, SelfT, NodeT> SelfT.builtChild(childCtor: () -> ChildT)
         where SelfT : ChildAbleSelf<out SelfT, NodeT>,
               ChildT : ChildAbleSelf<ChildT, NodeT>,
               NodeT : TreeAble<NodeT>,
-              NodeT : BuilderAble<NodeT> = lazy { childCtor().also { this.onChildAdded(it); it.node.isBuilder = false } }
+              NodeT : BuilderAble<NodeT> = LazyObservingDelegate(
+    { childCtor().also { this.onChildAdded(it) } },
+    { this.onChildAccessed(it); it.node.build() }
+)
 
 /**
  * Node that is aware of its own type.
