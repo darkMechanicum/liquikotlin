@@ -73,9 +73,3 @@ within closure (or globally if there is no closure).
 ### Links
 1. <a id="groovy_dsl_anchor"></a> https://github.com/liquibase/liquibase-groovy-dsl
 2. <a id="kotlin_dsl_anchor"></a> https://github.com/gradle/kotlin-dsl
-
-# TODO
-0. Add tests
-0. Add LICENSE.md
-0. Add badges
-0. Add check that node cannot get parent node fields from closure
