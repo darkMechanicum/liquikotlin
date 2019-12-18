@@ -28,7 +28,7 @@ class H2RunTest : RuleChainAwareTest() {
         assertTableOrViewExist(testTableName)
 
         assertColumnExist(testTableName, testColumnName)
-        assertIsNullable(testTableName, testColumnName, primaryNullable)
+        assertIsNullable(testTableName, testColumnName, testPrimaryNullable)
         assertIsPrimary(testTableName, testColumnName)
         assertHasAutoIncrement(testTableName, testColumnName)
 

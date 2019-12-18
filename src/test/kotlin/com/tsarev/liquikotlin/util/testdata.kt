@@ -8,6 +8,7 @@ import java.util.*
 const val testAfterColumn = "AfterColumn"
 const val testAutoIncrement = true
 const val testAssociatedWith = "MyAssociation"
+const val testAuthor = "Don"
 
 // B
 const val testBaseColumnNames = "baseColumnNames"
@@ -32,6 +33,8 @@ const val testComments = "My Comments"
 const val testComputed = true
 const val testConstraintName = "constraintName"
 const val testCycle = true
+const val testContext = "Context"
+const val testCheckSum = "1:1234567890"
 val testCacheSize = BigInteger.valueOf(345L)!!
 
 // D
@@ -65,6 +68,7 @@ const val testFinalColumnType = "finalColumn"
 const val testForeignKeyName = "foreignKey"
 const val testForeignKeyTableName = "ForeignTable"
 const val testFullDefinition = true
+const val testFailOnError = true
 
 // H
 const val testHeader = "myHeader"
@@ -73,6 +77,8 @@ const val testHeader = "myHeader"
 const val testIndex = 42
 const val testIndexName = "myIndex"
 const val testInitiallyDeferred = true
+const val testId = "simpleId1"
+const val testIncludePath = "test.dummy"
 val testIncrementBy = BigInteger.valueOf(406L)!!
 
 // J
@@ -116,6 +122,7 @@ const val testPrimaryKeyTablespace = "primaryKeyTablespace"
 const val testProcedureName = "My Procedure Name"
 const val testProcedureText = "My Procedure Text"
 const val testProperty = "answer"
+const val testPrimaryNullable = false
 
 // R
 const val testReferencedColumnNames = "referenceColumn1,referenceColumn2"
@@ -126,6 +133,9 @@ const val testReferences = "reference1,reference2"
 const val testRelativeToChangelogFile = true
 const val testRemarks = "MyRemarks"
 const val testReplaceIfExists = true
+const val testRunAlways = true
+const val testRunOnChange = true
+const val testRunInTransaction = true
 
 // S
 const val testSchemaName = "schemaName"
@@ -134,6 +144,8 @@ const val testSequenceName = "MySequence"
 const val testSplitStatements = true
 const val testSql = "select 1 from dual"
 const val testStripComments = false
+const val testSecondColumnName = "mySecondColumn"
+const val testSecondConstraintName = "constraintName"
 val testStartValue = BigInteger.valueOf(34L)!!
 val testStartWith = BigInteger.valueOf(507L)!!
 
@@ -164,15 +176,3 @@ const val testWhere = "1 = 1"
 const val testWillCycle = true
 
 // Sort
-const val testId = "simpleId1"
-const val testAuthor = "Don"
-const val testRunAlways = true
-const val testRunOnChange = true
-const val testContext = "Context"
-const val testRunInTransaction = true
-const val testFailOnError = true
-const val testCheckSum = "1:1234567890"
-const val testIncludePath = "test.dummy"
-const val testSecondColumnName = "mySecondColumn"
-const val testSecondConstraintName = "constraintName"
-const val primaryNullable = false
