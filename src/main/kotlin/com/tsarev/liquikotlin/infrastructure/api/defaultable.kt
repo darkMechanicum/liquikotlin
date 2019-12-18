@@ -3,6 +3,9 @@ package com.tsarev.liquikotlin.infrastructure.api
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
+/**
+ * Defaultable property meta information.
+ */
 open class MetaWithDefault(
     name: String,
     type: KClass<*>,
@@ -13,6 +16,9 @@ open class MetaWithDefault(
     val hasDefault: () -> Boolean
 ) : PropMeta(name, type, annotations, definingProp, getter, isNullable)
 
+/**
+ * Node that can have managed chainable properties, which can have default values.
+ */
 interface DefaultPropertyAble<NodeT> : PropertyAble<NodeT>, MetaAble<MetaWithDefault>
         where NodeT : DefaultPropertyAble<NodeT> {
 
