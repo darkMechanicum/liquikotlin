@@ -11,47 +11,47 @@ import liquibase.statement.DatabaseFunction
 import liquibase.statement.SequenceCurrentValueFunction
 import liquibase.statement.SequenceNextValueFunction
 
-open class BaseColumnConfigIntegration<NodeT : LkBaseColumnConfig<NodeT>, ColumnT : ColumnConfig, ParentT : Any>(
+open class BaseColumnConfigIntegration<SelfT : LkBaseColumnConfig<SelfT>, ColumnT : ColumnConfig, ParentT : Any>(
     linkedConstructor: () -> ColumnT,
     parentSetter: (ParentT, ColumnT?, DefaultNode, LbArg?) -> Unit,
     vararg childMappings: PropertyMapping<DefaultNode, ColumnT, *>
 ) : LiquibaseIntegrator<ColumnT, ParentT>(
     linkedConstructor,
     parentSetter,
-    LkBaseColumnConfig<NodeT>::name - ColumnConfig::setName,
-    LkBaseColumnConfig<NodeT>::type - ColumnConfig::setType,
-    LkBaseColumnConfig<NodeT>::value - ColumnConfig::setValue,
-    LkBaseColumnConfig<NodeT>::computed - ColumnConfig::setComputed,
-    LkBaseColumnConfig<NodeT>::valueNumeric - ColumnConfig::setValueNumeric,
-    LkBaseColumnConfig<NodeT>::valueBoolean - ColumnConfig::setValueBoolean,
-    LkBaseColumnConfig<NodeT>::valueDate - ColumnConfig::setValueDate,
-    LkBaseColumnConfig<NodeT>::valueComputed - { config: ColumnConfig, value ->
+    LkBaseColumnConfig<SelfT>::name - ColumnConfig::setName,
+    LkBaseColumnConfig<SelfT>::type - ColumnConfig::setType,
+    LkBaseColumnConfig<SelfT>::value - ColumnConfig::setValue,
+    LkBaseColumnConfig<SelfT>::computed - ColumnConfig::setComputed,
+    LkBaseColumnConfig<SelfT>::valueNumeric - ColumnConfig::setValueNumeric,
+    LkBaseColumnConfig<SelfT>::valueBoolean - ColumnConfig::setValueBoolean,
+    LkBaseColumnConfig<SelfT>::valueDate - ColumnConfig::setValueDate,
+    LkBaseColumnConfig<SelfT>::valueComputed - { config: ColumnConfig, value ->
         config.setValueComputed(DatabaseFunction(value))
     },
-    LkBaseColumnConfig<NodeT>::valueBlobFile - ColumnConfig::setValueBlobFile,
-    LkBaseColumnConfig<NodeT>::valueClobFile - ColumnConfig::setValueClobFile,
-    LkBaseColumnConfig<NodeT>::encoding - ColumnConfig::setEncoding,
-    LkBaseColumnConfig<NodeT>::defaultValue - ColumnConfig::setDefaultValue,
-    LkBaseColumnConfig<NodeT>::defaultValueNumeric - ColumnConfig::setDefaultValueNumeric,
-    LkBaseColumnConfig<NodeT>::defaultValueBoolean - ColumnConfig::setDefaultValueBoolean,
-    LkBaseColumnConfig<NodeT>::defaultValueDate - ColumnConfig::setDefaultValueDate,
-    LkBaseColumnConfig<NodeT>::defaultValueComputed - { config: ColumnConfig, value ->
+    LkBaseColumnConfig<SelfT>::valueBlobFile - ColumnConfig::setValueBlobFile,
+    LkBaseColumnConfig<SelfT>::valueClobFile - ColumnConfig::setValueClobFile,
+    LkBaseColumnConfig<SelfT>::encoding - ColumnConfig::setEncoding,
+    LkBaseColumnConfig<SelfT>::defaultValue - ColumnConfig::setDefaultValue,
+    LkBaseColumnConfig<SelfT>::defaultValueNumeric - ColumnConfig::setDefaultValueNumeric,
+    LkBaseColumnConfig<SelfT>::defaultValueBoolean - ColumnConfig::setDefaultValueBoolean,
+    LkBaseColumnConfig<SelfT>::defaultValueDate - ColumnConfig::setDefaultValueDate,
+    LkBaseColumnConfig<SelfT>::defaultValueComputed - { config: ColumnConfig, value ->
         config.setDefaultValueComputed(DatabaseFunction(value))
     },
-    LkBaseColumnConfig<NodeT>::autoIncrement - ColumnConfig::setAutoIncrement,
-    LkBaseColumnConfig<NodeT>::remarks - ColumnConfig::setRemarks,
-    LkBaseColumnConfig<NodeT>::valueSequenceNext - { config, seqName ->
+    LkBaseColumnConfig<SelfT>::autoIncrement - ColumnConfig::setAutoIncrement,
+    LkBaseColumnConfig<SelfT>::remarks - ColumnConfig::setRemarks,
+    LkBaseColumnConfig<SelfT>::valueSequenceNext - { config, seqName ->
         config.setValueSequenceNext(SequenceNextValueFunction(seqName))
     },
-    LkBaseColumnConfig<NodeT>::valueSequenceCurrent - { config, seqName ->
+    LkBaseColumnConfig<SelfT>::valueSequenceCurrent - { config, seqName ->
         config.setValueSequenceCurrent(SequenceCurrentValueFunction(seqName))
     },
-    LkBaseColumnConfig<NodeT>::defaultValueSequenceNext - { config, seqName ->
+    LkBaseColumnConfig<SelfT>::defaultValueSequenceNext - { config, seqName ->
         config.setDefaultValueSequenceNext(SequenceNextValueFunction(seqName))
     },
-    LkBaseColumnConfig<NodeT>::startWith - ColumnConfig::setStartWith,
-    LkBaseColumnConfig<NodeT>::incrementBy - ColumnConfig::setIncrementBy,
-    LkBaseColumnConfig<NodeT>::descending - ColumnConfig::setDescending
+    LkBaseColumnConfig<SelfT>::startWith - ColumnConfig::setStartWith,
+    LkBaseColumnConfig<SelfT>::incrementBy - ColumnConfig::setIncrementBy,
+    LkBaseColumnConfig<SelfT>::descending - ColumnConfig::setDescending
 ) { init {
     propertyMappings.addAll(childMappings)
 }

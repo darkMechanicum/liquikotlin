@@ -1,8 +1,8 @@
 package com.tsarev.liquikotlin.integration
 
 import com.tsarev.liquikotlin.bundled.*
-import com.tsarev.liquikotlin.infrastructure.EvaluatableDslNode
 import com.tsarev.liquikotlin.infrastructure.LbArg
+import com.tsarev.liquikotlin.infrastructure.LiquibaseIntegrator
 import com.tsarev.liquikotlin.infrastructure.api.EvalAction
 import com.tsarev.liquikotlin.infrastructure.api.EvalFactory
 import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
@@ -11,7 +11,7 @@ import liquibase.changelog.DatabaseChangeLog
 import kotlin.reflect.KClass
 
 /**
- * [EvaluatableDslNode.Evaluator]
+ * [EvalFactory] implementation to return [LiquibaseIntegrator]
  */
 open class LiquibaseIntegrationFactory : EvalFactory<LbArg, DefaultNode> {
 

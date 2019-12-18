@@ -57,46 +57,72 @@ class DefaultNode(
 /**
  * Default base class for all DSL nodes.
  */
-open class DefaultSelf<SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) :
-    ChildAbleSelf<SelfT, DefaultNode>(selfClass) {
+open class DefaultSelf<out SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) : ChildAbleSelf<SelfT>(selfClass) {
+    @Suppress("LeakingThis") // Here we should leak `this` link to provide callback from glue.
+    val managedGlue = DefaultGlue(this)
+    override fun onChildAdded(child: Self<*>) = DefaultGlueProvider.glue(self).onChildAdded(child)
+    override fun onChildAccessed(child: Self<*>) = DefaultGlueProvider.glue(self).onChildAccessed(child)
+}
 
-    override fun onChildAdded(child: Self<*, DefaultNode>) {
-        (child as? DefaultSelf<*>)?.let { doOnChildAdded(it) } ?: throw RuntimeException("Unexpected type for child node: ${child::class}")
+/**
+ * Default glue provider, based on mapping.
+ */
+object DefaultGlueProvider : GlueProvider<DefaultNode> {
+    override fun glue(self: Self<*>): Glue<DefaultNode> {
+        return (self as? DefaultSelf<*>)?.let { doGlue(it) }
+            ?: throw RuntimeException("Not supported SelfT type: ${self::class}")
+    }
+    fun doGlue(self: DefaultSelf<*>) = self.managedGlue
+}
+
+/**
+ * Node and Self linking logic.
+ */
+open class DefaultGlue(
+    private val self: Any
+) : Glue<DefaultNode>() {
+
+    override fun onChildAdded(child: Self<*>) {
+        (child as? DefaultSelf<*>)?.let { doOnChildAdded(it) }
+            ?: throw RuntimeException("Unexpected type for child node: ${child::class}")
     }
 
-    override fun onChildAccessed(child: Self<*, DefaultNode>) {
-        (child as? DefaultSelf<*>)?.let { doOnChildAccessed(it) } ?: throw RuntimeException("Unexpected type for child node: ${child::class}")
+    override fun onChildAccessed(child: Self<*>) {
+        (child as? DefaultSelf<*>)?.let { doOnChildAccessed(it) }
+            ?: throw RuntimeException("Unexpected type for child node: ${child::class}")
     }
 
     private fun doOnChildAdded(it: DefaultSelf<*>) {
-        it.parent = this
-        this.children.add(it)
-        it.node.parent = lazy { this@DefaultSelf.node }
+        val childGlue = DefaultGlueProvider.doGlue(it)
+        childGlue.parent = this
+        this.children.add(childGlue)
+        childGlue.node.parent = lazy { this@DefaultGlue.node }
     }
 
     private fun doOnChildAccessed(it: DefaultSelf<*>) {
-        if (it.realNode != null) {
-            it.clearRealNodeRec()
-            it.popTemplateRec()
+        val childGlue = DefaultGlueProvider.doGlue(it)
+        if (childGlue.realNode != null) {
+            childGlue.clearRealNodeRec()
+            childGlue.popTemplateRec()
         }
-        it.copyTemplateRec()
+        childGlue.copyTemplateRec()
     }
 
     private val templateStack = ArrayList<DefaultNode>()
 
     private var realNode: DefaultNode? = null
 
-    private var parent: DefaultSelf<*>? = null
+    private var parent: DefaultGlue? = null
 
-    private val children = ArrayList<DefaultSelf<*>>()
+    private val children = ArrayList<DefaultGlue>()
 
     override val node: DefaultNode
         get() = realNode ?: lastTemplate
 
     private val lastTemplate get() = templateStack.lastOrNull() ?: initNode()
 
-    private fun initNode() = DefaultNode(this@DefaultSelf::class) {
-        DefaultNode(this@DefaultSelf::class).also { this@DefaultSelf.realNode = it }
+    private fun initNode() = DefaultNode(this@DefaultGlue.self::class) {
+        DefaultNode(this@DefaultGlue.self::class).also { this@DefaultGlue.realNode = it }
     }.also { templateStack.add(it) }
 
     private fun clearRealNodeRec() {
@@ -106,7 +132,7 @@ open class DefaultSelf<SelfT : DefaultSelf<SelfT>>(selfClass: KClass<SelfT>) :
 
     private fun copyTemplateRec() {
         templateStack.add(lastTemplate.copy().also {
-            it.parent = this@DefaultSelf.parent?.let { lazy { it.node } }
+            it.parent = this@DefaultGlue.parent?.let { lazy { it.node } }
         })
         children.forEach { it.copyTemplateRec() }
     }

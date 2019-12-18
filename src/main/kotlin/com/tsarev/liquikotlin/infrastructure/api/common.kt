@@ -6,16 +6,11 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.cast
 
 /**
- * Class to hide implementation details.
+ * Class to allow chaining in DSL.
  */
-abstract class Self<SelfT : Self<SelfT, NodeT>, NodeT : Node<NodeT>>(
+abstract class Self<out SelfT : Self<SelfT>>(
     private val selfClass: KClass<SelfT>
 ) {
-
-    /**
-     * Real node data.
-     */
-    internal abstract val node: NodeT
 
     /**
      * Self link.
@@ -31,43 +26,52 @@ abstract class Self<SelfT : Self<SelfT, NodeT>, NodeT : Node<NodeT>>(
 /**
  * Self that has support for children.
  */
-abstract class ChildAbleSelf<SelfT : ChildAbleSelf<SelfT, NodeT>, NodeT : Node<NodeT>>(selfClass: KClass<SelfT>) :
-    Self<SelfT, NodeT>(selfClass) {
+abstract class ChildAbleSelf<out SelfT : ChildAbleSelf<SelfT>>(selfClass: KClass<SelfT>) :
+    Self<SelfT>(selfClass) {
 
     /**
      * Child add listener.
      */
-    internal abstract fun onChildAdded(child: Self<*, NodeT>)
+    internal abstract fun onChildAdded(child: Self<*>)
 
     /**
      * Child access listener.
      */
-    internal abstract fun onChildAccessed(child: Self<*, NodeT>)
+    internal abstract fun onChildAccessed(child: Self<*>)
 
 }
 
 /**
  * Utility method to create child node.
  */
-fun <ChildT, SelfT, NodeT> SelfT.child(childCtor: () -> ChildT)
-        where SelfT : ChildAbleSelf<out SelfT, NodeT>,
-              ChildT : ChildAbleSelf<ChildT, NodeT>,
-              NodeT : TreeAble<NodeT> = LazyObservingDelegate(
-    { childCtor().also { this.onChildAdded(it) } },
-    { this.onChildAccessed(it) }
-)
+fun <ChildT, SelfT, NodeT> GlueProvider<NodeT>.child(
+    childCtor: () -> ChildT,
+    self: SelfT
+) where SelfT : ChildAbleSelf<SelfT>,
+        ChildT : ChildAbleSelf<ChildT>,
+        NodeT : TreeAble<NodeT> = glue(self).run {
+    LazyObservingDelegate(
+        { childCtor().also { self.onChildAdded(it) } },
+        { self.onChildAccessed(it) }
+    )
+}
+
 
 /**
  * Utility method to create non builder child node.
  */
-fun <ChildT, SelfT, NodeT> SelfT.builtChild(childCtor: () -> ChildT)
-        where SelfT : ChildAbleSelf<out SelfT, NodeT>,
-              ChildT : ChildAbleSelf<ChildT, NodeT>,
-              NodeT : TreeAble<NodeT>,
-              NodeT : BuilderAble<NodeT> = LazyObservingDelegate(
-    { childCtor().also { this.onChildAdded(it) } },
-    { this.onChildAccessed(it); it.node.build() }
-)
+fun <ChildT, SelfT, NodeT> GlueProvider<NodeT>.builtChild(
+    childCtor: () -> ChildT,
+    self: SelfT
+) where SelfT : ChildAbleSelf<SelfT>,
+        ChildT : ChildAbleSelf<ChildT>,
+        NodeT : TreeAble<NodeT>,
+        NodeT : BuilderAble<NodeT> = glue(self).run {
+    LazyObservingDelegate(
+        { childCtor().also { self.onChildAdded(it) } },
+        { self.onChildAccessed(it); this.node.build() }
+    )
+}
 
 /**
  * Factory to obtain specific [EvalAction] for each node.

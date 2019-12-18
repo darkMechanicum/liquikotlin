@@ -1,10 +1,9 @@
 package com.tsarev.liquikotlin.bundled
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
-import com.tsarev.liquikotlin.infrastructure.api.child
-import com.tsarev.liquikotlin.infrastructure.api.nullable
-import com.tsarev.liquikotlin.infrastructure.api.prop
-import com.tsarev.liquikotlin.infrastructure.default.DefaultSelf
+import com.tsarev.liquikotlin.infrastructure.default.child
+import com.tsarev.liquikotlin.infrastructure.default.nullable
+import com.tsarev.liquikotlin.infrastructure.default.prop
 import java.math.BigInteger
 import java.util.*
 import kotlin.reflect.KClass
@@ -12,7 +11,7 @@ import kotlin.reflect.KClass
 // --- Generalized classes ---
 
 abstract class LkBaseColumnConfig<SelfT : LkBaseColumnConfig<SelfT>>(thisClass: KClass<SelfT>) :
-    DefaultSelf<SelfT>(thisClass) {
+    LbDslNode<SelfT>(thisClass) {
     @Primary
     open val name by nullable(String::class)
     @Primary

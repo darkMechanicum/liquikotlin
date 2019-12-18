@@ -14,7 +14,7 @@ import java.sql.DriverManager
  */
 class H2RunTest : RuleChainAwareTest() {
 
-    val conn: Connection by resource { DriverManager.getConnection("jdbc:h2:mem:test") }
+    private val conn by resource { DriverManager.getConnection("jdbc:h2:mem:test") }
 
     @Test
     fun simpleChangeLogTest() = testLiquibase("build/resources/test/simpleScript.kts") {

@@ -14,16 +14,16 @@ interface Valuable<FieldT> {
 /**
  * Base interface for property.
  */
-interface PropBase<FieldT : Any, SelfT : Self<SelfT, NodeT>, NodeT : PropertyAble<NodeT>> {
+interface PropBase<FieldT : Any, SelfT : Self<SelfT>, NodeT : PropertyAble<NodeT>> {
     val pName: String
     val pClass: KClass<FieldT>
-    val self: SelfT
+    val glue: Glue<NodeT>
 }
 
 /**
  * Nullable chainable property interface.
  */
-interface NlbChPr<SelfT : Self<SelfT, NodeT>, FieldT : Any, NodeT : PropertyAble<NodeT>>
+interface NlbChPr<SelfT : Self<SelfT>, FieldT : Any, NodeT : PropertyAble<NodeT>>
     : Valuable<FieldT?>, PropBase<FieldT, SelfT, NodeT> {
     operator fun invoke(value: FieldT?): SelfT
 }
@@ -31,7 +31,7 @@ interface NlbChPr<SelfT : Self<SelfT, NodeT>, FieldT : Any, NodeT : PropertyAble
 /**
  * Non nullable chainable property interface.
  */
-interface ChPr<SelfT : Self<SelfT, NodeT>, FieldT : Any, NodeT : PropertyAble<NodeT>>
+interface ChPr<SelfT : Self<SelfT>, FieldT : Any, NodeT : PropertyAble<NodeT>>
     : Valuable<FieldT>, PropBase<FieldT, SelfT, NodeT> {
     operator fun invoke(value: FieldT): SelfT
 }
@@ -39,7 +39,7 @@ interface ChPr<SelfT : Self<SelfT, NodeT>, FieldT : Any, NodeT : PropertyAble<No
 /**
  * Property delegate acting as delegate and delegate factory for any properies.
  */
-open class ChPrDlg<SelfT : Self<SelfT, NodeT>, FieldT : Any, NodeT : PropertyAble<NodeT>, out PropT : PropBase<FieldT, SelfT, NodeT>>(
+open class ChPrDlg<SelfT : Self<SelfT>, FieldT : Any, NodeT : PropertyAble<NodeT>, out PropT : PropBase<FieldT, SelfT, NodeT>>(
     private val constructor: (KProperty<*>) -> PropT
 ) : ReadOnlyProperty<Any?, PropT> {
     private lateinit var pDef: KProperty<*>
@@ -47,20 +47,6 @@ open class ChPrDlg<SelfT : Self<SelfT, NodeT>, FieldT : Any, NodeT : PropertyAbl
     open operator fun provideDelegate(thisRef: Any?, prop: KProperty<*>) = this.also { pDef = prop }
     override fun getValue(thisRef: Any?, property: KProperty<*>) = prop
 }
-
-/**
- * Utility method to define non nullable properties easier.
- */
-fun <NodeT : PropertyAble<NodeT>, SelfT : Self<SelfT, NodeT>, FieldT : Any> Self<SelfT, NodeT>.prop(
-    pClass: KClass<FieldT>
-) = this.node.createDelegate(pClass, this.self)
-
-/**
- * Utility method to define nullable properties easier.
- */
-fun <NodeT : PropertyAble<NodeT>, SelfT : Self<SelfT, NodeT>, FieldT : Any> Self<SelfT, NodeT>.nullable(
-    pClass: KClass<FieldT>
-) = this.node.createNlbDelegate(pClass, this.self)
 
 /**
  * Basic property meta info.

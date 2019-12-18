@@ -2,7 +2,6 @@ package com.tsarev.liquikotlin.complex
 
 import com.tsarev.liquikotlin.bundled.LkChangeLog
 import com.tsarev.liquikotlin.infrastructure.LbArg
-import com.tsarev.liquikotlin.infrastructure.eval
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
 import com.tsarev.liquikotlin.util.DummyAccessor
 import com.tsarev.liquikotlin.util.testIncludePath
@@ -36,7 +35,7 @@ class IncludeTest {
         })
 
         // Evaluate.
-        changelog.eval<Any, LbArg>(liquibaseIntegration, testPath to DummyAccessor.instance)
+        changelog.node.eval<Any, LbArg>(liquibaseIntegration, testPath to DummyAccessor.instance)
 
         // Test.
         Assert.assertEquals(listOf("/$testIncludePath", testIncludePath), DummyParser.hitFilePaths)
@@ -58,7 +57,7 @@ class IncludeTest {
         })
 
         // Evaluate.
-        changelog.eval<Any, LbArg>(liquibaseIntegration, testPath to accessor)
+        changelog.node.eval<Any, LbArg>(liquibaseIntegration, testPath to accessor)
 
         // Test.
         Assert.assertEquals(listOf(barFile, fooFile), DummyParser.hitFilePaths)

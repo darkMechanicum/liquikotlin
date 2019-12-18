@@ -21,10 +21,9 @@ package liquibase.parser.ext
 import com.tsarev.liquikotlin.bundled.LkChangeLog
 import com.tsarev.liquikotlin.bundled.changelog
 import com.tsarev.liquikotlin.infrastructure.LbArg
-import com.tsarev.liquikotlin.infrastructure.api.Self
-import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
+import com.tsarev.liquikotlin.infrastructure.LbDslNode
+import com.tsarev.liquikotlin.infrastructure.api.root
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
-import com.tsarev.liquikotlin.util.letWhile
 import liquibase.changelog.ChangeLogParameters
 import liquibase.changelog.DatabaseChangeLog
 import liquibase.exception.ChangeLogParseException
@@ -110,10 +109,14 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
             // Save current script state, if any, since next script can ruin it.
             changeLogStack.push(changelog)
             changelog = LkChangeLog()
-            // TODO Add type check
-            val result = compiled.eval() as Self<*, DefaultNode>
+            val evalRaw = compiled.eval()
+            val result = (evalRaw as? LbDslNode<*>)
+                ?: throw RuntimeException(
+                    "High level object is of class: ${evalRaw::class}. Only ${LbDslNode::class} is supported"
+                )
             val arg: LbArg = location to resourceAccessor
-            return result.node.letWhile { it.parent?.value }.eval(LiquibaseIntegrationFactory(), arg)!!
+            return result.node.root
+                .evalSafe(LiquibaseIntegrationFactory(), arg)
         } finally {
             // Restore current script state, if any.
             changelog = changeLogStack.pop()

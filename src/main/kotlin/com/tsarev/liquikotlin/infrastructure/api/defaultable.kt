@@ -23,36 +23,46 @@ interface DefaultPropertyAble<NodeT> : PropertyAble<NodeT>, MetaAble<MetaWithDef
         where NodeT : DefaultPropertyAble<NodeT> {
 
     // Nullable properties.
-    override fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createNlbDelegate(pClass: KClass<FieldT>, self: SelfT) =
-        createNlbDelegate(pClass, self, null)
+    override fun <FieldT : Any, SelfT : Self<SelfT>> createNlbDelegate(
+        pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
+        self: SelfT
+    ) = createNlbDelegate(pClass, glue, self, null)
 
     // Non nullable properties.
-    override fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createDelegate(pClass: KClass<FieldT>, self: SelfT) =
-        createDelegate(pClass, self, null)
+    override fun <FieldT : Any, SelfT : Self<SelfT>> createDelegate(
+        pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
+        self: SelfT
+    ) = createDelegate(pClass, glue, self, null)
 
     // Nullable properties with default value.
-    fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createNlbDelegate(
+    fun <FieldT : Any, SelfT : Self<SelfT>> createNlbDelegate(
         pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
         self: SelfT,
         default: FieldT? = null
-    ) = createDelegate { pDef -> createNlbProp(pDef.name, pClass, self).apply { this.default = default } }
+    ) = createDelegate { pDef -> createNlbProp(pDef.name, pClass, glue, self).apply { this.default = default } }
 
-    override fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createNlbProp(
+    override fun <FieldT : Any, SelfT : Self<SelfT>> createNlbProp(
         pName: String,
         pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
         self: SelfT
     ): DfltNlbChPr<SelfT, FieldT, NodeT>
 
     // Non nullable properties with default value.
-    fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createDelegate(
+    fun <FieldT : Any, SelfT : Self<SelfT>> createDelegate(
         pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
         self: SelfT,
         default: FieldT? = null
-    ) = createDelegate { pDef -> createProp(pDef.name, pClass, self).apply { this.default = default } }
+    ) = createDelegate { pDef -> createProp(pDef.name, pClass, glue, self).apply { this.default = default } }
 
-    override fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createProp(
+    override fun <FieldT : Any, SelfT : Self<SelfT>> createProp(
         pName: String,
         pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
         self: SelfT
     ): DfltChPr<SelfT, FieldT, NodeT>
 
@@ -69,16 +79,8 @@ interface DefaultAblePr<FieldT : Any> {
     var default: FieldT?
 }
 
-interface DfltNlbChPr<SelfT : Self<SelfT, NodeT>, FieldT : Any, NodeT : DefaultPropertyAble<NodeT>>
+interface DfltNlbChPr<SelfT : Self<SelfT>, FieldT : Any, NodeT : DefaultPropertyAble<NodeT>>
     : NlbChPr<SelfT, FieldT, NodeT>, PropBase<FieldT, SelfT, NodeT>, DefaultAblePr<FieldT>
 
-interface DfltChPr<SelfT : Self<SelfT, NodeT>, FieldT : Any, NodeT : DefaultPropertyAble<NodeT>>
+interface DfltChPr<SelfT : Self<SelfT>, FieldT : Any, NodeT : DefaultPropertyAble<NodeT>>
     : ChPr<SelfT, FieldT, NodeT>, PropBase<FieldT, SelfT, NodeT>, DefaultAblePr<FieldT>
-
-fun <NodeT : DefaultPropertyAble<NodeT>, SelfT : Self<SelfT, NodeT>, FieldT : Any> SelfT.prop(
-    pClass: KClass<FieldT>, default: FieldT? = null
-) = this.node.createDelegate(pClass, this, default)
-
-fun <NodeT : DefaultPropertyAble<NodeT>, SelfT : Self<SelfT, NodeT>, FieldT : Any> SelfT.nullable(
-    pClass: KClass<FieldT>, default: FieldT? = null
-) = this.node.createNlbDelegate(pClass, this, default)

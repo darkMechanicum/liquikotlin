@@ -1,7 +1,6 @@
 package com.tsarev.liquikotlin
 
-import com.tsarev.liquikotlin.infrastructure.api.Self
-import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
+import com.tsarev.liquikotlin.infrastructure.LbDslNode
 import com.tsarev.liquikotlin.util.*
 import kotlin.reflect.KClass
 
@@ -19,7 +18,7 @@ open class BaseLiquikotlinUnitTest {
      * Simple test wrapped to reduce boilerplate.
      */
     protected fun testEvaluation(
-        node: Self<*, DefaultNode>,
+        node: LbDslNode<*>,
         expectedClass: KClass<*>,
         vararg expectedFields: Any
     ) {

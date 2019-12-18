@@ -68,40 +68,43 @@ interface CopyAble<NodeT : CopyAble<NodeT>> : Node<NodeT> {
  */
 interface PropertyAble<NodeT : PropertyAble<NodeT>> : Node<NodeT> {
 
-    companion object {
-        inline fun <reified FieldT : Any> PropertyAble<*>.getAnyProperty(pName: String) =
-            this.getAnyProperty(FieldT::class, pName)
-    }
-
     val properties: MutableMap<String, Any?>
 
-    fun <FieldT: Any> getProperty(pClass: KClass<FieldT>, pName: String): FieldT
+    fun <FieldT : Any> getProperty(pClass: KClass<FieldT>, pName: String): FieldT
 
-    fun <FieldT: Any> getNullableProperty(pClass: KClass<FieldT>, pName: String): FieldT?
+    fun <FieldT : Any> getNullableProperty(pClass: KClass<FieldT>, pName: String): FieldT?
 
-    fun <FieldT: Any> getAnyProperty(pClass: KClass<FieldT>, pName: String): FieldT?
+    fun <FieldT : Any> getAnyProperty(pClass: KClass<FieldT>, pName: String): FieldT?
 
     // Nullable properties.
-    fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createNlbDelegate(pClass: KClass<FieldT>, self: SelfT) =
-        createDelegate { pDef -> createNlbProp(pDef.name, pClass, self) }
+    fun <FieldT : Any, SelfT : Self<SelfT>> createNlbDelegate(
+        pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
+        self: SelfT
+    ) = createDelegate { pDef -> createNlbProp(pDef.name, pClass, glue, self) }
 
-    fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createNlbProp(
+    fun <FieldT : Any, SelfT : Self<SelfT>> createNlbProp(
         pName: String,
         pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
         self: SelfT
     ): NlbChPr<SelfT, FieldT, NodeT>
 
     // Non nullable properties.
-    fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createDelegate(pClass: KClass<FieldT>, self: SelfT) =
-        createDelegate { pDef -> createProp(pDef.name, pClass, self) }
+    fun <FieldT : Any, SelfT : Self<SelfT>> createDelegate(
+        pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
+        self: SelfT
+    ) = createDelegate { pDef -> createProp(pDef.name, pClass, glue, self) }
 
-    fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createProp(
+    fun <FieldT : Any, SelfT : Self<SelfT>> createProp(
         pName: String,
         pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
         self: SelfT
     ): ChPr<SelfT, FieldT, NodeT>
 
-    fun <FieldT : Any, SelfT : Self<SelfT, NodeT>, PropT : PropBase<FieldT, SelfT, NodeT>> createDelegate(
+    fun <FieldT : Any, SelfT : Self<SelfT>, PropT : PropBase<FieldT, SelfT, NodeT>> createDelegate(
         constructor: (KProperty<*>) -> PropT
     ) = ChPrDlg(constructor)
 }

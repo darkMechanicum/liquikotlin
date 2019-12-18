@@ -1,7 +1,6 @@
 package com.tsarev.liquikotlin.complex
 
 import com.tsarev.liquikotlin.bundled.LkChangeLog
-import com.tsarev.liquikotlin.infrastructure.evalSafe
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
 import com.tsarev.liquikotlin.util.*
 import liquibase.change.Change
@@ -224,7 +223,8 @@ class AllHierarchyTest : RuleChainAwareTest() {
         })
 
 
-        val result: DatabaseChangeLog = changelog.evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
+        val result: DatabaseChangeLog = changelog.node
+            .evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
 
         result.run {
             Assert.assertEquals(1, changeSets.size)

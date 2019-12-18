@@ -5,7 +5,6 @@ import com.tsarev.liquikotlin.infrastructure.LbDslNode
 import com.tsarev.liquikotlin.infrastructure.api.EvalAction
 import com.tsarev.liquikotlin.infrastructure.api.EvalFactory
 import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
-import com.tsarev.liquikotlin.infrastructure.evalSafe
 import java.io.PrintStream
 import kotlin.reflect.KClass
 
@@ -90,7 +89,7 @@ typealias PrinterArg = Pair<PrinterMode, PrintStream>
  * Function to print tree.
  */
 fun LbDslNode<*>.print(mode: PrinterMode = PrinterMode.PRETTY, stream: PrintStream = System.out) {
-    this.evalSafe<Any, PrinterArg>(Printer, mode to stream)
+    this.node.evalSafe<Any, PrinterArg>(Printer, mode to stream)
 }
 
 /**

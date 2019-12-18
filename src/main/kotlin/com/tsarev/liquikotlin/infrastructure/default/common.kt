@@ -142,22 +142,23 @@ class DefaultCopyAble<NodeT>(
 class DefaultNullableProperty<SelfT, FieldT, NodeT>(
     override val pName: String,
     override val pClass: KClass<FieldT>,
-    override val self: SelfT
+    override val glue: Glue<NodeT>,
+    private val self: SelfT
 ) : DfltNlbChPr<SelfT, FieldT, NodeT>
-        where SelfT : Self<SelfT, NodeT>,
+        where SelfT : Self<SelfT>,
               FieldT : Any,
               NodeT : DefaultPropertyAble<NodeT>,
               NodeT : BuilderAble<NodeT> {
 
-    override val current: FieldT? get() = pClass.safeCast(self.node.properties[pName])
+    override val current: FieldT? get() = pClass.safeCast(glue.node.properties[pName])
 
-    override fun invoke(value: FieldT?) = self.apply { this@apply.node.build().properties[pName] = value }
+    override fun invoke(value: FieldT?) = glue.apply { this@apply.node.build().properties[pName] = value }.let { self }
 
     override var default: FieldT?
-        get() = if (self.node.isBuilder) this.current else null
+        get() = if (glue.node.isBuilder) this.current else null
         set(value) {
-            if (self.node.isBuilder) {
-                self.node.properties[pName] = value; self.node.hasDefault = true
+            if (glue.node.isBuilder) {
+                glue.node.properties[pName] = value; glue.node.hasDefault = true
             }
         }
 }
@@ -168,22 +169,23 @@ class DefaultNullableProperty<SelfT, FieldT, NodeT>(
 class DefaultProperty<SelfT, FieldT, NodeT>(
     override val pName: String,
     override val pClass: KClass<FieldT>,
-    override val self: SelfT
+    override val glue: Glue<NodeT>,
+    private val self: SelfT
 ) : DfltChPr<SelfT, FieldT, NodeT>
-        where SelfT : Self<SelfT, NodeT>,
+        where SelfT : Self<SelfT>,
               FieldT : Any,
               NodeT : DefaultPropertyAble<NodeT>,
               NodeT : BuilderAble<NodeT> {
 
-    override val current: FieldT get() = pClass.cast(self.node.properties[pName])
+    override val current: FieldT get() = pClass.cast(glue.node.properties[pName])
 
-    override fun invoke(value: FieldT) = self.apply { this@apply.node.build().properties[pName] = value }
+    override fun invoke(value: FieldT) = glue.apply { this@apply.node.build().properties[pName] = value }.let { self }
 
     override var default: FieldT?
-        get() = if (self.node.isBuilder) this.current else null
+        get() = if (glue.node.isBuilder) this.current else null
         set(value) {
-            if (self.node.isBuilder && value != null) {
-                self.node.properties[pName] = value; self.node.hasDefault = true
+            if (glue.node.isBuilder && value != null) {
+                glue.node.properties[pName] = value; glue.node.hasDefault = true
             }
         }
 }
@@ -223,17 +225,19 @@ class DefaultPropertyAbleImpl<NodeT> : NodeBase<NodeT>(),
         }
     }
 
-    override fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createNlbProp(
+    override fun <FieldT : Any, SelfT : Self<SelfT>> createNlbProp(
         pName: String,
         pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
         self: SelfT
-    ) = DefaultNullableProperty(pName, pClass, self)
+    ) = DefaultNullableProperty(pName, pClass, glue, self)
 
-    override fun <FieldT : Any, SelfT : Self<SelfT, NodeT>> createProp(
+    override fun <FieldT : Any, SelfT : Self<SelfT>> createProp(
         pName: String,
         pClass: KClass<FieldT>,
+        glue: Glue<NodeT>,
         self: SelfT
-    ) = DefaultProperty(pName, pClass, self)
+    ) = DefaultProperty(pName, pClass, glue, self)
 
     override val properties: MutableMap<String, Any?> = HashMap()
 
@@ -245,7 +249,7 @@ class DefaultPropertyAbleImpl<NodeT> : NodeBase<NodeT>(),
 
     override val metas get() = metaMap
 
-    override fun <FieldT : Any, SelfT : Self<SelfT, NodeT>, PropT : PropBase<FieldT, SelfT, NodeT>> createDelegate(
+    override fun <FieldT : Any, SelfT : Self<SelfT>, PropT : PropBase<FieldT, SelfT, NodeT>> createDelegate(
         constructor: (KProperty<*>) -> PropT
     ) = object : ChPrDlg<SelfT, FieldT, NodeT, PropT>(constructor) {
         override operator fun provideDelegate(thisRef: Any?, prop: KProperty<*>) =

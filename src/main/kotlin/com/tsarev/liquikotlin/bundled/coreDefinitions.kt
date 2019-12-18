@@ -1,10 +1,10 @@
 package com.tsarev.liquikotlin.bundled
 
 import com.tsarev.liquikotlin.infrastructure.LbDslNode
-import com.tsarev.liquikotlin.infrastructure.api.builtChild
-import com.tsarev.liquikotlin.infrastructure.api.child
-import com.tsarev.liquikotlin.infrastructure.api.nullable
-import com.tsarev.liquikotlin.infrastructure.api.prop
+import com.tsarev.liquikotlin.infrastructure.default.builtChild
+import com.tsarev.liquikotlin.infrastructure.default.child
+import com.tsarev.liquikotlin.infrastructure.default.nullable
+import com.tsarev.liquikotlin.infrastructure.default.prop
 import kotlin.reflect.KClass
 
 // --- Abstract base and utility classes ---

@@ -1,6 +1,7 @@
 package com.tsarev.liquikotlin.infrastructure
 
 import com.tsarev.liquikotlin.infrastructure.api.*
+import com.tsarev.liquikotlin.infrastructure.default.DefaultGlueProvider
 import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
 import com.tsarev.liquikotlin.infrastructure.default.DefaultSelf
 import liquibase.resource.ResourceAccessor
@@ -9,9 +10,13 @@ import kotlin.reflect.KProperty1
 
 typealias LbArg = Pair<String, ResourceAccessor>
 
+typealias LkGlueProvider = DefaultGlueProvider
+
 open class LbDslNode<SelfT : LbDslNode<SelfT>>(
     selfClass: KClass<SelfT>
-) : DefaultSelf<SelfT>(selfClass)
+) : DefaultSelf<SelfT>(selfClass), GlueProvider<DefaultNode> by LkGlueProvider {
+    internal val node get() = glue(this).node
+}
 
 /**
  * Single property mapping to original domain model.
@@ -64,13 +69,13 @@ open class LiquibaseIntegrator<LinkedT : Any, ParentT : Any>(
 /**
  * Util function for fast [PropertyMapping] creation.
  */
-internal inline operator fun <LinkedT : Any, SelfT : Self<SelfT, DefaultNode>, reified PropertyT : Any>
+internal inline operator fun <LinkedT : Any, SelfT : Self<SelfT>, reified PropertyT : Any>
         KProperty1<*, NlbChPr<SelfT, PropertyT, DefaultNode>>.minus(crossinline setter: (LinkedT, PropertyT?) -> Any) =
     PropertyMapping<DefaultNode, LinkedT, PropertyT>(
         { node -> node.node.getNullableProperty(PropertyT::class, this.name) },
         { linked, prop -> linked?.run { setter.invoke(this, prop) } })
 
-internal inline infix fun <LinkedT : Any, SelfT : Self<SelfT, DefaultNode>, reified PropertyT : Any>
+internal inline infix fun <LinkedT : Any, SelfT : Self<SelfT>, reified PropertyT : Any>
         KProperty1<*, ChPr<SelfT, PropertyT, DefaultNode>>.notNull(crossinline setter: (LinkedT, PropertyT?) -> Any) =
     PropertyMapping<DefaultNode, LinkedT, PropertyT>(
         { node -> node.node.getProperty(PropertyT::class, this.name) },
@@ -81,9 +86,3 @@ inline fun <reified SelfT : DefaultSelf<SelfT>, reified PropertyT : Any> Default
 
 inline fun <reified SelfT : DefaultSelf<SelfT>, reified PropertyT : Any> DefaultNode.get(prop: KProperty1<SelfT, ChPr<SelfT, PropertyT, DefaultNode>>) =
     this.getProperty(PropertyT::class, prop.name)
-
-fun <EvalT : Any, ArgT> LbDslNode<*>.eval(factory: EvalFactory<ArgT, DefaultNode>, arg: ArgT?, parentEval: Any? = null) =
-    this.node.eval<EvalT, ArgT>(factory, arg, parentEval)
-
-fun <EvalT : Any, ArgT> LbDslNode<*>.evalSafe(factory: EvalFactory<ArgT, DefaultNode>, arg: ArgT?, parentEval: Any? = null) =
-    this.node.evalSafe<EvalT, ArgT>(factory, arg, parentEval)
