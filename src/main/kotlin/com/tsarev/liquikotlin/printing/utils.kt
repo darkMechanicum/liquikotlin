@@ -1,10 +1,10 @@
 package com.tsarev.liquikotlin.printing
 
-import com.tsarev.liquikotlin.infrastructure.DslNode
+import com.tsarev.liquikotlin.infrastructure.api.Valuable
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
-inline operator fun <reified NodeT : Any, FieldT> KProperty1<NodeT, DslNode.Valuable<FieldT>>.unaryMinus()
+inline operator fun <reified NodeT : Any, FieldT> KProperty1<NodeT, Valuable<FieldT>>.unaryMinus()
         : Pair<KClass<NodeT>, (Any) -> Any?> = NodeT::class to { node -> this.get(node as NodeT).current }
 
 /**

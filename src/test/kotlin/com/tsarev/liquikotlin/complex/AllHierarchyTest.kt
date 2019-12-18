@@ -27,9 +27,9 @@ class AllHierarchyTest : RuleChainAwareTest() {
     private val liquibaseIntegration = LiquibaseIntegrationFactory()
 
     /**
-     * Temp filder to use within include all.
+     * Temp folder to use within include all.
      */
-    val tempDir by rule { TemporaryFolder() }
+    private val tempDir by rule { TemporaryFolder() }
 
     @Test
     fun testAllNodes() {
