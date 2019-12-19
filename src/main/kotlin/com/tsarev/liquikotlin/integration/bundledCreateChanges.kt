@@ -132,6 +132,7 @@ open class ConstraintsIntegration : LiquibaseIntegrator<ConstraintsConfig, Colum
     LkConstraints::checkConstraint - ConstraintsConfig::setCheckConstraint
 )
 
+@Suppress("UsePropertyAccessSyntax")
 open class AddDefaultValueIntegration : ChangeIntegration<AddDefaultValueChange>(
     ::AddDefaultValueChange,
     LkAddDefaultValue::catalogName - AddDefaultValueChange::setCatalogName,

@@ -48,6 +48,7 @@ abstract class PreconditionWithSchAndCat<SelfT : PreconditionWithSchAndCat<SelfT
 
 // --- Bundled preconditions ---
 
+@LKDsl
 open class LkPrecondition : LkPreconditionLogic<LkPrecondition>(LkPrecondition::class) {
     open val onFail by nullable(String::class)
     open val onError by nullable(String::class)
@@ -56,20 +57,25 @@ open class LkPrecondition : LkPreconditionLogic<LkPrecondition>(LkPrecondition::
     open val onSqlOutput by nullable(String::class)
 }
 
+@LKDsl
 open class LkAndPrecondition : LkPreconditionLogic<LkAndPrecondition>(LkAndPrecondition::class)
 
+@LKDsl
 open class LkOrPrecondition : LkPreconditionLogic<LkOrPrecondition>(LkOrPrecondition::class)
 
+@LKDsl
 open class LkDbmsPrecondition : LbDslNode<LkDbmsPrecondition>(LkDbmsPrecondition::class) {
     @Primary
     open val type by nullable(String::class)
 }
 
+@LKDsl
 open class LkRunningAsPrecondition : LbDslNode<LkRunningAsPrecondition>(LkRunningAsPrecondition::class) {
     @Primary
     open val username by nullable(String::class)
 }
 
+@LKDsl
 open class LkChangeSetExecutedPrecondition :
     LbDslNode<LkChangeSetExecutedPrecondition>(LkChangeSetExecutedPrecondition::class) {
     @Primary
@@ -79,6 +85,7 @@ open class LkChangeSetExecutedPrecondition :
     open val changeLogFile by nullable(String::class)
 }
 
+@LKDsl
 open class LkColumnExistsPrecondition :
     PreconditionWithSchAndCat<LkColumnExistsPrecondition>(LkColumnExistsPrecondition::class) {
     @Primary
@@ -87,18 +94,21 @@ open class LkColumnExistsPrecondition :
     open val columnName by nullable(String::class)
 }
 
+@LKDsl
 open class LkTableExistsPrecondition :
     PreconditionWithSchAndCat<LkTableExistsPrecondition>(LkTableExistsPrecondition::class) {
     @Primary
     open val tableName by nullable(String::class)
 }
 
+@LKDsl
 open class LkViewExistsPrecondition :
     PreconditionWithSchAndCat<LkViewExistsPrecondition>(LkViewExistsPrecondition::class) {
     @Primary
     open val viewName by nullable(String::class)
 }
 
+@LKDsl
 open class LkForeignKeyConstraintExistsPrecondition :
     PreconditionWithSchAndCat<LkForeignKeyConstraintExistsPrecondition>(LkForeignKeyConstraintExistsPrecondition::class) {
     @Primary
@@ -106,6 +116,7 @@ open class LkForeignKeyConstraintExistsPrecondition :
     open val foreignKeyTableName by nullable(String::class)
 }
 
+@LKDsl
 open class LkIndexExistsPrecondition :
     PreconditionWithSchAndCat<LkIndexExistsPrecondition>(LkIndexExistsPrecondition::class) {
     @Primary
@@ -114,12 +125,14 @@ open class LkIndexExistsPrecondition :
     open val columnNames by nullable(String::class)
 }
 
+@LKDsl
 open class LkSequenceExistsPrecondition :
     PreconditionWithSchAndCat<LkSequenceExistsPrecondition>(LkSequenceExistsPrecondition::class) {
     @Primary
     open val sequenceName by nullable(String::class)
 }
 
+@LKDsl
 open class LkPrimaryKeyExistsPrecondition :
     PreconditionWithSchAndCat<LkPrimaryKeyExistsPrecondition>(LkPrimaryKeyExistsPrecondition::class) {
     @Primary
@@ -127,12 +140,14 @@ open class LkPrimaryKeyExistsPrecondition :
     open val tableName by nullable(String::class)
 }
 
+@LKDsl
 open class LkSqlCheckPrecondition : LbDslNode<LkSqlCheckPrecondition>(LkSqlCheckPrecondition::class) {
     open val expectedResult by nullable(String::class)
     @Primary
     open val sql by nullable(String::class)
 }
 
+@LKDsl
 open class LkChangeLogPropertyDefinedPrecondition :
     LbDslNode<LkChangeLogPropertyDefinedPrecondition>(LkChangeLogPropertyDefinedPrecondition::class) {
     @Primary
@@ -140,12 +155,14 @@ open class LkChangeLogPropertyDefinedPrecondition :
     open val value by nullable(String::class)
 }
 
+@LKDsl
 open class LkCustomPrecondition : LbDslNode<LkCustomPrecondition>(LkCustomPrecondition::class) {
     @Primary
     open val className by nullable(String::class)
     open val param by child(::LkCustomPreconditionParam)
 }
 
+@LKDsl
 open class LkCustomPreconditionParam : LbDslNode<LkCustomPreconditionParam>(LkCustomPreconditionParam::class) {
     @Primary
     open val name by prop(String::class)

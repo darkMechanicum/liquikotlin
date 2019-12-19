@@ -73,6 +73,7 @@ var changelog = LkChangeLog()
 /**
  * Changelog. Entry point for rest nodes.
  */
+@LKDsl
 open class LkChangeLog : LbDslNode<LkChangeLog>(LkChangeLog::class) {
     @Primary
     open val logicalFilePath by nullable(String::class)
@@ -84,12 +85,14 @@ open class LkChangeLog : LbDslNode<LkChangeLog>(LkChangeLog::class) {
     open val includeAll by child(::LkIncludeAll)
 }
 
+@LKDsl
 open class LkInclude : LbDslNode<LkInclude>(LkInclude::class) {
     @Primary
     open val path by prop(String::class)
     open val relativeToChangelogFile by prop(Boolean::class, false)
 }
 
+@LKDsl
 open class LkIncludeAll : LbDslNode<LkIncludeAll>(LkIncludeAll::class) {
     @Primary
     open val path by prop(String::class)
@@ -101,6 +104,7 @@ open class LkIncludeAll : LbDslNode<LkIncludeAll>(LkIncludeAll::class) {
 /**
  * Changelog property.
  */
+@LKDsl
 open class LkProperty : LbDslNode<LkProperty>(LkProperty::class) {
     @Primary
     open val name by prop(String::class)
@@ -109,6 +113,7 @@ open class LkProperty : LbDslNode<LkProperty>(LkProperty::class) {
     open val dbms by nullable(String::class)
 }
 
+@LKDsl
 open class LkChangeSet : LkRefactorings<LkChangeSet>(LkChangeSet::class) {
     @Primary
     open val id by prop(Any::class)
@@ -127,13 +132,16 @@ open class LkChangeSet : LkRefactorings<LkChangeSet>(LkChangeSet::class) {
     open val precondition by child(::LkPrecondition)
 }
 
+@LKDsl
 open class LkRollback : LkRefactorings<LkRollback>(LkRollback::class)
 
+@LKDsl
 open class LkValidCheckSum : LbDslNode<LkValidCheckSum>(LkValidCheckSum::class) {
     @Primary
     open val checkSum by prop(String::class)
 }
 
+@LKDsl
 open class LkComment : LbDslNode<LkComment>(LkComment::class) {
     @Primary
     open val text by prop(String::class)

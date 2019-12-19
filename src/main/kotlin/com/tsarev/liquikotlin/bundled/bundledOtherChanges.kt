@@ -6,6 +6,7 @@ import com.tsarev.liquikotlin.infrastructure.default.nullable
 import com.tsarev.liquikotlin.infrastructure.default.prop
 import java.math.BigInteger
 
+@LKDsl
 open class LkAlterSequence : LbDslNode<LkAlterSequence>(LkAlterSequence::class) {
     open val catalogName by nullable(String::class)
     open val incrementBy by nullable(BigInteger::class)
@@ -19,14 +20,17 @@ open class LkAlterSequence : LbDslNode<LkAlterSequence>(LkAlterSequence::class) 
     open val willCycle by nullable(Boolean::class)
 }
 
+@LKDsl
 open class LkEmpty : LbDslNode<LkEmpty>(LkEmpty::class)
 
+@LKDsl
 open class LkExecuteCommand : LbDslNode<LkExecuteCommand> (LkExecuteCommand::class) {
     @Primary
     open val executable by nullable(String::class)
     open val os by nullable(String::class)
 }
 
+@LKDsl
 open class LkInsert : LbDslNode<LkInsert> (LkInsert::class) {
     open val catalogName by nullable(String::class)
     open val dbms by nullable(String::class)
@@ -37,6 +41,7 @@ open class LkInsert : LbDslNode<LkInsert> (LkInsert::class) {
     open val column by child(::LkAddColumnConfig)
 }
 
+@LKDsl
 open class LkLoadData : LbDslNode<LkLoadData> (LkLoadData::class) {
     open val catalogName by nullable(String::class)
     open val encoding by nullable(String::class)
@@ -52,6 +57,7 @@ open class LkLoadData : LbDslNode<LkLoadData> (LkLoadData::class) {
     open val column by child(::LkLoadColumnConfig)
 }
 
+@LKDsl
 open class LkLoadUpdateData : LbDslNode<LkLoadUpdateData> (LkLoadUpdateData::class) {
     open val catalogName by nullable(String::class)
     open val encoding by nullable(String::class)
@@ -68,6 +74,7 @@ open class LkLoadUpdateData : LbDslNode<LkLoadUpdateData> (LkLoadUpdateData::cla
     open val column by child(::LkLoadColumnConfig)
 }
 
+@LKDsl
 open class LkMergeColumns : LbDslNode<LkMergeColumns> (LkMergeColumns::class) {
     open val catalogName by nullable(String::class)
     @Primary
@@ -82,6 +89,7 @@ open class LkMergeColumns : LbDslNode<LkMergeColumns> (LkMergeColumns::class) {
     open val tableName by nullable(String::class)
 }
 
+@LKDsl
 open class LkModifyDataType : LbDslNode<LkModifyDataType> (LkModifyDataType::class) {
     open val catalogName by nullable(String::class)
     @Primary
@@ -92,6 +100,7 @@ open class LkModifyDataType : LbDslNode<LkModifyDataType> (LkModifyDataType::cla
     open val tableName by nullable(String::class)
 }
 
+@LKDsl
 open class LkRenameColumn : LbDslNode<LkRenameColumn> (LkRenameColumn::class) {
     open val catalogName by nullable(String::class)
     open val columnDataType by nullable(String::class)
@@ -105,6 +114,7 @@ open class LkRenameColumn : LbDslNode<LkRenameColumn> (LkRenameColumn::class) {
     open val tableName by nullable(String::class)
 }
 
+@LKDsl
 open class LkRenameTable : LbDslNode<LkRenameTable> (LkRenameTable::class) {
     open val catalogName by nullable(String::class)
     @Primary
@@ -114,6 +124,7 @@ open class LkRenameTable : LbDslNode<LkRenameTable> (LkRenameTable::class) {
     open val schemaName by nullable(String::class)
 }
 
+@LKDsl
 open class LkRenameView : LbDslNode<LkRenameView> (LkRenameView::class) {
     open val catalogName by nullable(String::class)
     @Primary
@@ -123,6 +134,7 @@ open class LkRenameView : LbDslNode<LkRenameView> (LkRenameView::class) {
     open val schemaName by nullable(String::class)
 }
 
+@LKDsl
 open class LkSql : LbDslNode<LkSql> (LkSql::class) {
     open val comment by nullable(String::class)
     open val dbms by nullable(String::class)
@@ -133,6 +145,7 @@ open class LkSql : LbDslNode<LkSql> (LkSql::class) {
     open val stripComments by nullable(Boolean::class)
 }
 
+@LKDsl
 open class LkSqlFile : LbDslNode<LkSqlFile> (LkSqlFile::class) {
     open val dbms by nullable(String::class)
     open val encoding by nullable(String::class)
@@ -144,16 +157,19 @@ open class LkSqlFile : LbDslNode<LkSqlFile> (LkSqlFile::class) {
     open val stripComments by nullable(Boolean::class)
 }
 
+@LKDsl
 open class LkStop : LbDslNode<LkStop>(LkStop::class) {
     @Primary
     open val message by nullable(String::class)
 }
 
+@LKDsl
 open class LkTagDatabase : LbDslNode<LkTagDatabase>(LkTagDatabase::class) {
     @Primary
     open val tag by nullable(String::class)
 }
 
+@LKDsl
 open class LkUpdate : LbDslNode<LkUpdate>(LkUpdate::class) {
     open val catalogName by nullable(String::class)
     open val schemaName by nullable(String::class)

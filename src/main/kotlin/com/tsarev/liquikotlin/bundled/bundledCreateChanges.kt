@@ -42,21 +42,25 @@ abstract class LkBaseColumnConfig<SelfT : LkBaseColumnConfig<SelfT>>(thisClass: 
     open val constraints by child(::LkConstraints)
 }
 
+@LKDsl
 open class LkAddColumnConfig : LkBaseColumnConfig<LkAddColumnConfig>(LkAddColumnConfig::class) {
     open val beforeColumn by nullable(String::class)
     open val afterColumn by nullable(String::class)
     open val position by nullable(Int::class)
 }
 
+@LKDsl
 open class LkLoadColumnConfig : LkBaseColumnConfig<LkLoadColumnConfig>(LkLoadColumnConfig::class) {
     open val index by nullable(Int::class)
     open val header by nullable(String::class)
 }
 
+@LKDsl
 open class LkCommonColumnConfig : LkBaseColumnConfig<LkCommonColumnConfig>(LkCommonColumnConfig::class)
 
 // --- Definitions ---
 
+@LKDsl
 open class LkAddAutoIncrement : LbDslNode<LkAddAutoIncrement>(LkAddAutoIncrement::class) {
     open val catalogName by nullable(String::class)
     open val columnDataType by nullable(String::class)
@@ -69,6 +73,7 @@ open class LkAddAutoIncrement : LbDslNode<LkAddAutoIncrement>(LkAddAutoIncrement
     open val tableName by prop(String::class)
 }
 
+@LKDsl
 open class LkAddColumn : LbDslNode<LkAddColumn>(LkAddColumn::class) {
     open val catalogName by nullable(String::class)
     open val schemaName by nullable(String::class)
@@ -78,6 +83,7 @@ open class LkAddColumn : LbDslNode<LkAddColumn>(LkAddColumn::class) {
     open val column by child(::LkAddColumnConfig)
 }
 
+@LKDsl
 open class LkConstraints : LbDslNode<LkConstraints>(LkConstraints::class) {
     @Primary
     open val nullable by nullable(Boolean::class)
@@ -102,6 +108,7 @@ open class LkConstraints : LbDslNode<LkConstraints>(LkConstraints::class) {
     open val checkConstraint by nullable(String::class)
 }
 
+@LKDsl
 open class LkAddDefaultValue : LbDslNode<LkAddDefaultValue>(LkAddDefaultValue::class) {
     open val catalogName by nullable(String::class)
     open val columnDataType by nullable(String::class)
@@ -118,6 +125,7 @@ open class LkAddDefaultValue : LbDslNode<LkAddDefaultValue>(LkAddDefaultValue::c
     open val tableName by nullable(String::class)
 }
 
+@LKDsl
 open class LkAddForeignKeyConstraint : LbDslNode<LkAddForeignKeyConstraint>(LkAddForeignKeyConstraint::class) {
     @Primary
     open val baseColumnNames by nullable(String::class)
@@ -137,6 +145,7 @@ open class LkAddForeignKeyConstraint : LbDslNode<LkAddForeignKeyConstraint>(LkAd
     open val referencesUniqueColumn by nullable(Boolean::class)
 }
 
+@LKDsl
 open class LkAddLookupTable : LbDslNode<LkAddLookupTable>(LkAddLookupTable::class) {
     open val constraintName by nullable(String::class)
     open val existingColumnName by nullable(String::class)
@@ -152,6 +161,7 @@ open class LkAddLookupTable : LbDslNode<LkAddLookupTable>(LkAddLookupTable::clas
     open val newTableSchemaName by nullable(String::class)
 }
 
+@LKDsl
 open class LkAddNotNullConstraint : LbDslNode<LkAddNotNullConstraint>(LkAddNotNullConstraint::class) {
     open val catalogName by nullable(String::class)
     open val columnDataType by nullable(String::class)
@@ -164,6 +174,7 @@ open class LkAddNotNullConstraint : LbDslNode<LkAddNotNullConstraint>(LkAddNotNu
     open val constraintName by nullable(String::class)
 }
 
+@LKDsl
 open class LkAddPrimaryKey : LbDslNode<LkAddPrimaryKey>(LkAddPrimaryKey::class) {
     open val catalogName by nullable(String::class)
     @Primary
@@ -179,6 +190,7 @@ open class LkAddPrimaryKey : LbDslNode<LkAddPrimaryKey>(LkAddPrimaryKey::class) 
     open val forIndexCatalogName by nullable(String::class)
 }
 
+@LKDsl
 open class LkAddUniqueConstraint : LbDslNode<LkAddUniqueConstraint>(LkAddUniqueConstraint::class) {
     open val catalogName by nullable(String::class)
     @Primary
@@ -196,6 +208,7 @@ open class LkAddUniqueConstraint : LbDslNode<LkAddUniqueConstraint>(LkAddUniqueC
     open val forIndexCatalogName by nullable(String::class)
 }
 
+@LKDsl
 open class LkCreateIndex : LbDslNode<LkCreateIndex>(LkCreateIndex::class) {
     open val catalogName by nullable(String::class)
     @Primary
@@ -209,6 +222,7 @@ open class LkCreateIndex : LbDslNode<LkCreateIndex>(LkCreateIndex::class) {
     open val column by child(::LkAddColumnConfig)
 }
 
+@LKDsl
 open class LkCreateProcedure : LbDslNode<LkCreateProcedure>(LkCreateProcedure::class) {
     open val catalogName by nullable(String::class)
     open val comments by nullable(String::class)
@@ -223,6 +237,7 @@ open class LkCreateProcedure : LbDslNode<LkCreateProcedure>(LkCreateProcedure::c
     open val replaceIfExists by nullable(Boolean::class)
 }
 
+@LKDsl
 open class LkCreateSequence : LbDslNode<LkCreateSequence>(LkCreateSequence::class) {
     open val catalogName by nullable(String::class)
     open val cycle by nullable(Boolean::class)
@@ -237,6 +252,7 @@ open class LkCreateSequence : LbDslNode<LkCreateSequence>(LkCreateSequence::clas
     open val cacheSize by nullable(BigInteger::class)
 }
 
+@LKDsl
 open class LkCreateTable : LbDslNode<LkCreateTable>(LkCreateTable::class) {
     open val catalogName by nullable(String::class)
     open val remarks by nullable(String::class)
@@ -248,6 +264,7 @@ open class LkCreateTable : LbDslNode<LkCreateTable>(LkCreateTable::class) {
     open val column by child(::LkCommonColumnConfig)
 }
 
+@LKDsl
 open class LkCreateView : LbDslNode<LkCreateView>(LkCreateView::class) {
     open val catalogName by nullable(String::class)
     open val replaceIfExists by nullable(Boolean::class)
