@@ -7,6 +7,7 @@ import liquibase.change.core.*
 
 open class AlterSequenceIntegration : ChangeIntegration<AlterSequenceChange>(
     ::AlterSequenceChange,
+    AlterSequenceChange::class.java,
     LkAlterSequence::catalogName - AlterSequenceChange::setCatalogName,
     LkAlterSequence::incrementBy - AlterSequenceChange::setIncrementBy,
     LkAlterSequence::maxValue - AlterSequenceChange::setMaxValue,
@@ -17,16 +18,21 @@ open class AlterSequenceIntegration : ChangeIntegration<AlterSequenceChange>(
     LkAlterSequence::sequenceName - AlterSequenceChange::setSequenceName
 )
 
-open class EmptyIntegration : ChangeIntegration<EmptyChange>(::EmptyChange)
+open class EmptyIntegration : ChangeIntegration<EmptyChange>(
+    ::EmptyChange,
+    EmptyChange::class.java
+)
 
 open class ExecuteCommandIntegration : ChangeIntegration<ExecuteShellCommandChange>(
     ::ExecuteShellCommandChange,
+    ExecuteShellCommandChange::class.java,
     LkExecuteCommand::executable - ExecuteShellCommandChange::setExecutable,
     LkExecuteCommand::os - ExecuteShellCommandChange::setOs
 )
 
 open class InsertIntegration : ChangeIntegration<InsertDataChange>(
     ::InsertDataChange,
+    InsertDataChange::class.java,
     LkInsert::catalogName - InsertDataChange::setCatalogName,
     LkInsert::dbms - InsertDataChange::setDbms,
     LkInsert::schemaName - InsertDataChange::setSchemaName,
@@ -35,6 +41,7 @@ open class InsertIntegration : ChangeIntegration<InsertDataChange>(
 
 open class LoadDataIntegration : ChangeIntegration<LoadDataChange>(
     ::LoadDataChange,
+    LoadDataChange::class.java,
     LkLoadData::catalogName - LoadDataChange::setCatalogName,
     LkLoadData::encoding - LoadDataChange::setEncoding,
     LkLoadData::file - LoadDataChange::setFile,
@@ -47,6 +54,7 @@ open class LoadDataIntegration : ChangeIntegration<LoadDataChange>(
 
 open class LoadUpdateDataIntegration : ChangeIntegration<LoadUpdateDataChange>(
     ::LoadUpdateDataChange,
+    LoadUpdateDataChange::class.java,
     LkLoadUpdateData::catalogName - LoadUpdateDataChange::setCatalogName,
     LkLoadUpdateData::encoding - LoadUpdateDataChange::setEncoding,
     LkLoadUpdateData::file - LoadUpdateDataChange::setFile,
@@ -60,6 +68,7 @@ open class LoadUpdateDataIntegration : ChangeIntegration<LoadUpdateDataChange>(
 
 open class MergeColumnsIntegration : ChangeIntegration<MergeColumnChange>(
     ::MergeColumnChange,
+    MergeColumnChange::class.java,
     LkMergeColumns::catalogName - MergeColumnChange::setCatalogName,
     LkMergeColumns::column1Name - MergeColumnChange::setColumn1Name,
     LkMergeColumns::column2Name - MergeColumnChange::setColumn2Name,
@@ -72,6 +81,7 @@ open class MergeColumnsIntegration : ChangeIntegration<MergeColumnChange>(
 
 open class ModifyDataTypeIntegration : ChangeIntegration<ModifyDataTypeChange>(
     ::ModifyDataTypeChange,
+    ModifyDataTypeChange::class.java,
     LkModifyDataType::catalogName - ModifyDataTypeChange::setCatalogName,
     LkModifyDataType::columnName - ModifyDataTypeChange::setColumnName,
     LkModifyDataType::newDataType - ModifyDataTypeChange::setNewDataType,
@@ -81,6 +91,7 @@ open class ModifyDataTypeIntegration : ChangeIntegration<ModifyDataTypeChange>(
 
 open class RenameColumnIntegration : ChangeIntegration<RenameColumnChange>(
     ::RenameColumnChange,
+    RenameColumnChange::class.java,
     LkRenameColumn::catalogName - RenameColumnChange::setCatalogName,
     LkRenameColumn::columnDataType - RenameColumnChange::setColumnDataType,
     LkRenameColumn::newColumnName - RenameColumnChange::setNewColumnName,
@@ -92,6 +103,7 @@ open class RenameColumnIntegration : ChangeIntegration<RenameColumnChange>(
 
 open class RenameTableIntegration : ChangeIntegration<RenameTableChange>(
     ::RenameTableChange,
+    RenameTableChange::class.java,
     LkRenameTable::catalogName - RenameTableChange::setCatalogName,
     LkRenameTable::newTableName - RenameTableChange::setNewTableName,
     LkRenameTable::oldTableName - RenameTableChange::setOldTableName,
@@ -100,6 +112,7 @@ open class RenameTableIntegration : ChangeIntegration<RenameTableChange>(
 
 open class RenameViewIntegration : ChangeIntegration<RenameViewChange>(
     ::RenameViewChange,
+    RenameViewChange::class.java,
     LkRenameView::catalogName - RenameViewChange::setCatalogName,
     LkRenameView::newViewName - RenameViewChange::setNewViewName,
     LkRenameView::oldViewName - RenameViewChange::setOldViewName,
@@ -108,6 +121,7 @@ open class RenameViewIntegration : ChangeIntegration<RenameViewChange>(
 
 open class SqlIntegration : ChangeIntegration<RawSQLChange>(
     ::RawSQLChange,
+    RawSQLChange::class.java,
     LkSql::comment - RawSQLChange::setComment,
     LkSql::dbms - RawSQLChange::setDbms,
     LkSql::endDelimiter - RawSQLChange::setEndDelimiter,
@@ -118,6 +132,7 @@ open class SqlIntegration : ChangeIntegration<RawSQLChange>(
 
 open class SqlFileIntegration : ChangeIntegration<SQLFileChange>(
     ::SQLFileChange,
+    SQLFileChange::class.java,
     LkSqlFile::dbms - SQLFileChange::setDbms,
     LkSqlFile::encoding - SQLFileChange::setEncoding,
     LkSqlFile::endDelimiter - SQLFileChange::setEndDelimiter,
@@ -129,16 +144,19 @@ open class SqlFileIntegration : ChangeIntegration<SQLFileChange>(
 
 open class StopIntegration : ChangeIntegration<StopChange>(
     ::StopChange,
+    StopChange::class.java,
     LkStop::message - StopChange::setMessage
 )
 
 open class TagDatabaseIntegration : ChangeIntegration<TagDatabaseChange>(
     ::TagDatabaseChange,
+    TagDatabaseChange::class.java,
     LkTagDatabase::tag - TagDatabaseChange::setTag
 )
 
 open class UpdateIntegration : ChangeIntegration<UpdateDataChange>(
     ::UpdateDataChange,
+    UpdateDataChange::class.java,
     LkUpdate::catalogName - UpdateDataChange::setCatalogName,
     LkUpdate::schemaName - UpdateDataChange::setSchemaName,
     LkUpdate::tableName - UpdateDataChange::setTableName,

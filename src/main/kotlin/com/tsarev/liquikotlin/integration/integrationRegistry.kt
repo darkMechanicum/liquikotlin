@@ -38,7 +38,7 @@ open class LiquibaseIntegrationFactory : EvalFactory<LbArg, DefaultNode> {
                 }
     )
 
-    protected open val single: Map<KClass<*>, EvalAction<DefaultNode, *, LbArg>> = mapOf(
+    open val single: Map<KClass<*>, LiquibaseIntegrator<*, *>> = mapOf(
         LkAddAutoIncrement::class to AddAutoIncrementIntegration(),
         LkAddColumn::class to AddColumnIntegration(),
         LkConstraints::class to ConstraintsIntegration(),

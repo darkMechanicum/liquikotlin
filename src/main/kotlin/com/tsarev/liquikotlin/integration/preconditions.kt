@@ -10,9 +10,11 @@ import liquibase.precondition.core.*
 
 open class BasePreconditionIntegration<LinkedT : Precondition>(
     linkedConstructor: () -> LinkedT,
+    linkedClass: Class<LinkedT>,
     vararg childMappings: PropertyMapping<DefaultNode, LinkedT, *>
 ) : LiquibaseIntegrator<LinkedT, PreconditionLogic>(
     linkedConstructor,
+    linkedClass,
     { container, precondition, _, _ -> container.addNestedPrecondition(precondition) }
 ) { init {
     propertyMappings.addAll(childMappings)
@@ -21,11 +23,13 @@ open class BasePreconditionIntegration<LinkedT : Precondition>(
 
 abstract class SchAndCatIntegration<SelfT : PreconditionWithSchAndCat<SelfT>, LinkedT : Precondition>(
     linkedConstructor: () -> LinkedT,
+    linkedClass: Class<LinkedT>,
     schemaSetter: (LinkedT, String?) -> Any,
     catalogSetter: (LinkedT, String?) -> Any,
     vararg childMappings: PropertyMapping<DefaultNode, LinkedT, *>
 ) : BasePreconditionIntegration<LinkedT>(
     linkedConstructor,
+    linkedClass,
     PreconditionWithSchAndCat<SelfT>::schemaName - schemaSetter,
     PreconditionWithSchAndCat<SelfT>::catalogName - catalogSetter
 ) { init {
@@ -38,7 +42,8 @@ abstract class SchAndCatIntegration<SelfT : PreconditionWithSchAndCat<SelfT>, Li
 open class PreconditionContainerIntegration<ParentT : Any>(
     parentSetter: (ParentT, PreconditionContainer?, DefaultNode, LbArg?) -> Unit
 ) : LiquibaseIntegrator<PreconditionContainer, ParentT>(
-    ::PreconditionContainer,
+	::PreconditionContainer,
+	PreconditionContainer::class.java,
     parentSetter,
     LkPrecondition::onFail - PreconditionContainer::setOnFail,
     LkPrecondition::onError - PreconditionContainer::setOnError,
@@ -47,24 +52,33 @@ open class PreconditionContainerIntegration<ParentT : Any>(
     LkPrecondition::onSqlOutput - PreconditionContainer::setOnSqlOutput
 )
 
-open class AndPreconditionIntegration : BasePreconditionIntegration<AndPrecondition>(::AndPrecondition)
+open class AndPreconditionIntegration : BasePreconditionIntegration<AndPrecondition>(
+    ::AndPrecondition,
+    AndPrecondition::class.java
+)
 
-open class OrPreconditionIntegration : BasePreconditionIntegration<OrPrecondition>(::OrPrecondition)
+open class OrPreconditionIntegration : BasePreconditionIntegration<OrPrecondition>(
+    ::OrPrecondition,
+    OrPrecondition::class.java
+)
 
 open class DbmsPreconditionIntegration : BasePreconditionIntegration<DBMSPrecondition>(
-    ::DBMSPrecondition,
+	::DBMSPrecondition,
+	DBMSPrecondition::class.java,
     LkDbmsPrecondition::type - DBMSPrecondition::setType
 )
 
 open class RunningAsPreconditionIntegration :
     BasePreconditionIntegration<RunningAsPrecondition>(
-        ::RunningAsPrecondition,
+	::RunningAsPrecondition,
+	RunningAsPrecondition::class.java,
         LkRunningAsPrecondition::username - RunningAsPrecondition::setUsername
     )
 
 open class ChangeSetExecutedPreconditionIntegration :
     BasePreconditionIntegration<ChangeSetExecutedPrecondition>(
-        ::ChangeSetExecutedPrecondition,
+	::ChangeSetExecutedPrecondition,
+	ChangeSetExecutedPrecondition::class.java,
         LkChangeSetExecutedPrecondition::id - ChangeSetExecutedPrecondition::setId,
         LkChangeSetExecutedPrecondition::author - ChangeSetExecutedPrecondition::setAuthor,
         LkChangeSetExecutedPrecondition::changeLogFile - ChangeSetExecutedPrecondition::setChangeLogFile
@@ -72,7 +86,8 @@ open class ChangeSetExecutedPreconditionIntegration :
 
 open class ColumnExistsPreconditionIntegration :
     SchAndCatIntegration<LkColumnExistsPrecondition, ColumnExistsPrecondition>(
-        ::ColumnExistsPrecondition,
+	::ColumnExistsPrecondition,
+	ColumnExistsPrecondition::class.java,
         ColumnExistsPrecondition::setSchemaName,
         ColumnExistsPrecondition::setCatalogName,
         LkColumnExistsPrecondition::tableName - ColumnExistsPrecondition::setTableName,
@@ -81,14 +96,16 @@ open class ColumnExistsPreconditionIntegration :
 
 open class TableExistsPreconditionIntegration :
     SchAndCatIntegration<LkTableExistsPrecondition, TableExistsPrecondition>(
-        ::TableExistsPrecondition,
+	::TableExistsPrecondition,
+	TableExistsPrecondition::class.java,
         TableExistsPrecondition::setSchemaName,
         TableExistsPrecondition::setCatalogName,
         LkTableExistsPrecondition::tableName - TableExistsPrecondition::setTableName
     )
 
 open class ViewExistsPreconditionIntegration : SchAndCatIntegration<LkViewExistsPrecondition, ViewExistsPrecondition>(
-    ::ViewExistsPrecondition,
+	::ViewExistsPrecondition,
+	ViewExistsPrecondition::class.java,
     ViewExistsPrecondition::setSchemaName,
     ViewExistsPrecondition::setCatalogName
     ,
@@ -97,7 +114,8 @@ open class ViewExistsPreconditionIntegration : SchAndCatIntegration<LkViewExists
 
 open class ForeignKeyConstraintExistsPreconditionIntegration :
     SchAndCatIntegration<LkForeignKeyConstraintExistsPrecondition, ForeignKeyExistsPrecondition>(
-        ::ForeignKeyExistsPrecondition,
+	::ForeignKeyExistsPrecondition,
+	ForeignKeyExistsPrecondition::class.java,
         ForeignKeyExistsPrecondition::setSchemaName,
         ForeignKeyExistsPrecondition::setCatalogName,
         LkForeignKeyConstraintExistsPrecondition::foreignKeyName - ForeignKeyExistsPrecondition::setForeignKeyName,
@@ -106,7 +124,8 @@ open class ForeignKeyConstraintExistsPreconditionIntegration :
 
 open class IndexExistsPreconditionIntegration :
     SchAndCatIntegration<LkIndexExistsPrecondition, IndexExistsPrecondition>(
-        ::IndexExistsPrecondition,
+	::IndexExistsPrecondition,
+	IndexExistsPrecondition::class.java,
         IndexExistsPrecondition::setSchemaName,
         IndexExistsPrecondition::setCatalogName
         ,
@@ -117,7 +136,8 @@ open class IndexExistsPreconditionIntegration :
 
 open class SequenceExistsPreconditionIntegration :
     SchAndCatIntegration<LkSequenceExistsPrecondition, SequenceExistsPrecondition>(
-        ::SequenceExistsPrecondition,
+	::SequenceExistsPrecondition,
+	SequenceExistsPrecondition::class.java,
         SequenceExistsPrecondition::setSchemaName,
         SequenceExistsPrecondition::setCatalogName
         ,
@@ -126,7 +146,8 @@ open class SequenceExistsPreconditionIntegration :
 
 open class PrimaryKeyExistsPreconditionIntegration :
     SchAndCatIntegration<LkPrimaryKeyExistsPrecondition, PrimaryKeyExistsPrecondition>(
-        ::PrimaryKeyExistsPrecondition,
+	::PrimaryKeyExistsPrecondition,
+	PrimaryKeyExistsPrecondition::class.java,
         PrimaryKeyExistsPrecondition::setSchemaName,
         PrimaryKeyExistsPrecondition::setCatalogName
         ,
@@ -135,26 +156,30 @@ open class PrimaryKeyExistsPreconditionIntegration :
     )
 
 open class SqlCheckPreconditionIntegration : BasePreconditionIntegration<SqlPrecondition>(
-    ::SqlPrecondition,
+	::SqlPrecondition,
+	SqlPrecondition::class.java,
     LkSqlCheckPrecondition::expectedResult - SqlPrecondition::setExpectedResult,
     LkSqlCheckPrecondition::sql - SqlPrecondition::setSql
 )
 
 open class ChangeLogPropertyDefinedPreconditionIntegration :
     BasePreconditionIntegration<ChangeLogPropertyDefinedPrecondition>(
-        ::ChangeLogPropertyDefinedPrecondition,
+	::ChangeLogPropertyDefinedPrecondition,
+	ChangeLogPropertyDefinedPrecondition::class.java,
         LkChangeLogPropertyDefinedPrecondition::property - ChangeLogPropertyDefinedPrecondition::setProperty,
         LkChangeLogPropertyDefinedPrecondition::value - ChangeLogPropertyDefinedPrecondition::setValue
     )
 
 open class CustomPreconditionIntegration : BasePreconditionIntegration<CustomPreconditionWrapper>(
-    ::CustomPreconditionWrapper,
+	::CustomPreconditionWrapper,
+	CustomPreconditionWrapper::class.java,
     LkCustomPrecondition::className - CustomPreconditionWrapper::setClassName
 )
 
 open class CustomPreconditionParamIntegration :
     LiquibaseIntegrator<Any, CustomPreconditionWrapper>(
-        ::Any,
+	::Any,
+	Any::class.java,
         { wrapper, _, self, _ ->
             wrapper.setParam(self.get(LkCustomPreconditionParam::name), self.getNullable(LkCustomPreconditionParam::value)?.toString())
         }

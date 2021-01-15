@@ -2,6 +2,7 @@ package com.tsarev.liquikotlin.util
 
 import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.infrastructure.LbArg
+import com.tsarev.liquikotlin.infrastructure.LiquibaseIntegrator
 import com.tsarev.liquikotlin.infrastructure.api.EvalAction
 import com.tsarev.liquikotlin.infrastructure.api.EvalFactory
 import com.tsarev.liquikotlin.infrastructure.api.EvaluateAble
@@ -12,7 +13,6 @@ import liquibase.changelog.DatabaseChangeLog
 import liquibase.resource.InputStreamList
 import liquibase.resource.ResourceAccessor
 import java.io.File
-import java.io.InputStream
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -72,7 +72,7 @@ class TestLiquibaseIntegrationFactory : LiquibaseIntegrationFactory() {
         )
     }
 
-    private val extendedWithParent: Map<Pair<KClass<*>, KClass<*>>, EvalAction<DefaultNode, *, LbArg>> = mapOf(
+    private val extendedWithParent: Map<Pair<KClass<*>, KClass<*>>, LiquibaseIntegrator<*, *>> = mapOf(
         LkAddColumnConfig::class to LkAddColumn::class to AddColumnConfigIntegration<AddColumnChange>(dummy),
         LkAddColumnConfig::class to LkCreateIndex::class to AddColumnConfigIntegration<CreateIndexChange>(dummy),
         LkAddColumnConfig::class to LkInsert::class to AddColumnConfigIntegration<InsertDataChange>(dummy),
@@ -84,9 +84,9 @@ class TestLiquibaseIntegrationFactory : LiquibaseIntegrationFactory() {
         LkPrecondition::class to LkChangeLog::class to PreconditionContainerIntegration<DatabaseChangeLog>(dummy)
     )
 
-    override val single: Map<KClass<*>, EvalAction<DefaultNode, *, LbArg>>
+    override val single: Map<KClass<*>, LiquibaseIntegrator<*, *>>
         get() = extendedSingle
 
-    override val withParent: Map<Pair<KClass<*>, KClass<*>>, EvalAction<DefaultNode, *, LbArg>>
+    override val withParent: Map<Pair<KClass<*>, KClass<*>>, LiquibaseIntegrator<*, *>>
         get() = extendedWithParent
 }

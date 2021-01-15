@@ -34,9 +34,11 @@ open class ChangesHolder {
 
 open class ChangeIntegration<ChangeT : Change>(
     linkedConstructor: () -> ChangeT,
+    linkedClass: Class<ChangeT>,
     vararg childMappings: PropertyMapping<DefaultNode, ChangeT, *>
 ) : LiquibaseIntegrator<ChangeT, ChangesHolder>(
     linkedConstructor,
+    linkedClass,
     { holder, change, _, arg ->
         holder.changes.add(change!!)
     }
@@ -50,7 +52,10 @@ open class ChangeIntegration<ChangeT : Change>(
 /**
  * Changelog. Entry point for rest nodes.
  */
-open class ChangeLogIntegration : LiquibaseIntegrator<DatabaseChangeLog, Any>(::DatabaseChangeLog) {
+open class ChangeLogIntegration : LiquibaseIntegrator<DatabaseChangeLog, Any>(
+    ::DatabaseChangeLog,
+    DatabaseChangeLog::class.java
+) {
     override fun doBefore(thisNode: DefaultNode, argument: LbArg?): DatabaseChangeLog? {
         val (physicalPath, _) = argument!!
         val result = DatabaseChangeLog(physicalPath).apply { changeLogParameters = ChangeLogParameters() }
@@ -62,6 +67,7 @@ open class ChangeLogIntegration : LiquibaseIntegrator<DatabaseChangeLog, Any>(::
 
 open class IncludeIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
     ::Any,
+    Any::class.java,
     { changeLog, _, self, arg ->
         val (_, resourceAccessor) = (arg as Pair<*, ResourceAccessor>)
         changeLog.include(
@@ -78,6 +84,7 @@ open class IncludeIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
 
 open class IncludeAllIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
     ::Any,
+    Any::class.java,
     { changeLog, _, self, arg ->
         val (_, resourceAccessor) = arg!!
         val resourceFilterDef: String? = self.getNullable(LkIncludeAll::resourceFilter)
@@ -103,6 +110,7 @@ open class IncludeAllIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
  */
 open class PropertyIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
     ::Any,
+    Any::class.java,
     { changeLog, _, self, _ ->
         changeLog.changeLogParameters.set(
             self.get(LkProperty::name),
@@ -118,6 +126,7 @@ open class PropertyIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
 
 open class ChangeSetIntegration : LiquibaseIntegrator<ChangesHolder, DatabaseChangeLog>(
     ::ChangesHolder,
+    ChangesHolder::class.java,
     { changeLog, holder, self, _ ->
         val result = ChangeSet(
             self.get(LkChangeSet::id).toString(),
@@ -142,6 +151,7 @@ open class ChangeSetIntegration : LiquibaseIntegrator<ChangesHolder, DatabaseCha
 
 open class RollbackIntegration : LiquibaseIntegrator<ChangesHolder, ChangesHolder>(
     ::ChangesHolder,
+    ChangesHolder::class.java,
     { holder, it, _, _ ->
         holder.rollback = it
     }
@@ -149,6 +159,7 @@ open class RollbackIntegration : LiquibaseIntegrator<ChangesHolder, ChangesHolde
 
 open class ValidCheckSumIntegration : LiquibaseIntegrator<Any, ChangesHolder>(
     ::Any,
+    Any::class.java,
     { holder, _, self, _ ->
         holder.validCheckSums.add(self.get(LkValidCheckSum::checkSum))
     }
@@ -156,6 +167,7 @@ open class ValidCheckSumIntegration : LiquibaseIntegrator<Any, ChangesHolder>(
 
 open class CommentIntegration : LiquibaseIntegrator<Any, ChangesHolder>(
     ::Any,
+    Any::class.java,
     { holder, _, self, _ ->
         holder.comments.add(self.get(LkComment::text))
     }

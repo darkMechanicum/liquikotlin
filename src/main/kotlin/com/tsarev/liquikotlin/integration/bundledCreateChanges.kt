@@ -13,10 +13,12 @@ import liquibase.statement.SequenceNextValueFunction
 
 open class BaseColumnConfigIntegration<SelfT : LkBaseColumnConfig<SelfT>, ColumnT : ColumnConfig, ParentT : Any>(
     linkedConstructor: () -> ColumnT,
+    linkedClass: Class<ColumnT>,
     parentSetter: (ParentT, ColumnT?, DefaultNode, LbArg?) -> Unit,
     vararg childMappings: PropertyMapping<DefaultNode, ColumnT, *>
 ) : LiquibaseIntegrator<ColumnT, ParentT>(
     linkedConstructor,
+    linkedClass,
     parentSetter,
     LkBaseColumnConfig<SelfT>::name - ColumnConfig::setName,
     LkBaseColumnConfig<SelfT>::type - ColumnConfig::setType,
@@ -62,6 +64,7 @@ open class AddColumnConfigIntegration<ParentT : Any>(
     vararg childMappings: PropertyMapping<DefaultNode, AddColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkAddColumnConfig, AddColumnConfig, ParentT>(
     ::AddColumnConfig,
+    AddColumnConfig::class.java,
     parentSetter,
     LkAddColumnConfig::beforeColumn - AddColumnConfig::setBeforeColumn,
     LkAddColumnConfig::afterColumn - AddColumnConfig::setAfterColumn,
@@ -76,6 +79,7 @@ open class LoadColumnConfigIntegration<ParentT : Any>(
     vararg childMappings: PropertyMapping<DefaultNode, LoadDataColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkLoadColumnConfig, LoadDataColumnConfig, ParentT>(
     ::LoadDataColumnConfig,
+    LoadDataColumnConfig::class.java,
     parentSetter,
     LkLoadColumnConfig::header - LoadDataColumnConfig::setHeader,
     LkLoadColumnConfig::index - LoadDataColumnConfig::setIndex
@@ -89,6 +93,7 @@ open class CommonColumnConfigIntegration<ParentT : Any>(
     vararg childMappings: PropertyMapping<DefaultNode, ColumnConfig, *>
 ) : BaseColumnConfigIntegration<LkCommonColumnConfig, ColumnConfig, ParentT>(
     ::ColumnConfig,
+    ColumnConfig::class.java,
     parentSetter
 ) { init {
     propertyMappings.addAll(childMappings)
@@ -97,6 +102,7 @@ open class CommonColumnConfigIntegration<ParentT : Any>(
 
 open class AddAutoIncrementIntegration : ChangeIntegration<AddAutoIncrementChange>(
     ::AddAutoIncrementChange,
+    AddAutoIncrementChange::class.java,
     LkAddAutoIncrement::catalogName - AddAutoIncrementChange::setCatalogName,
     LkAddAutoIncrement::columnDataType - AddAutoIncrementChange::setColumnDataType,
     LkAddAutoIncrement::columnName notNull AddAutoIncrementChange::setColumnName,
@@ -108,6 +114,7 @@ open class AddAutoIncrementIntegration : ChangeIntegration<AddAutoIncrementChang
 
 open class AddColumnIntegration : ChangeIntegration<AddColumnChange>(
     ::AddColumnChange,
+    AddColumnChange::class.java,
     LkAddColumn::catalogName - AddColumnChange::setCatalogName,
     LkAddColumn::schemaName - AddColumnChange::setSchemaName,
     LkAddColumn::tableName notNull AddColumnChange::setTableName
@@ -115,6 +122,7 @@ open class AddColumnIntegration : ChangeIntegration<AddColumnChange>(
 
 open class ConstraintsIntegration : LiquibaseIntegrator<ConstraintsConfig, ColumnConfig>(
     ::ConstraintsConfig,
+    ConstraintsConfig::class.java,
     { columnConfig, constraintsConfig, _, _ -> columnConfig.constraints = constraintsConfig },
     LkConstraints::nullable - ConstraintsConfig::setNullable,
     LkConstraints::primaryKey - ConstraintsConfig::setPrimaryKey,
@@ -135,6 +143,7 @@ open class ConstraintsIntegration : LiquibaseIntegrator<ConstraintsConfig, Colum
 @Suppress("UsePropertyAccessSyntax")
 open class AddDefaultValueIntegration : ChangeIntegration<AddDefaultValueChange>(
     ::AddDefaultValueChange,
+    AddDefaultValueChange::class.java,
     LkAddDefaultValue::catalogName - AddDefaultValueChange::setCatalogName,
     LkAddDefaultValue::columnDataType - AddDefaultValueChange::setColumnDataType,
     LkAddDefaultValue::columnName - AddDefaultValueChange::setColumnName,
@@ -155,6 +164,7 @@ open class AddDefaultValueIntegration : ChangeIntegration<AddDefaultValueChange>
 open class AddForeignKeyConstraintIntegration :
     ChangeIntegration<AddForeignKeyConstraintChange>(
         ::AddForeignKeyConstraintChange,
+        AddForeignKeyConstraintChange::class.java,
         LkAddForeignKeyConstraint::baseColumnNames - AddForeignKeyConstraintChange::setBaseColumnNames,
         LkAddForeignKeyConstraint::baseTableCatalogName - AddForeignKeyConstraintChange::setBaseTableCatalogName,
         LkAddForeignKeyConstraint::baseTableName - AddForeignKeyConstraintChange::setBaseTableName,
@@ -173,6 +183,7 @@ open class AddForeignKeyConstraintIntegration :
 
 open class AddLookupTableIntegration : ChangeIntegration<AddLookupTableChange>(
     ::AddLookupTableChange,
+    AddLookupTableChange::class.java,
     LkAddLookupTable::constraintName - AddLookupTableChange::setConstraintName,
     LkAddLookupTable::existingColumnName - AddLookupTableChange::setExistingColumnName,
     LkAddLookupTable::existingTableCatalogName - AddLookupTableChange::setExistingTableCatalogName,
@@ -187,6 +198,7 @@ open class AddLookupTableIntegration : ChangeIntegration<AddLookupTableChange>(
 
 open class AddNotNullConstraintIntegration : ChangeIntegration<AddNotNullConstraintChange>(
     ::AddNotNullConstraintChange,
+    AddNotNullConstraintChange::class.java,
     LkAddNotNullConstraint::catalogName - AddNotNullConstraintChange::setCatalogName,
     LkAddNotNullConstraint::columnDataType - AddNotNullConstraintChange::setColumnDataType,
     LkAddNotNullConstraint::columnName - AddNotNullConstraintChange::setColumnName,
@@ -198,6 +210,7 @@ open class AddNotNullConstraintIntegration : ChangeIntegration<AddNotNullConstra
 
 open class AddPrimaryKeyIntegration : ChangeIntegration<AddPrimaryKeyChange>(
     ::AddPrimaryKeyChange,
+    AddPrimaryKeyChange::class.java,
     LkAddPrimaryKey::catalogName - AddPrimaryKeyChange::setCatalogName,
     LkAddPrimaryKey::columnNames - AddPrimaryKeyChange::setColumnNames,
     LkAddPrimaryKey::constraintName - AddPrimaryKeyChange::setConstraintName,
@@ -212,6 +225,7 @@ open class AddPrimaryKeyIntegration : ChangeIntegration<AddPrimaryKeyChange>(
 
 open class AddUniqueConstraintIntegration : ChangeIntegration<AddUniqueConstraintChange>(
     ::AddUniqueConstraintChange,
+    AddUniqueConstraintChange::class.java,
     LkAddUniqueConstraint::catalogName - AddUniqueConstraintChange::setCatalogName,
     LkAddUniqueConstraint::columnNames - AddUniqueConstraintChange::setColumnNames,
     LkAddUniqueConstraint::constraintName - AddUniqueConstraintChange::setConstraintName,
@@ -228,6 +242,7 @@ open class AddUniqueConstraintIntegration : ChangeIntegration<AddUniqueConstrain
 
 open class CreateIndexIntegration : ChangeIntegration<CreateIndexChange>(
     ::CreateIndexChange,
+    CreateIndexChange::class.java,
     LkCreateIndex::catalogName - CreateIndexChange::setCatalogName,
     LkCreateIndex::indexName - CreateIndexChange::setIndexName,
     LkCreateIndex::schemaName - CreateIndexChange::setSchemaName,
@@ -238,6 +253,7 @@ open class CreateIndexIntegration : ChangeIntegration<CreateIndexChange>(
 
 open class CreateProcedureIntegration : ChangeIntegration<CreateProcedureChange>(
     ::CreateProcedureChange,
+    CreateProcedureChange::class.java,
     LkCreateProcedure::catalogName - CreateProcedureChange::setCatalogName,
     LkCreateProcedure::comments - CreateProcedureChange::setComments,
     LkCreateProcedure::dbms - CreateProcedureChange::setDbms,
@@ -252,6 +268,7 @@ open class CreateProcedureIntegration : ChangeIntegration<CreateProcedureChange>
 
 open class CreateSequenceIntegration : ChangeIntegration<CreateSequenceChange>(
     ::CreateSequenceChange,
+    CreateSequenceChange::class.java,
     LkCreateSequence::catalogName - CreateSequenceChange::setCatalogName,
     LkCreateSequence::cycle - CreateSequenceChange::setCycle,
     LkCreateSequence::incrementBy - CreateSequenceChange::setIncrementBy,
@@ -266,6 +283,7 @@ open class CreateSequenceIntegration : ChangeIntegration<CreateSequenceChange>(
 
 open class CreateTableIntegration : ChangeIntegration<CreateTableChange>(
     ::CreateTableChange,
+    CreateTableChange::class.java,
     LkCreateTable::catalogName - CreateTableChange::setCatalogName,
     LkCreateTable::remarks - CreateTableChange::setRemarks,
     LkCreateTable::schemaName - CreateTableChange::setSchemaName,
@@ -275,6 +293,7 @@ open class CreateTableIntegration : ChangeIntegration<CreateTableChange>(
 
 open class CreateViewIntegration : ChangeIntegration<CreateViewChange>(
     ::CreateViewChange,
+    CreateViewChange::class.java,
     LkCreateView::catalogName - CreateViewChange::setCatalogName,
     LkCreateView::replaceIfExists - CreateViewChange::setReplaceIfExists,
     LkCreateView::schemaName - CreateViewChange::setSchemaName,

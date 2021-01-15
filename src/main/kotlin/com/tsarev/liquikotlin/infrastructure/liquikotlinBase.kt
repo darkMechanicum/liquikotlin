@@ -38,6 +38,7 @@ data class PropertyMapping<FromT, ToT, PropertyT>(
  */
 open class LiquibaseIntegrator<LinkedT : Any, ParentT : Any>(
     val linkedConstructor: () -> LinkedT,
+    val linkedClass: Class<LinkedT>,
     private val parentSetter: ((ParentT, LinkedT?, DefaultNode, LbArg?) -> Unit)? = null,
     vararg mappings: PropertyMapping<DefaultNode, LinkedT, *>
 ) : EvalAction<DefaultNode, LinkedT, LbArg> {
