@@ -22,14 +22,14 @@ const val secondSql = "select 2 from dual"
 
 const val firstScript = """
     import com.tsarev.liquikotlin.bundled.*
-    changelog.changeset(1).sql - "$firstSql"
+    changelog.changeSet(1).sql - "$firstSql"
 """
 
 const val secondScript = """
     import com.tsarev.liquikotlin.bundled.*
     changelog - {
         include("$firstFileName").relativeToChangelogFile(true)
-        changeset(2).sql - "$secondSql"
+        changeSet(2).sql - "$secondSql"
     }
 """
 

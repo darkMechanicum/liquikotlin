@@ -142,7 +142,7 @@ open class ChangeSetIntegration : LiquibaseIntegrator<ChangesHolder, DatabaseCha
         holder.changes.forEach { result.addChange(it) }
         result.rollback.apply { holder.rollback?.changes?.forEach { this.changes.add(it) } }
         result.comments = holder.comments.joinToString()
-        result.failOnError = self.getNullable(LkChangeSet::failOnError)
+        result.failOnError = self.get(LkChangeSet::failOnError)
         holder.validCheckSums.map { result.addValidCheckSum(it) }
         result.preconditions = holder.preconditions
         changeLog.addChangeSet(result)

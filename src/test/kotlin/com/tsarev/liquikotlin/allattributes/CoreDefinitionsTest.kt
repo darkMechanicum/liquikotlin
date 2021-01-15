@@ -23,7 +23,7 @@ class CoreDefinitionsTest : BaseLiquikotlinUnitTest() {
 
     @Test
     fun changeSetTest() = testEvaluation(
-        LkChangeLog().changeset
+        LkChangeLog().changeSet
             .id(testId)
             .author(testAuthor)
             .dbms(testDbms)

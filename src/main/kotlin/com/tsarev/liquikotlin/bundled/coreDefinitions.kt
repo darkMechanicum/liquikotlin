@@ -80,7 +80,7 @@ open class LkChangeLog : LbDslNode<LkChangeLog>(LkChangeLog::class) {
 
     open val precondition by child(::LkPrecondition)
     open val property by child(::LkProperty)
-    open val changeset by child(::LkChangeSet)
+    open val changeSet by child(::LkChangeSet)
     open val include by child(::LkInclude)
     open val includeAll by child(::LkIncludeAll)
 }
@@ -130,7 +130,7 @@ open class LkChangeSet : LkRefactorings<LkChangeSet>(LkChangeSet::class) {
     open val runOnChange by nullable(Boolean::class, true) // TODO What is correct default?
     open val context by nullable(String::class)
     open val runInTransaction by nullable(Boolean::class)
-    open val failOnError by nullable(Boolean::class)
+    open val failOnError by prop(Boolean::class, true)
 
     open val rollback by child(::LkRollback)
     open val comment by child(::LkComment)

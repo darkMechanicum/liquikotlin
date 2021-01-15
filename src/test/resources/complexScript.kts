@@ -6,10 +6,10 @@ import com.tsarev.liquikotlin.util.*
  * This is a test script. See [H2RunTest].
  */
 
-changelog.changeset.author.default = "darkMechanicum"
+changelog.changeSet.author.default = "darkMechanicum"
 
 changelog - {
-    changeset.id(1) - {
+    changeSet.id(1) - {
         // Create changes.
         createTable.tableName(testTableName) - {
             column.name(testColumnName)

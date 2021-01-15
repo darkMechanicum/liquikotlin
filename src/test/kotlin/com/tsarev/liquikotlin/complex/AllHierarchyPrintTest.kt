@@ -354,7 +354,7 @@ class AllHierarchyPrintTest : RuleChainAwareTest() {
 
         property.name(testProperty).value(testValue)
 
-        changeset.id(1) - {
+        changeSet.id(1) - {
             rollback - {
                 // Create changes.
                 addAutoIncrement.tableName(testTableName).columnName(testColumnName)

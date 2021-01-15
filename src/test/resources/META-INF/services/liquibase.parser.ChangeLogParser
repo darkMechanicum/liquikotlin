@@ -1,2 +1,1 @@
 liquibase.parser.ext.DummyParser
-liquibase.parser.ext.KotlinLiquibaseChangeLogParser

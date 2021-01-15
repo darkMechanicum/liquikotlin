@@ -1,38 +1,27 @@
-package com.tsarev.liquikotlin.complex
+package com.tsarev.liquikotlin.serialize
 
 import com.tsarev.liquikotlin.bundled.LkChangeLog
+import com.tsarev.liquikotlin.bundled.invoke
+import com.tsarev.liquikotlin.bundled.minus
 import com.tsarev.liquikotlin.integration.LiquibaseIntegrationFactory
 import com.tsarev.liquikotlin.util.*
-import liquibase.change.Change
-import liquibase.change.ChangeWithColumns
-import liquibase.change.CheckSum
-import liquibase.change.core.*
 import liquibase.changelog.DatabaseChangeLog
-import liquibase.precondition.CustomPreconditionWrapper
-import liquibase.precondition.PreconditionLogic
-import liquibase.precondition.core.*
-import org.junit.Assert
+import liquibase.serializer.ext.KotlinLiquibaseChangeLogSerializer
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
 
 /**
- * Comprehensive test that checks all node types.
+ * Testing script execution on in memory H2 database.
  */
-class AllHierarchyTest : RuleChainAwareTest() {
+class SimpleSerializationTests : RuleChainAwareTest() {
 
     /**
      * Test integration factory.
      */
     private val liquibaseIntegration = LiquibaseIntegrationFactory()
 
-    /**
-     * Temp folder to use within include all.
-     */
-    private val tempDir by rule { TemporaryFolder() }
-
     @Test
-    fun testAllNodes() {
-        // Prepare test data.
+    fun simpleSerializeTest() {
+
         val root = LkChangeLog()
         val changelog = (root - {
             precondition - {
@@ -217,138 +206,13 @@ class AllHierarchyTest : RuleChainAwareTest() {
                         .constraints.nullable(testNullable)
                 }
             }
-
-            include.path(testIncludePath).relativeToChangelogFile(testRelativeToChangelogFile)
-            includeAll.path(tempDir.root.absolutePath).relativeToChangelogFile(false).errorIfMissingOrEmpty(false)
         })
 
+        val result: DatabaseChangeLog = changelog.node.evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
 
-        val result: DatabaseChangeLog = changelog.node
-            .evalSafe(liquibaseIntegration, testPath to DummyAccessor.instance)
+        val serializer = KotlinLiquibaseChangeLogSerializer()
 
-        result.run {
-            Assert.assertEquals(1, changeSets.size)
-            Assert.assertEquals(16, preconditions.nestedPreconditions.size) // One more from include logic.
-            Assert.assertEquals(testValue, changeLogParameters.getValue(testProperty, this))
-            preconditions.assertPreconditionClasses()
-            preconditions.assertNestedPreconditions()
-
-            changeSets.first().run {
-                Assert.assertEquals(42, rollback.changes.size)
-                Assert.assertEquals(42, changes.size)
-                Assert.assertEquals(testComment, comments)
-                Assert.assertEquals(1, validCheckSums.size)
-                Assert.assertEquals(CheckSum.parse(testCheckSum), validCheckSums.first())
-                preconditions.assertPreconditionClasses()
-                preconditions.assertNestedPreconditions()
-                rollback.changes.assertChangesClasses()
-                changes.assertChangesClasses()
-                rollback.changes.assertColumnAffectedChanges()
-                changes.assertColumnAffectedChanges()
-            }
-        }
-    }
-
-    /**
-     * Assert that preconditions have specified classes honoring order.
-     */
-    private fun PreconditionLogic.assertPreconditionClasses() = this.nestedPreconditions.assertClasses(
-        AndPrecondition::class,
-        OrPrecondition::class,
-        DBMSPrecondition::class,
-        RunningAsPrecondition::class,
-        ChangeSetExecutedPrecondition::class,
-        ColumnExistsPrecondition::class,
-        TableExistsPrecondition::class,
-        ViewExistsPrecondition::class,
-        ForeignKeyExistsPrecondition::class,
-        IndexExistsPrecondition::class,
-        SequenceExistsPrecondition::class,
-        PrimaryKeyExistsPrecondition::class,
-        SqlPrecondition::class,
-        ChangeLogPropertyDefinedPrecondition::class,
-        CustomPreconditionWrapper::class
-    )
-
-    /**
-     * Assert that passed precondition container has AndPrecondition
-     * and OrPrecondition as its first two elements. This AndPrecondition
-     * and OrPrecondition should also have nested DBMSPrecondition.
-     */
-    private fun PreconditionLogic.assertNestedPreconditions() {
-        operator fun PreconditionLogic.get(index: Int) = this.nestedPreconditions[index]
-        assertType(DBMSPrecondition::class, this[0].assertedCast<AndPrecondition>()[0])
-        assertType(DBMSPrecondition::class, this[1].assertedCast<OrPrecondition>()[0])
-    }
-
-    /**
-     * Assert that changes have specified classes honoring order.
-     */
-    private fun List<Change>.assertChangesClasses() = this.assertClasses(
-        AddAutoIncrementChange::class,
-        AddColumnChange::class,
-        AddDefaultValueChange::class,
-        AddForeignKeyConstraintChange::class,
-        AddLookupTableChange::class,
-        AddNotNullConstraintChange::class,
-        AddPrimaryKeyChange::class,
-        AddUniqueConstraintChange::class,
-        CreateIndexChange::class,
-        CreateProcedureChange::class,
-        CreateSequenceChange::class,
-        CreateTableChange::class,
-        CreateViewChange::class,
-        DeleteDataChange::class,
-        DropAllForeignKeyConstraintsChange::class,
-        DropColumnChange::class,
-        DropDefaultValueChange::class,
-        DropForeignKeyConstraintChange::class,
-        DropIndexChange::class,
-        DropNotNullConstraintChange::class,
-        DropPrimaryKeyChange::class,
-        DropProcedureChange::class,
-        DropSequenceChange::class,
-        DropTableChange::class,
-        DropUniqueConstraintChange::class,
-        DropViewChange::class,
-        AlterSequenceChange::class,
-        EmptyChange::class,
-        ExecuteShellCommandChange::class,
-        InsertDataChange::class,
-        LoadDataChange::class,
-        LoadUpdateDataChange::class,
-        MergeColumnChange::class,
-        ModifyDataTypeChange::class,
-        RenameColumnChange::class,
-        RenameTableChange::class,
-        RenameViewChange::class,
-        RawSQLChange::class,
-        SQLFileChange::class,
-        StopChange::class,
-        TagDatabaseChange::class,
-        UpdateDataChange::class
-    )
-
-    /**
-     * Assert that some of changes has specific column config.
-     */
-    private fun List<Change>.assertColumnAffectedChanges() {
-        (get(1) as AddColumnChange).assertColumns()
-        (get(8) as CreateIndexChange).assertColumns()
-        (get(11) as CreateTableChange).assertColumns()
-        (get(29) as InsertDataChange).assertColumns()
-        (get(30) as LoadDataChange).assertColumns()
-        (get(31) as LoadUpdateDataChange).assertColumns()
-        (get(41) as UpdateDataChange).assertColumns()
-    }
-
-    /**
-     * Assert that column aware element has exactly one column and
-     * this column has nullable constraint.
-     */
-    private fun ChangeWithColumns<*>.assertColumns() {
-        Assert.assertEquals(1, columns.size)
-        Assert.assertEquals(testNullable, columns.first().constraints.isNullable)
+        println(serializer.serialize(result.changeSets.first(), true))
     }
 
 }

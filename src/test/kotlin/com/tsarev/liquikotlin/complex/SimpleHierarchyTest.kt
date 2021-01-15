@@ -32,7 +32,7 @@ class SimpleHierarchyTest {
     fun testSingleChangeSet() {
 
         val changelog = (LkChangeLog() - {
-            changeset(1) - {
+            changeSet(1) - {
                 sql - testSql
             }
         })
@@ -88,11 +88,11 @@ class SimpleHierarchyTest {
     fun testSingleChangeSetWithDefault() {
         val root = LkChangeLog()
 
-        root.changeset.sql.splitStatements.default = testSplitStatements
-        root.changeset.sql.stripComments.default = testStripComments
+        root.changeSet.sql.splitStatements.default = testSplitStatements
+        root.changeSet.sql.stripComments.default = testStripComments
 
         val changelog = (root - {
-            changeset(1) - {
+            changeSet(1) - {
                 sql - testSql
             }
         })
@@ -110,13 +110,13 @@ class SimpleHierarchyTest {
     @Test
     fun defaultsNotIntersectTest() {
         val changelog = (LkChangeLog() - {
-            changeset(1) - {
+            changeSet(1) - {
                 sql.splitStatements.default = testSplitStatements
                 sql.stripComments.default = testStripComments
 
                 sql - testSql
             }
-            changeset(2) - {
+            changeSet(2) - {
                 sql.splitStatements.default = !testSplitStatements
                 sql.stripComments.default = !testStripComments
 
@@ -138,11 +138,11 @@ class SimpleHierarchyTest {
     @Test
     fun multipleSipleChanges() {
         val changelog = (LkChangeLog() - {
-            changeset(1) - {
+            changeSet(1) - {
                 createTable(testTableName, testColumnName to testColumnType)
                 dropTable(testTableName)
             }
-            changeset(2) - {
+            changeSet(2) - {
                 createView(testViewName) - testSql
             }
         })
