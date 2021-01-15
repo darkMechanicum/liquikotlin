@@ -21,7 +21,7 @@ class CoreDefinitionsTest : BaseLiquikotlinUnitTest() {
     fun changeLogTest() = testEvaluation(
         LkChangeLog(),
         DatabaseChangeLog::class,
-        DatabaseChangeLog::getLogicalFilePath to testPath,
+        DatabaseChangeLog::getLogicalFilePath to testPath.replaceFirst("/", ""),
         DatabaseChangeLog::getPhysicalFilePath to testPath,
         DatabaseChangeLog::getChangeSets to emptyList<ChangeSet>()
     )

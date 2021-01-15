@@ -74,9 +74,9 @@ open class KotlinLiquibaseChangeLogParser : ChangeLogParser {
         resourceAccessor: ResourceAccessor
     ): DatabaseChangeLog {
         val realLocation = physicalChangeLogLocation.replace("\\\\", "/")
-        val inputStreams = resourceAccessor.getResourcesAsStream(realLocation)
-        val firstStream = inputStreams?.first() ?: throw ChangeLogParseException("$realLocation does not exist")
-        if (inputStreams.size > 1) {
+        val inputStreams = resourceAccessor.openStreams(null, realLocation)
+        val firstStream = inputStreams?.firstOrNull() ?: throw ChangeLogParseException("$realLocation does not exist")
+        if (inputStreams.size() > 1) {
             System.err.println("Warning: Ambiguous resources for path: $physicalChangeLogLocation")
         }
         return handleStream(firstStream, physicalChangeLogLocation, resourceAccessor)

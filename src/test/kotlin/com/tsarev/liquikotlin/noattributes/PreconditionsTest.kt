@@ -142,8 +142,7 @@ class PreconditionsTest : BaseLiquikotlinUnitTest() {
     fun customPreconditionTest() = testEvaluation(
         LkCustomPrecondition(),
         CustomPreconditionWrapper::class,
-        CustomPreconditionWrapper::getClassName,
-        CustomPreconditionWrapper::getClassLoader
+        CustomPreconditionWrapper::getClassName
     )
 
 }

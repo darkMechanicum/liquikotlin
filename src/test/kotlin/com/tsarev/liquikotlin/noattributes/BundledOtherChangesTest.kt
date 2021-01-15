@@ -5,6 +5,7 @@ import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.util.testSql
 import liquibase.change.ColumnConfig
 import liquibase.change.core.*
+import liquibase.util.csv.CSVReader
 import org.junit.Test
 
 /**
@@ -24,8 +25,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
         AlterSequenceChange::getMaxValue,
         AlterSequenceChange::getMinValue,
         AlterSequenceChange::isOrdered,
-        AlterSequenceChange::getCacheSize,
-        AlterSequenceChange::getWillCycle
+        AlterSequenceChange::getCacheSize
     )
 
     @Test
@@ -64,8 +64,8 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
         LoadDataChange::getFile,
         LoadDataChange::isRelativeToChangelogFile,
         LoadDataChange::getEncoding,
-        LoadDataChange::getSeparator to liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR + "",
-        LoadDataChange::getQuotchar to liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER + "",
+        LoadDataChange::getSeparator to CSVReader.DEFAULT_SEPARATOR + "",
+        LoadDataChange::getQuotchar to CSVReader.DEFAULT_QUOTE_CHARACTER + "",
         LoadDataChange::getColumns to emptyList<LoadDataColumnConfig>()
     )
 
@@ -80,8 +80,8 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
         LoadUpdateDataChange::isRelativeToChangelogFile,
         LoadUpdateDataChange::getEncoding,
         LoadUpdateDataChange::getPrimaryKey,
-        LoadUpdateDataChange::getSeparator to liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR + "",
-        LoadUpdateDataChange::getQuotchar to liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER + "",
+        LoadUpdateDataChange::getSeparator to CSVReader.DEFAULT_SEPARATOR + "",
+        LoadUpdateDataChange::getQuotchar to CSVReader.DEFAULT_QUOTE_CHARACTER + "",
         LoadUpdateDataChange::getColumns to emptyList<LoadDataColumnConfig>()
     )
 

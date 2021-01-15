@@ -46,7 +46,7 @@ abstract class LkRefactorings<SelfT : LkRefactorings<SelfT>>(thisClass: KClass<S
 
     // Other changes
     open val alterSequence by child(::LkAlterSequence)
-    open val empty by builtChild(::LkEmpty)
+    open val empty by child(::LkEmpty)
     open val executeCommand by child(::LkExecuteCommand)
     open val insert by child(::LkInsert)
     open val loadData by child(::LkLoadData)
@@ -90,6 +90,9 @@ open class LkInclude : LbDslNode<LkInclude>(LkInclude::class) {
     @Primary
     open val path by prop(String::class)
     open val relativeToChangelogFile by prop(Boolean::class, false)
+    open val context by nullable(String::class)
+    open val labels by nullable(String::class)
+    open val ignore by prop(Boolean::class, false)
 }
 
 @LKDsl
@@ -99,6 +102,9 @@ open class LkIncludeAll : LbDslNode<LkIncludeAll>(LkIncludeAll::class) {
     open val resourceFilter by nullable(String::class)
     open val relativeToChangelogFile by prop(Boolean::class, false)
     open val errorIfMissingOrEmpty by prop(Boolean::class, true)
+    open val context by nullable(String::class)
+    open val labels by nullable(String::class)
+    open val ignore by prop(Boolean::class, false)
 }
 
 /**

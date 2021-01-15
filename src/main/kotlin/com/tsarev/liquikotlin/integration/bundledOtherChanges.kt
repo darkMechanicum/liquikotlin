@@ -14,7 +14,6 @@ open class AlterSequenceIntegration : ChangeIntegration<AlterSequenceChange>(
     LkAlterSequence::ordered - AlterSequenceChange::setOrdered,
     LkAlterSequence::schemaName - AlterSequenceChange::setSchemaName,
     LkAlterSequence::cacheSize - AlterSequenceChange::setCacheSize,
-    LkAlterSequence::willCycle - AlterSequenceChange::setWillCycle,
     LkAlterSequence::sequenceName - AlterSequenceChange::setSequenceName
 )
 

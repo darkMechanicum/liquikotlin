@@ -42,7 +42,7 @@ class SimpleHierarchyTest {
         val changes = changeSet?.changes
         val change = changes?.firstOrNull()
 
-        Assert.assertEquals(testPath, result.filePath)
+        Assert.assertEquals(testPath.replaceFirst("/", ""), result.filePath)
         Assert.assertEquals(1, result.changeSets.size)
         Assert.assertEquals(1, changes?.size)
         Assert.assertTrue((change as RawSQLChange).run {true})

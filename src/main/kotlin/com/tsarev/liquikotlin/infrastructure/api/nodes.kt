@@ -1,5 +1,6 @@
 package com.tsarev.liquikotlin.infrastructure.api
 
+import com.tsarev.liquikotlin.util.letWhile
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
@@ -110,7 +111,7 @@ interface PropertyAble<NodeT : PropertyAble<NodeT>> : Node<NodeT> {
 }
 
 /**
- * Node that know its managed (which is created with delgation) properties meta info.
+ * Node that know its managed (which is created with delegation) properties meta info.
  */
 interface MetaAble<MetaT : PropMeta> {
 
@@ -158,3 +159,42 @@ interface SelfClassAble<NodeT : SelfClassAble<NodeT>> : Node<NodeT> {
      */
     val selfClass: KClass<*>
 }
+
+/**
+ * Factory to obtain specific [EvalAction] for each node.
+ */
+interface EvalFactory<ArgT, NodeT : Node<NodeT>> {
+
+    fun <EvalT : Any> getAction(node: NodeT): EvalAction<NodeT, EvalT, ArgT>
+}
+
+/**
+ * Hierarchy evaluation worker.
+ */
+interface EvalAction<NodeT : Node<NodeT>, EvalT : Any, ArgT> {
+
+    /**
+     * Perform evaluation before children.
+     */
+    fun doBefore(
+        thisNode: NodeT,
+        argument: ArgT?
+    ): EvalT?
+
+    /**
+     * Perform evaluation after children.
+     */
+    fun doAfter(
+        argument: ArgT?,
+        thisNode: NodeT,
+        childEvaluations: Collection<Any?>,
+        childNodes: Collection<NodeT>,
+        parentEval: Any?,
+        resultEval: EvalT?
+    ): EvalT?
+}
+
+/**
+ * Utility method to obtain tree root from any tree element.
+ */
+val <NodeT : TreeAble<NodeT>> NodeT.root: NodeT get() = this.letWhile { it.parent?.value }

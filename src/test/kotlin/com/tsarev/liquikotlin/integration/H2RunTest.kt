@@ -48,7 +48,7 @@ class H2RunTest : RuleChainAwareTest() {
      */
     private fun testLiquibase(path: String, assertions: Connection.() -> Unit) {
         val script = File(path)
-        val liquibase = Liquibase(script.patchedAbs, FileSystemResourceAccessor(), JdbcConnection(conn))
+        val liquibase = Liquibase(script.patchedAbs, FileSystemResourceAccessor(File("/")), JdbcConnection(conn))
         liquibase.update("")
         conn.assertions()
     }

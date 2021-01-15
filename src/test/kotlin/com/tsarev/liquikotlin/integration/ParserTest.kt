@@ -71,20 +71,32 @@ class ParserTest : RuleChainAwareTest() {
 
     @Test
     fun simpleParseTest() {
-        val changeLog = parser.parse(firstFile.patchedAbs, null, FileSystemResourceAccessor())
+        val changeLog = parser.parse(
+            firstFile.patchedAbs,
+            null,
+            FileSystemResourceAccessor(File("/"))
+        )
         val firstChange = changeLog.changeSets.firstOrNull()?.changes?.firstOrNull()
         Assert.assertEquals(firstSql, firstChange.assertedCast<RawSQLChange>().sql)
     }
 
     @Test
     fun includeParseTest() {
-        val changeLog = parser.parse(secondFile.patchedAbs, null, FileSystemResourceAccessor())
+        val changeLog = parser.parse(
+            secondFile.patchedAbs,
+            null,
+            FileSystemResourceAccessor(File("/"))
+        )
         changeLog.assertChanges()
     }
 
     @Test
     fun transitiveIncludeParseTest() {
-        val changeLog = parser.parse(thirdFile.patchedAbs, null, FileSystemResourceAccessor())
+        val changeLog = parser.parse(
+            thirdFile.patchedAbs,
+            null,
+            FileSystemResourceAccessor(File("/"))
+        )
         changeLog.assertChanges()
     }
 

@@ -1,5 +1,7 @@
 package com.tsarev.liquikotlin.infrastructure.api
 
+import com.tsarev.liquikotlin.util.LazyObservingDelegate
+
 /**
  * A way to get glue.
  */
@@ -34,4 +36,35 @@ abstract class Glue<NodeT : Node<NodeT>> {
      * Child access listener.
      */
     internal abstract fun onChildAccessed(child: Self<*>)
+}
+
+/**
+ * Utility method to create child node.
+ */
+fun <ChildT, SelfT, NodeT> GlueProvider<NodeT>.child(
+    childCtor: () -> ChildT,
+    self: SelfT
+) where SelfT : ChildAbleSelf<SelfT>,
+        ChildT : ChildAbleSelf<ChildT>,
+        NodeT : TreeAble<NodeT> = glue(self).run {
+    LazyObservingDelegate(
+        { childCtor().also { self.onChildAdded(it) } },
+        { self.onChildAccessed(it) }
+    )
+}
+
+/**
+ * Utility method to create already built (thus, non builder) child node.
+ */
+fun <ChildT, SelfT, NodeT> GlueProvider<NodeT>.builtChild(
+    childCtor: () -> ChildT,
+    self: SelfT
+) where SelfT : ChildAbleSelf<SelfT>,
+        ChildT : ChildAbleSelf<ChildT>,
+        NodeT : TreeAble<NodeT>,
+        NodeT : BuilderAble<NodeT> = glue(self).run {
+    LazyObservingDelegate(
+        { childCtor().also { self.onChildAdded(it) } },
+        { self.onChildAccessed(it); this.node.build() }
+    )
 }

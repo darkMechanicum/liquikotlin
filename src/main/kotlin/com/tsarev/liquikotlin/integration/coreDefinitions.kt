@@ -4,6 +4,9 @@ import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.infrastructure.*
 import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
 import com.tsarev.liquikotlin.util.letTry
+import liquibase.ContextExpression
+import liquibase.LabelExpression
+import liquibase.Scope
 import liquibase.change.Change
 import liquibase.changelog.ChangeLogParameters
 import liquibase.changelog.ChangeSet
@@ -35,7 +38,6 @@ open class ChangeIntegration<ChangeT : Change>(
 ) : LiquibaseIntegrator<ChangeT, ChangesHolder>(
     linkedConstructor,
     { holder, change, _, arg ->
-        arg?.let { change!!.setResourceAccessor(it.second) }
         holder.changes.add(change!!)
     }
 ) { init {
@@ -62,7 +64,15 @@ open class IncludeIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
     ::Any,
     { changeLog, _, self, arg ->
         val (_, resourceAccessor) = (arg as Pair<*, ResourceAccessor>)
-        changeLog.include(self.get(LkInclude::path), self.get(LkInclude::relativeToChangelogFile), resourceAccessor)
+        changeLog.include(
+            self.get(LkInclude::path),
+            self.get(LkInclude::relativeToChangelogFile),
+            resourceAccessor,
+            ContextExpression(self.getNullable(LkInclude::context)),
+            LabelExpression(self.getNullable(LkInclude::labels)),
+            self.get(LkInclude::ignore),
+            true
+        )
     }
 )
 
@@ -80,7 +90,10 @@ open class IncludeAllIntegration : LiquibaseIntegrator<Any, DatabaseChangeLog>(
             resourceFilter,
             self.get(LkIncludeAll::errorIfMissingOrEmpty),
             comparator,
-            resourceAccessor
+            resourceAccessor,
+            ContextExpression(self.getNullable(LkInclude::context)),
+            LabelExpression(self.getNullable(LkInclude::labels)),
+            self.get(LkInclude::ignore)
         )
     }
 )

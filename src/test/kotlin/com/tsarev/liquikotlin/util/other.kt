@@ -9,9 +9,13 @@ import com.tsarev.liquikotlin.infrastructure.default.DefaultNode
 import com.tsarev.liquikotlin.integration.*
 import liquibase.change.core.*
 import liquibase.changelog.DatabaseChangeLog
+import liquibase.resource.InputStreamList
 import liquibase.resource.ResourceAccessor
 import java.io.File
 import java.io.InputStream
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.reflect.KClass
 
 fun <ArgT, NodeT: EvaluateAble<NodeT>> EvaluateAble<NodeT>.generalEval(factory: EvalFactory<ArgT, NodeT>, arg: ArgT? = null) =
@@ -27,8 +31,7 @@ val File.patchedAbs get() = this.absolutePath.replace('\\', '/')
  */
 class DummyAccessor(
     private val list: MutableSet<String> = HashSet(),
-    private val resources: MutableSet<InputStream> = HashSet(),
-    private val classLoader: ClassLoader = DummyAccessor::class.java.classLoader
+    private val resources: InputStreamList = InputStreamList()
 ) : ResourceAccessor {
 
     companion object {
@@ -41,11 +44,14 @@ class DummyAccessor(
         includeFiles: Boolean,
         includeDirectories: Boolean,
         recursive: Boolean
-    ): MutableSet<String> = list
+    ): SortedSet<String> = list.toSortedSet()
 
-    override fun getResourcesAsStream(path: String?): MutableSet<InputStream> = resources
+    override fun openStreams(relativeTo: String?, streamPath: String?): InputStreamList = resources
 
-    override fun toClassLoader(): ClassLoader = classLoader
+    override fun openStream(relativeTo: String?, streamPath: String?) = resources.firstOrNull()
+
+    override fun describeLocations() = TreeSet(listOf("Test resource locations"))
+
 }
 
 /**

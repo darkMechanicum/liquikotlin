@@ -397,7 +397,7 @@ class AllHierarchyPrintTest : RuleChainAwareTest() {
 
                 // Other changes.
                 alterSequence.sequenceName(testSequenceName)
-                empty
+                empty()
                 executeCommand.executable(testExecutable)
                 insert.tableName(testTableName) - {
                     column.name(testColumnName)
@@ -488,7 +488,7 @@ class AllHierarchyPrintTest : RuleChainAwareTest() {
 
             // Other changes.
             alterSequence.sequenceName(testSequenceName)
-            empty
+            empty()
             executeCommand.executable(testExecutable)
             insert.tableName(testTableName) - {
                 column.name(testColumnName)

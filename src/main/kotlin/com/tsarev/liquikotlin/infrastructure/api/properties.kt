@@ -37,7 +37,7 @@ interface ChPr<SelfT : Self<SelfT>, FieldT : Any, NodeT : PropertyAble<NodeT>>
 }
 
 /**
- * Property delegate acting as delegate and delegate factory for any properies.
+ * Property delegate acting as delegate and delegate factory for any properties.
  */
 open class ChPrDlg<SelfT : Self<SelfT>, FieldT : Any, NodeT : PropertyAble<NodeT>, out PropT : PropBase<FieldT, SelfT, NodeT>>(
     private val constructor: (KProperty<*>) -> PropT

@@ -5,7 +5,7 @@ import com.tsarev.liquikotlin.bundled.*
 import com.tsarev.liquikotlin.util.*
 import liquibase.change.ColumnConfig
 import liquibase.change.core.*
-import liquibase.util.StringUtils
+import liquibase.util.csv.CSVReader
 import org.junit.Test
 
 /**
@@ -24,8 +24,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
             .maxValue(testMaxValue)
             .minValue(testMinValue)
             .ordered(testOrdered)
-            .cacheSize(testCacheSize)
-            .willCycle(testWillCycle),
+            .cacheSize(testCacheSize),
         AlterSequenceChange::class,
         AlterSequenceChange::getCatalogName to testCatalogName,
         AlterSequenceChange::getSchemaName to testSchemaName,
@@ -34,8 +33,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
         AlterSequenceChange::getMaxValue to testMaxValue,
         AlterSequenceChange::getMinValue to testMinValue,
         AlterSequenceChange::isOrdered to testOrdered,
-        AlterSequenceChange::getCacheSize to testCacheSize,
-        AlterSequenceChange::getWillCycle to testWillCycle
+        AlterSequenceChange::getCacheSize to testCacheSize
     )
 
     // TODO Add args testing
@@ -46,7 +44,7 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
             .os(testOs),
         ExecuteShellCommandChange::class,
         ExecuteShellCommandChange::getExecutable to testExecutable,
-        ExecuteShellCommandChange::getOs to StringUtils.splitAndTrim(testOs, ","),
+        ExecuteShellCommandChange::getOs to liquibase.util.StringUtil.splitAndTrim(testOs, ","),
         ExecuteShellCommandChange::getArgs to emptyList<String>()
     )
 
@@ -81,8 +79,8 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
         LoadDataChange::getFile to testFile,
         LoadDataChange::isRelativeToChangelogFile to testRelativeToChangelogFile,
         LoadDataChange::getEncoding to testEncoding,
-        LoadDataChange::getSeparator to "${liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR}",
-        LoadDataChange::getQuotchar to "${liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER}",
+        LoadDataChange::getSeparator to "${CSVReader.DEFAULT_SEPARATOR}",
+        LoadDataChange::getQuotchar to "${CSVReader.DEFAULT_QUOTE_CHARACTER}",
         LoadDataChange::getColumns to emptyList<LoadDataColumnConfig>()
     )
 
@@ -103,8 +101,8 @@ class BundledOtherChangesTest : BaseLiquikotlinUnitTest() {
         LoadUpdateDataChange::getFile to testFile,
         LoadUpdateDataChange::isRelativeToChangelogFile to testRelativeToChangelogFile,
         LoadUpdateDataChange::getEncoding to testEncoding,
-        LoadUpdateDataChange::getSeparator to "${liquibase.util.csv.opencsv.CSVReader.DEFAULT_SEPARATOR}",
-        LoadUpdateDataChange::getQuotchar to "${liquibase.util.csv.opencsv.CSVReader.DEFAULT_QUOTE_CHARACTER}",
+        LoadUpdateDataChange::getSeparator to "${CSVReader.DEFAULT_SEPARATOR}",
+        LoadUpdateDataChange::getQuotchar to "${CSVReader.DEFAULT_QUOTE_CHARACTER}",
         LoadUpdateDataChange::getColumns to emptyList<LoadDataColumnConfig>(),
         LoadUpdateDataChange::getPrimaryKey to testPrimaryKeyName
     )

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.tsarev"
-version = "1.0.0."
+version = "1.2.0-SNAPSHOT"
 
 configurations {
     "archives"()
@@ -20,7 +20,7 @@ repositories {
 dependencies {
     compile(kotlin("compiler"))
     compile(kotlin("script-util"))
-    compile("org.liquibase:liquibase-core:3.4.2")
+    compile("org.liquibase:liquibase-core:4.1.1")
     compile("de.swirtz:ktsRunner:0.0.7")
 
     testCompile("junit", "junit", "4.12")

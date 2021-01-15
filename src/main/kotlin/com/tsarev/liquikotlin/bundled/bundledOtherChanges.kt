@@ -17,11 +17,14 @@ open class LkAlterSequence : LbDslNode<LkAlterSequence>(LkAlterSequence::class) 
     @Primary
     open val sequenceName by nullable(String::class)
     open val cacheSize by nullable(BigInteger::class)
-    open val willCycle by nullable(Boolean::class)
 }
 
 @LKDsl
-open class LkEmpty : LbDslNode<LkEmpty>(LkEmpty::class)
+open class LkEmpty : LbDslNode<LkEmpty>(LkEmpty::class) {
+    operator fun invoke() { // Touch like function.
+        self.node.build()
+    }
+}
 
 @LKDsl
 open class LkExecuteCommand : LbDslNode<LkExecuteCommand> (LkExecuteCommand::class) {
